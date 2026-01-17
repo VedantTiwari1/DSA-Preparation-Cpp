@@ -1,0 +1,31 @@
+class Solution {
+public:
+    long long largestSquareArea(vector<vector<int>>& bottomLeft, vector<vector<int>>& topRight) {
+        long long maxSide = 0;
+        int n = bottomLeft.size();
+
+        // Iterate through every unique pair of rectangles
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                
+                // Find the intersection rectangle coordinates
+                // Max of starts (bottom-left)
+                long long x1 = max(bottomLeft[i][0], bottomLeft[j][0]);
+                long long y1 = max(bottomLeft[i][1], bottomLeft[j][1]);
+                
+                // Min of ends (top-right)
+                long long x2 = min(topRight[i][0], topRight[j][0]);
+                long long y2 = min(topRight[i][1], topRight[j][1]);
+
+                // Check if a valid intersection exists
+                if (x1 < x2 && y1 < y2) {
+                    // The side of the square is limited by the smaller dimension of the intersection
+                    long long side = min(x2 - x1, y2 - y1);
+                    maxSide = max(maxSide, side);
+                }
+            }
+        }
+
+        return maxSide * maxSide;
+    }
+};
