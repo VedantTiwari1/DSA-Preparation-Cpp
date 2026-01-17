@@ -1,0 +1,33 @@
+class Solution {
+public:
+    bool checkRedundancy(string &s) {
+        stack<char> st;
+        
+        for (char ch : s) {
+            if (ch == ')') {
+                // If the immediate top is '(', it means we have "()" which is redundant
+                // Or if we pop elements and find NO operators, it means "(a)" which is redundant
+                bool operatorFound = false;
+                
+                while (!st.empty() && st.top() != '(') {
+                    char top = st.top();
+                    if (top == '+' || top == '-' || top == '*' || top == '/') {
+                        operatorFound = true;
+                    }
+                    st.pop();
+                }
+                
+                // Pop the opening '('
+                if (!st.empty()) st.pop();
+                
+                // If no operator was found between '(' and ')', the brackets are redundant
+                if (!operatorFound) return true;
+                
+            } else {
+                // Push everything else (open brackets, operators, operands)
+                st.push(ch);
+            }
+        }
+        return false;
+    }
+};
