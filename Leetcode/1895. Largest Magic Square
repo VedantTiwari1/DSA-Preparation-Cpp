@@ -1,0 +1,71 @@
+class Solution {
+public:
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        // 1. Build Prefix Sums for Rows and Columns
+        // rowSum[i][j] stores the sum of the first j elements in row i
+        // colSum[i][j] stores the sum of the first i elements in column j
+        vector<vector<int>> rowSum(m, vector<int>(n + 1, 0));
+        vector<vector<int>> colSum(m + 1, vector<int>(n, 0));
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                rowSum[i][j + 1] = rowSum[i][j] + grid[i][j];
+                colSum[i + 1][j] = colSum[i][j] + grid[i][j];
+            }
+        }
+
+        // 2. Iterate possible sizes k from Largest to Smallest
+        // We start from min(m, n) because we want the largest square.
+        for (int k = min(m, n); k > 1; --k) {
+            // Iterate through every possible top-left corner (i, j) for size k
+            for (int i = 0; i <= m - k; ++i) {
+                for (int j = 0; j <= n - k; ++j) {
+                    
+                    // Check if the k x k square at (i, j) is a Magic Square
+                    if (isMagic(grid, rowSum, colSum, i, j, k)) {
+                        return k; // Found the largest possible, return immediately
+                    }
+                }
+            }
+        }
+
+        return 1; // A 1x1 grid is always a magic square
+    }
+
+private:
+    bool isMagic(vector<vector<int>>& grid, vector<vector<int>>& rowSum, vector<vector<int>>& colSum, int r, int c, int k) {
+        // Get the sum of the first row to set the target
+        int target = rowSum[r][c + k] - rowSum[r][c];
+
+        // Check all rows match target
+        for (int i = 0; i < k; ++i) {
+            int currentSum = rowSum[r + i][c + k] - rowSum[r + i][c];
+            if (currentSum != target) return false;
+        }
+
+        // Check all columns match target
+        for (int j = 0; j < k; ++j) {
+            int currentSum = colSum[r + k][c + j] - colSum[r][c + j];
+            if (currentSum != target) return false;
+        }
+
+        // Check Main Diagonal (top-left to bottom-right)
+        int d1 = 0;
+        for (int i = 0; i < k; ++i) {
+            d1 += grid[r + i][c + i];
+        }
+        if (d1 != target) return false;
+
+        // Check Anti-Diagonal (top-right to bottom-left)
+        int d2 = 0;
+        for (int i = 0; i < k; ++i) {
+            d2 += grid[r + i][c + k - 1 - i];
+        }
+        if (d2 != target) return false;
+
+        return true;
+    }
+};
