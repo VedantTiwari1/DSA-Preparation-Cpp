@@ -1,0 +1,31 @@
+class Solution {
+public:
+    // CHANGED FUNCTION NAME HERE from 'removeKdigits' to 'removeKdig'
+    string removeKdig(string s, int k) {
+        string ans = ""; // Using string as a stack
+        
+        for (char c : s) {
+            // While the current char 'c' is smaller than the last char in 'ans'
+            // and we still need to remove digits (k > 0)
+            while (!ans.empty() && ans.back() > c && k > 0) {
+                ans.pop_back(); // Remove the larger previous digit
+                k--;
+            }
+            
+            // Avoid adding leading zeros (unless ans is empty and c is '0')
+            if (!ans.empty() || c != '0') {
+                ans.push_back(c);
+            }
+        }
+        
+        // Edge Case 1: If k is still > 0, remove from the end
+        // (This happens if the number was already in ascending order like "12345")
+        while (!ans.empty() && k > 0) {
+            ans.pop_back();
+            k--;
+        }
+        
+        // Edge Case 3: If result is empty, return "0"
+        return ans.empty() ? "0" : ans;
+    }
+};
