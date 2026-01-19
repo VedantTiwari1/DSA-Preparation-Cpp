@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        int m = mat.size();
+        int n = mat[0].size();
+        
+        // 1. Build the 2D Prefix Sum Array
+        // We use m+1 and n+1 size to handle boundaries easily (1-based indexing)
+        vector<vector<int>> P(m + 1, vector<int>(n + 1, 0));
+        
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                P[i][j] = mat[i-1][j-1] 
+                        + P[i-1][j] 
+                        + P[i][j-1] 
+                        - P[i-1][j-1];
+            }
+        }
+        
+        // 2. Binary Search for the maximum side length
+        int low = 0, high = min(m, n);
+        int ans = 0;
+        
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            
+            // Check if any square of size 'mid' has sum <= threshold
+            bool found = false;
+            for (int i = mid; i <= m; i++) {
+                for (int j = mid; j <= n; j++) {
+                    int currentSum = P[i][j] - P[i-mid][j] - P[i][j-mid] + P[i-mid][j-mid];
+                    if (currentSum <= threshold) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            
+            if (found) {
+                ans = mid;      // This size is possible, try larger
+                low = mid + 1;
+            } else {
+                high = mid - 1; // This size is too big, try smaller
+            }
+        }
+        
+        return ans;
+    }
+};
