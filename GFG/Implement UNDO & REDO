@@ -1,0 +1,37 @@
+class Solution {
+private:
+    string doc;             // Stores the current document text
+    stack<char> redoStack;  // Stores characters removed by undo for potential redo
+
+public:
+    void append(char x) {
+        doc.push_back(x);
+        
+        // standard behavior: new changes invalidate the redo history
+        while (!redoStack.empty()) {
+            redoStack.pop();
+        }
+    }
+
+    void undo() {
+        // Only undo if there is something to remove
+        if (!doc.empty()) {
+            char lastChar = doc.back();
+            doc.pop_back();
+            redoStack.push(lastChar); // Save it for a potential redo
+        }
+    }
+
+    void redo() {
+        // Only redo if there is a previously undone action available
+        if (!redoStack.empty()) {
+            char recoveredChar = redoStack.top();
+            redoStack.pop();
+            doc.push_back(recoveredChar); // Restore it to the document
+        }
+    }
+
+    string read() {
+        return doc;
+    }
+};
