@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<int> minBitwiseArray(vector<int>& nums) {
+        vector<int> ans;
+        ans.reserve(nums.size()); // Optimization to avoid reallocations
+        
+        for (int x : nums) {
+            // Case 1: The only prime that is even is 2.
+            // Binary 2 is '10'. The trailing bit is 0, so no 'x | (x+1)' can equal 2.
+            if (x == 2) {
+                ans.push_back(-1);
+            } else {
+                // Case 2: All other primes are odd, so they end in '1'.
+                // We find the sequence of trailing 1s.
+                // Example: x = 23 (binary 10111)
+                // Trailing 1s are at indices 0, 1, 2.
+                // We minimize the result by removing the largest bit in that sequence (bit 2).
+                
+                int p = 0;
+                int temp = x;
+                
+                // Find the position of the first '0' bit starting from LSB
+                while ((temp & 1) == 1) {
+                    temp >>= 1;
+                    p++;
+                }
+                
+                // 'p' is the index of the first 0. 
+                // The contiguous trailing 1s are from index 0 to p-1.
+                // The MSB of this group is at index p-1.
+                ans.push_back(x - (1 << (p - 1)));
+            }
+        }
+        return ans;
+    }
+};
