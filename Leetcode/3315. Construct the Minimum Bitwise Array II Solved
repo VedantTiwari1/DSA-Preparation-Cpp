@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> minBitwiseArray(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n);
+        
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 2) {
+                // 2 is the only even prime. 
+                // x | (x + 1) will always have the last bit set (be odd) for any x > 0.
+                // 2 (binary 10) cannot be formed, so result is -1.
+                ans[i] = -1;
+            } else {
+                // For any other prime, it is odd, so it ends in ...1
+                // We need to find the sequence of trailing 1s.
+                // Example: 11 (binary 1011). Trailing 1s are at indices 0 and 1.
+                // We want to flip the Most Significant Bit of this trailing block to 0.
+                
+                int p = 0;
+                // Find the position of the first '0' bit starting from LSB
+                while ((nums[i] >> p) & 1) {
+                    p++;
+                }
+                
+                // The contiguous block of 1s is from bit 0 to bit p-1.
+                // To get the minimum x, we subtract the largest possible power of 2
+                // which corresponds to flipping the bit at (p - 1).
+                ans[i] = nums[i] ^ (1 << (p - 1));
+            }
+        }
+        return ans;
+    }
+};
