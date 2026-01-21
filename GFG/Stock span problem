@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> calculateSpan(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> span(n);
+        stack<int> st; // Stack to store indices of days
+
+        for (int i = 0; i < n; i++) {
+            // We want to find the previous greater element.
+            // Pop elements from the stack that are less than or equal to the current price.
+            // These elements can never be the "previous greater" for future elements
+            // because the current element is larger and closer.
+            while (!st.empty() && arr[st.top()] <= arr[i]) {
+                st.pop();
+            }
+
+            // If the stack is empty, it means the current price is greater than
+            // all previous prices we've encountered so far.
+            if (st.empty()) {
+                span[i] = i + 1;
+            } else {
+                // The top of the stack is now the index of the nearest previous day
+                // with a price greater than the current day.
+                span[i] = i - st.top();
+            }
+
+            // Push the current day's index onto the stack
+            st.push(i);
+        }
+
+        return span;
+    }
+};
