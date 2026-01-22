@@ -1,0 +1,76 @@
+class Solution {
+public:
+    int subarrayRanges(vector<int>& arr) {
+        int n = arr.size();
+        long long sumMax = 0;
+        long long sumMin = 0;
+        stack<int> s;
+
+        // --- Part 1: Calculate Sum of Subarray Minimums ---
+        vector<int> prevSmaller(n, -1);
+        vector<int> nextSmaller(n, n);
+
+        // Find Previous Smaller Element (index)
+        for (int i = 0; i < n; ++i) {
+            // Use <= to handle duplicates correctly (one side strict, one side non-strict)
+            while (!s.empty() && arr[s.top()] >= arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) prevSmaller[i] = s.top();
+            s.push(i);
+        }
+
+        while (!s.empty()) s.pop(); // Clear stack
+
+        // Find Next Smaller Element (index)
+        for (int i = n - 1; i >= 0; --i) {
+            // Use strictly > here
+            while (!s.empty() && arr[s.top()] > arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) nextSmaller[i] = s.top();
+            s.push(i);
+        }
+
+        // Calculate contribution to Min Sum
+        for (int i = 0; i < n; ++i) {
+            long long left = i - prevSmaller[i];
+            long long right = nextSmaller[i] - i;
+            sumMin += left * right * arr[i];
+        }
+
+        // --- Part 2: Calculate Sum of Subarray Maximums ---
+        while (!s.empty()) s.pop(); // Clear stack
+        vector<int> prevGreater(n, -1);
+        vector<int> nextGreater(n, n);
+
+        // Find Previous Greater Element
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && arr[s.top()] <= arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) prevGreater[i] = s.top();
+            s.push(i);
+        }
+
+        while (!s.empty()) s.pop(); // Clear stack
+
+        // Find Next Greater Element
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && arr[s.top()] < arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) nextGreater[i] = s.top();
+            s.push(i);
+        }
+
+        // Calculate contribution to Max Sum
+        for (int i = 0; i < n; ++i) {
+            long long left = i - prevGreater[i];
+            long long right = nextGreater[i] - i;
+            sumMax += left * right * arr[i];
+        }
+
+        return (int)(sumMax - sumMin);
+    }
+};
