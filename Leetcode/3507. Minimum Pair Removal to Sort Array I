@@ -1,0 +1,34 @@
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+class Solution {
+public:
+    int minimumPairRemoval(std::vector<int>& nums) {
+        int ops = 0;
+
+        // Continue as long as the array is not sorted
+        while (!std::is_sorted(nums.begin(), nums.end())) {
+            long long minSum = LLONG_MAX;
+            int targetIdx = -1;
+
+            // Find the leftmost adjacent pair with the minimum sum
+            for (int i = 0; i < (int)nums.size() - 1; ++i) {
+                long long currentSum = (long long)nums[i] + nums[i + 1];
+                if (currentSum < minSum) {
+                    minSum = currentSum;
+                    targetIdx = i;
+                }
+            }
+
+            // MERGE the pair: Replace nums[i] with sum, remove nums[i+1]
+            if (targetIdx != -1) {
+                nums[targetIdx] = nums[targetIdx] + nums[targetIdx + 1];
+                nums.erase(nums.begin() + targetIdx + 1);
+                ops++;
+            }
+        }
+
+        return ops;
+    }
+};
