@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int maxPeople(vector<int> &arr) {
+        int n = arr.size();
+        vector<int> left(n), right(n);
+        stack<int> s;
+
+        // 1. Find the Previous Greater or Equal Element for each index
+        for (int i = 0; i < n; ++i) {
+            // Pop smaller elements as they don't block the view
+            while (!s.empty() && arr[s.top()] < arr[i]) {
+                s.pop();
+            }
+            // If stack is empty, no blocker to the left (-1)
+            // Else, the top element is the nearest blocker
+            if (s.empty()) left[i] = -1;
+            else left[i] = s.top();
+            
+            s.push(i);
+        }
+
+        // Clear stack to reuse for right side
+        while (!s.empty()) s.pop();
+
+        // 2. Find the Next Greater or Equal Element for each index
+        for (int i = n - 1; i >= 0; --i) {
+            // Pop smaller elements
+            while (!s.empty() && arr[s.top()] < arr[i]) {
+                s.pop();
+            }
+            // If stack is empty, no blocker to the right (n)
+            // Else, top element is the nearest blocker
+            if (s.empty()) right[i] = n;
+            else right[i] = s.top();
+            
+            s.push(i);
+        }
+
+        // 3. Calculate max visible people
+        int max_visible = 0;
+        for (int i = 0; i < n; ++i) {
+            // The range (left[i], right[i]) contains people strictly smaller than arr[i]
+            // The formula (right - left - 1) gives the count of elements between them
+            int visible = right[i] - left[i] - 1;
+            max_visible = max(max_visible, visible);
+        }
+
+        return max_visible;
+    }
+};
