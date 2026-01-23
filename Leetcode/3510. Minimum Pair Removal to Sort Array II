@@ -1,0 +1,98 @@
+#include <vector>
+#include <queue>
+#include <functional>
+
+using namespace std;
+
+class Solution {
+public:
+    int minimumPairRemoval(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 2) return 0; // Already sorted if size < 2
+
+        // Doubly Linked List simulation using arrays
+        // prev[i] stores the index of the active element to the left of i
+        // next[i] stores the index of the active element to the right of i
+        vector<int> next(n), prev(n);
+        vector<long long> val(n); // Use long long to prevent overflow on sums
+        vector<bool> removed(n, false); // Track removed nodes
+        
+        for (int i = 0; i < n; ++i) {
+            val[i] = nums[i];
+            next[i] = (i == n - 1) ? -1 : i + 1;
+            prev[i] = (i == 0) ? -1 : i - 1;
+        }
+
+        // Min-heap to store {sum, left_index}. 
+        // Use 'greater' for Min-Heap. 
+        // Pairs are compared by first element (sum), then second (index), handling the "leftmost" rule naturally.
+        using P = pair<long long, int>;
+        priority_queue<P, vector<P>, greater<P>> pq;
+
+        int bad_count = 0;
+
+        // Helper lambda to check if the pair starting at 'i' is an inversion (bad)
+        auto is_bad = [&](int i) {
+            if (i == -1 || next[i] == -1) return false;
+            return val[i] > val[next[i]];
+        };
+
+        // Initialize PQ and count initial bad pairs (inversions)
+        for (int i = 0; i < n - 1; ++i) {
+            pq.push({val[i] + val[i + 1], i});
+            if (val[i] > val[i + 1]) bad_count++;
+        }
+
+        int ops = 0;
+
+        // Simulation Loop
+        while (bad_count > 0) {
+            if (pq.empty()) break; 
+
+            auto [sum, i] = pq.top();
+            pq.pop();
+
+            // Lazy Deletion Check:
+            // 1. Is node 'i' already removed?
+            // 2. Is the sum 'stale'? (Does not match current reality)
+            if (removed[i] || next[i] == -1) continue;
+            if (val[i] + val[next[i]] != sum) continue;
+
+            // Valid move found
+            ops++;
+
+            // Identify the neighborhood
+            int left = i;
+            int right = next[i];
+            int pre = prev[left];
+            int post = next[right];
+
+            // 1. Remove contributions of affected pairs to bad_count
+            if (is_bad(pre)) bad_count--;   // connection (pre -> left)
+            if (is_bad(left)) bad_count--;  // connection (left -> right) [will happen implicitly]
+            if (is_bad(right)) bad_count--; // connection (right -> post)
+
+            // 2. Perform the merge
+            val[left] += val[right]; // Add value to left node
+            removed[right] = true;   // Mark right node as removed
+
+            // 3. Update DLL pointers (bypass 'right')
+            next[left] = post;
+            if (post != -1) prev[post] = left;
+            
+            // 4. Check new connections for bad_count
+            if (is_bad(pre)) bad_count++;  // New connection (pre -> left)
+            if (is_bad(left)) bad_count++; // New connection (left -> post)
+
+            // 5. Add new neighbor sums to PQ
+            if (pre != -1) {
+                pq.push({val[pre] + val[left], pre});
+            }
+            if (post != -1) {
+                pq.push({val[left] + val[post], left});
+            }
+        }
+
+        return ops;
+    }
+};
