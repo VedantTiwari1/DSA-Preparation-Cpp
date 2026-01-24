@@ -1,0 +1,18 @@
+class Solution {
+public:
+    // Helper function to handle 0-based indexing recursion
+    int josephusHelper(int n, int k) {
+        // Base case: if there is only 1 person, they are at position 0
+        if (n == 1) {
+            return 0;
+        }
+        
+        // Recursive step: find position in (n-1) and shift by k
+        return (josephusHelper(n - 1, k) + k) % n;
+    }
+
+    int josephus(int n, int k) {
+        // Add 1 to convert 0-based result to 1-based index
+        return josephusHelper(n, k) + 1;
+    }
+};
