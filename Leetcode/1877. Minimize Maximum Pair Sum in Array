@@ -1,0 +1,25 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int minPairSum(std::vector<int>& nums) {
+        // Step 1: Sort the array
+        std::sort(nums.begin(), nums.end());
+        
+        int max_sum = 0;
+        int n = nums.size();
+        
+        // Step 2: Use two pointers to pair smallest with largest
+        for (int i = 0; i < n / 2; ++i) {
+            int current_pair_sum = nums[i] + nums[n - 1 - i];
+            
+            // Step 3: Update the maximum pair sum found so far
+            if (current_pair_sum > max_sum) {
+                max_sum = current_pair_sum;
+            }
+        }
+        
+        return max_sum;
+    }
+};
