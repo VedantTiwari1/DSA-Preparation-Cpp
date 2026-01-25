@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int findWays(int n) {
+        // A valid expression must have an even number of characters
+        if (n % 2 != 0) return 0;
+        
+        int k = n / 2;
+        
+        // dp[i] will store the i-th Catalan number
+        vector<long long> dp(k + 1, 0);
+        
+        // Base case: One way to arrange 0 pairs (empty string)
+        dp[0] = 1; 
+        
+        // Fill the DP table using the recursive formula:
+        // C(i) = sum(C(j) * C(i-1-j)) for j from 0 to i-1
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - 1 - j];
+            }
+        }
+        
+        return (int)dp[k];
+    }
+};
