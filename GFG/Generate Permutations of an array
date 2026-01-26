@@ -1,0 +1,27 @@
+class Solution {
+public:
+    void backtrack(int index, vector<int>& arr, vector<vector<int>>& result) {
+        // Base Case: All elements are positioned
+        if (index == arr.size()) {
+            result.push_back(arr);
+            return;
+        }
+
+        for (int i = index; i < arr.size(); i++) {
+            // Swap to put the element at the current 'index'
+            swap(arr[index], arr[i]);
+            
+            // Move to the next position
+            backtrack(index + 1, arr, result);
+            
+            // Backtrack: Undo the swap
+            swap(arr[index], arr[i]);
+        }
+    }
+
+    vector<vector<int>> permuteDist(vector<int>& arr) {
+        vector<vector<int>> result;
+        backtrack(0, arr, result);
+        return result;
+    }
+};
