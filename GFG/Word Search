@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool backtrack(vector<vector<char>>& mat, string& word, int i, int j, int index) {
+        // Base Case: All characters found
+        if (index == word.length()) return true;
+
+        // Boundary conditions and character mismatch check
+        if (i < 0 || i >= mat.size() || j < 0 || j >= mat[0].size() || mat[i][j] != word[index]) {
+            return false;
+        }
+
+        // Mark the cell as visited
+        char temp = mat[i][j];
+        mat[i][j] = '#';
+
+        // Explore all 4 directions
+        bool found = backtrack(mat, word, i + 1, j, index + 1) ||
+                     backtrack(mat, word, i - 1, j, index + 1) ||
+                     backtrack(mat, word, i, j + 1, index + 1) ||
+                     backtrack(mat, word, i, j - 1, index + 1);
+
+        // Backtrack: Restore the original character
+        mat[i][j] = temp;
+
+        return found;
+    }
+
+    bool isWordExist(vector<vector<char>>& mat, string& word) {
+        int n = mat.size();
+        int m = mat[0].size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                // If first character matches, start DFS
+                if (mat[i][j] == word[0]) {
+                    if (backtrack(mat, word, i, j, 0)) return true;
+                }
+            }
+        }
+        return false;
+    }
+};
