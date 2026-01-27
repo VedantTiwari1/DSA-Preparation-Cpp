@@ -1,0 +1,44 @@
+#include <vector>
+#include <queue>
+#include <tuple>
+
+using namespace std;
+
+class Solution {
+public:
+    long long minCost(int n, vector<vector<int>>& edges) {
+        // adj[u] = {v, weight, isReverse}
+        vector<vector<pair<int, int>>> adj(n);
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            // Regular edge: cost w
+            adj[u].push_back({v, w});
+            // Reversible version: from v back to u, cost 2*w
+            adj[v].push_back({u, 2 * w});
+        }
+
+        // Dijkstra's: {cost, node}
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+        vector<long long> dist(n, -1);
+
+        pq.push({0, 0});
+        dist[0] = 0;
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+
+            if (d > dist[u] && dist[u] != -1) continue;
+            if (u == n - 1) return d;
+
+            for (auto& [v, weight] : adj[u]) {
+                if (dist[v] == -1 || d + weight < dist[v]) {
+                    dist[v] = d + weight;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        return dist[n - 1];
+    }
+};
