@@ -1,0 +1,74 @@
+#include <vector>
+#include <algorithm>
+#include <map>
+
+using namespace std;
+
+class Solution {
+public:
+    int minCost(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        long long INF = 1e15; // Use a safe infinity
+        
+        // dp[t][pos] = min cost to reach cell with t teleports
+        vector<vector<long long>> dp(k + 1, vector<long long>(m * n, INF));
+
+        // 0. Group cell positions by their values for teleport optimization
+        map<int, vector<int>> val_to_pos;
+        int max_val = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                val_to_pos[grid[i][j]].push_back(i * n + j);
+                max_val = max(max_val, grid[i][j]);
+            }
+        }
+
+        // 1. Base Layer (0 teleports) - Standard Grid DP
+        dp[0][0] = 0; // Starting cost is 0 per LeetCode explanation
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int curr = i * n + j;
+                if (i > 0) dp[0][curr] = min(dp[0][curr], dp[0][(i - 1) * n + j] + grid[i][j]);
+                if (j > 0) dp[0][curr] = min(dp[0][curr], dp[0][i * n + (j - 1)] + grid[i][j]);
+            }
+        }
+
+        // 2. Iterate through each teleportation count
+        for (int t = 1; t <= k; ++t) {
+            // Build Suffix Minimum: suffix_min[v] = min cost of all cells with grid value >= v
+            vector<long long> suffix_min(max_val + 2, INF);
+            long long running_min = INF;
+            for (auto it = val_to_pos.rbegin(); it != val_to_pos.rend(); ++it) {
+                int val = it->first;
+                for (int pos : it->second) {
+                    running_min = min(running_min, dp[t - 1][pos]);
+                }
+                suffix_min[val] = running_min;
+            }
+            
+            // Fill suffix_min for values not present in the grid
+            for (int v = max_val; v >= 0; --v) {
+                suffix_min[v] = min(suffix_min[v], suffix_min[v + 1]);
+            }
+
+            for (int i = 0; i < m; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    int curr = i * n + j;
+                    int val = grid[i][j];
+                    
+                    // Option 1: Teleport here (Cost 0 from any cell with value >= current val)
+                    dp[t][curr] = min(dp[t - 1][curr], suffix_min[val]);
+
+                    // Option 2: Normal move within the same teleport level
+                    if (i > 0) dp[t][curr] = min(dp[t][curr], dp[t][(i - 1) * n + j] + val);
+                    if (j > 0) dp[t][curr] = min(dp[t][curr], dp[t][i * n + (j - 1)] + val);
+                }
+            }
+        }
+
+        long long ans = INF;
+        for (int t = 0; t <= k; ++t) ans = min(ans, dp[t][m * n - 1]);
+        return (int)ans;
+    }
+};
