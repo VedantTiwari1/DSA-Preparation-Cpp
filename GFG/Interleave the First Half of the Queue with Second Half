@@ -1,0 +1,25 @@
+class Solution {
+public:
+    void rearrangeQueue(queue<int> &q) {
+        int n = q.size();
+        int half = n / 2;
+        queue<int> firstHalf;
+        
+        // 1. Move the first half of elements to a temporary queue
+        for (int i = 0; i < half; i++) {
+            firstHalf.push(q.front());
+            q.pop();
+        }
+        
+        // 2. Interleave elements back into the original queue
+        while (!firstHalf.empty()) {
+            // Add element from the first half
+            q.push(firstHalf.front());
+            firstHalf.pop();
+            
+            // Move the current front of the original queue (second half) to the back
+            q.push(q.front());
+            q.pop();
+        }
+    }
+};
