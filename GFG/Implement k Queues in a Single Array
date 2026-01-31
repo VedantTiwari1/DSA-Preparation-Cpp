@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class kQueues {
+    int *arr, *front, *rear, *next;
+    int n, k, free;
+
+public:
+    kQueues(int n, int k) {
+        this->n = n;
+        this->k = k;
+        arr = new int[n];
+        next = new int[n];
+        front = new int[k];
+        rear = new int[k];
+
+        // Initialize all queues as empty
+        for (int i = 0; i < k; i++) front[i] = -1;
+
+        // Initialize all slots as free and link them
+        free = 0;
+        for (int i = 0; i < n - 1; i++) next[i] = i + 1;
+        next[n - 1] = -1; // Last slot points to nothing
+    }
+
+    void enqueue(int x, int i) {
+        if (isFull()) return;
+
+        int index = free;      // Get a free slot
+        free = next[index];    // Update free to the next available slot
+
+        if (isEmpty(i)) {
+            front[i] = index;  // If first element, update front
+        } else {
+            next[rear[i]] = index; // Link new element to the end of queue i
+        }
+
+        next[index] = -1;      // New element is now the end
+        rear[i] = index;       // Update rear
+        arr[index] = x;        // Insert the data
+    }
+
+    int dequeue(int i) {
+        if (isEmpty(i)) return -1;
+
+        int index = front[i];   // Find index of front element
+        front[i] = next[index]; // Move front to the next element
+
+        next[index] = free;     // Add the popped slot back to the free list
+        free = index;
+
+        return arr[index];
+    }
+
+    bool isEmpty(int i) {
+        return front[i] == -1;
+    }
+
+    bool isFull() {
+        return free == -1;
+    }
+};
