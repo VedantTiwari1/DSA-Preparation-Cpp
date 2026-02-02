@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int maxCircularSum(vector<int> &arr) {
+        int total_sum = 0;
+        int curr_max = 0;
+        int max_so_far = arr[0];
+        int curr_min = 0;
+        int min_so_far = arr[0];
+
+        for (int x : arr) {
+            total_sum += x;
+            
+            // Standard Kadane's for Max Subarray
+            curr_max = max(x, curr_max + x);
+            max_so_far = max(max_so_far, curr_max);
+            
+            // Kadane's variation for Min Subarray
+            curr_min = min(x, curr_min + x);
+            min_so_far = min(min_so_far, curr_min);
+        }
+
+        // Edge Case: If all numbers are negative, total_sum - min_so_far will be 0.
+        // We must return the max_so_far (the largest single negative number).
+        if (max_so_far < 0) {
+            return max_so_far;
+        }
+
+        // Return the best of non-wrapping and wrapping cases
+        return max(max_so_far, total_sum - min_so_far);
+    }
+};
