@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int maxProfit(vector<int> &prices) {
+        if (prices.empty()) return 0;
+
+        int min_price = prices[0]; // Track the lowest price seen so far
+        int max_profit = 0;        // Track the best profit found
+
+        for (int i = 1; i < prices.size(); i++) {
+            // Potential profit if sold today
+            int current_profit = prices[i] - min_price;
+            
+            // Update max_profit if today's sale is better
+            max_profit = max(max_profit, current_profit);
+            
+            // Update min_price for future days
+            min_price = min(min_price, prices[i]);
+        }
+
+        return max_profit;
+    }
+};
