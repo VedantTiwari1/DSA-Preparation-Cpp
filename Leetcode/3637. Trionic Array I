@@ -1,0 +1,33 @@
+class Solution {
+public:
+    bool isTrionic(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 4) return false; // Need at least 4 elements for 0 < p < q < n-1
+
+        int i = 0;
+
+        // 1. Strictly Increasing (0...p)
+        while (i + 1 < n && nums[i] < nums[i + 1]) {
+            i++;
+        }
+        // Peak p cannot be at the start (i == 0) or the very end
+        if (i == 0 || i == n - 1) return false;
+
+        // 2. Strictly Decreasing (p...q)
+        int p = i;
+        while (i + 1 < n && nums[i] > nums[i + 1]) {
+            i++;
+        }
+        // Valley q cannot be the same as p, and cannot be the end
+        if (i == p || i == n - 1) return false;
+
+        // 3. Strictly Increasing (q...n-1)
+        int q = i;
+        while (i + 1 < n && nums[i] < nums[i + 1]) {
+            i++;
+        }
+
+        // Must reach the end of the array to be valid
+        return i == n - 1;
+    }
+};
