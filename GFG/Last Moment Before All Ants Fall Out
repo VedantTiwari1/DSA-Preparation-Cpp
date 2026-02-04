@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int getLastMoment(int n, vector<int>& left, vector<int>& right) {
+        int lastMoment = 0;
+
+        // Ants moving left need to travel 'pos' distance to reach 0
+        for (int pos : left) {
+            lastMoment = max(lastMoment, pos);
+        }
+
+        // Ants moving right need to travel 'n - pos' distance to reach n
+        for (int pos : right) {
+            lastMoment = max(lastMoment, n - pos);
+        }
+
+        return lastMoment;
+    }
+};
