@@ -1,0 +1,28 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int minRemoval(std::vector<int>& nums, int k) {
+        int n = nums.size();
+        if (n <= 1) return 0;
+
+        // Sort to use sliding window
+        std::sort(nums.begin(), nums.end());
+
+        int max_len = 0;
+        int i = 0;
+
+        for (int j = 0; j < n; ++j) {
+            // Check condition: max <= k * min
+            // Cast to long long to handle potential overflow if nums[i] and k are large
+            while (nums[j] > (long long)k * nums[i]) {
+                i++;
+            }
+            // Update the largest balanced window found so far
+            max_len = std::max(max_len, j - i + 1);
+        }
+
+        return n - max_len;
+    }
+};
