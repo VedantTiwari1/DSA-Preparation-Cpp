@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int minimumDeletions(string s) {
+        int deletions = 0;
+        int b_count = 0;
+        
+        for (char c : s) {
+            if (c == 'b') {
+                // Keep track of 'b's encountered
+                b_count++;
+            } else {
+                // We found an 'a'. Is there a 'b' before it?
+                if (b_count > 0) {
+                    // Conflict found! 
+                    // We increment deletions and "consume" one 'b'
+                    deletions++;
+                    b_count--;
+                }
+            }
+        }
+        
+        return deletions;
+    }
+};
