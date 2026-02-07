@@ -1,0 +1,28 @@
+class Solution {
+public:
+    long long maxSum(vector<int> &arr) {
+        long long n = arr.size();
+        long long total_sum = 0;
+        long long current_val = 0;
+
+        for (int i = 0; i < n; i++) {
+            total_sum += arr[i];
+            current_val += (long long)i * arr[i];
+        }
+
+        long long max_val = current_val;
+
+        // Try all rotations using the transition formula
+        for (int i = 1; i < n; i++) {
+            // NextSum = CurrentSum + TotalSum - n * (last element of previous rotation)
+            // The element that was at (n-1) in the previous rotation is arr[n-i]
+            current_val = current_val + total_sum - n * (long long)arr[n - i];
+            
+            if (current_val > max_val) {
+                max_val = current_val;
+            }
+        }
+
+        return max_val;
+    }
+};
