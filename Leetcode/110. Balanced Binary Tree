@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int checkHeight(TreeNode* root) {
+        // Base case: null nodes have height 0
+        if (root == nullptr) return 0;
+
+        // Recursively check left subtree
+        int leftHeight = checkHeight(root->left);
+        if (leftHeight == -1) return -1;
+
+        // Recursively check right subtree
+        int rightHeight = checkHeight(root->right);
+        if (rightHeight == -1) return -1;
+
+        // If current node is unbalanced, return -1
+        if (abs(leftHeight - rightHeight) > 1) return -1;
+
+        // Otherwise, return the actual height of this node
+        return 1 + max(leftHeight, rightHeight);
+    }
+
+    bool isBalanced(TreeNode* root) {
+        // If helper returns -1, the tree is not balanced
+        return checkHeight(root) != -1;
+    }
+};
