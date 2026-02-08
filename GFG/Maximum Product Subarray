@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int maxProduct(vector<int> &arr) {
+        int n = arr.size();
+        if (n == 0) return 0;
+
+        // Initialize with the first element
+        long long max_so_far = arr[0];
+        long long min_so_far = arr[0];
+        long long result = arr[0];
+
+        for (int i = 1; i < n; i++) {
+            long long curr = arr[i];
+
+            // If current element is negative, swap max and min
+            if (curr < 0) {
+                swap(max_so_far, min_so_far);
+            }
+
+            // Standard Kadane-like update for products
+            max_so_far = max(curr, max_so_far * curr);
+            min_so_far = min(curr, min_so_far * curr);
+
+            result = max(result, max_so_far);
+        }
+
+        return (int)result;
+    }
+};
