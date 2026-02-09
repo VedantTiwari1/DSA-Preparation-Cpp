@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> sortedNodes;
+
+    // Step 1: In-order traversal to get sorted values
+    void inorder(TreeNode* root) {
+        if (!root) return;
+        inorder(root->left);
+        sortedNodes.push_back(root->val);
+        inorder(root->right);
+    }
+
+    // Step 2: Recursive function to build a balanced BST
+    TreeNode* buildBalancedBST(int start, int end) {
+        if (start > end) return nullptr;
+
+        int mid = start + (end - start) / 2;
+        TreeNode* root = new TreeNode(sortedNodes[mid]);
+
+        root->left = buildBalancedBST(start, mid - 1);
+        root->right = buildBalancedBST(mid + 1, end);
+
+        return root;
+    }
+
+    TreeNode* balanceBST(TreeNode* root) {
+        sortedNodes.clear();
+        inorder(root);
+        return buildBalancedBST(0, sortedNodes.size() - 1);
+    }
+};
