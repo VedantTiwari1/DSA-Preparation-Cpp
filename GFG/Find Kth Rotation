@@ -1,0 +1,33 @@
+class Solution {
+  public:
+    int findKRotation(vector<int> &arr) {
+        int low = 0, high = arr.size() - 1;
+
+        // If the array is not rotated at all
+        if (arr[low] <= arr[high]) return 0;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            // Check if mid+1 is the minimum element
+            if (mid < high && arr[mid] > arr[mid + 1]) {
+                return mid + 1;
+            }
+            
+            // Check if mid is the minimum element
+            if (mid > low && arr[mid] < arr[mid - 1]) {
+                return mid;
+            }
+
+            // Decide which half to choose
+            if (arr[mid] >= arr[low]) {
+                // Left half is sorted, pivot must be in the right
+                low = mid + 1;
+            } else {
+                // Right half is sorted, pivot must be in the left
+                high = mid - 1;
+            }
+        }
+        return 0;
+    }
+};
