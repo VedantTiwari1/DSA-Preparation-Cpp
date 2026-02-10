@@ -1,0 +1,35 @@
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+class Solution {
+public:
+    // Helper function to check if a speed 's' allows Koko to finish in 'k' hours
+    bool canEatAll(const std::vector<int>& arr, int k, int s) {
+        long long totalHours = 0;
+        for (int pile : arr) {
+            // Calculate ceiling of pile/s
+            totalHours += (pile + s - 1) / s;
+        }
+        return totalHours <= k;
+    }
+
+    int kokoEat(std::vector<int>& arr, int k) {
+        int low = 1;
+        int high = *std::max_element(arr.begin(), arr.end());
+        int ans = high;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            
+            if (canEatAll(arr, k, mid)) {
+                ans = mid;      // Mid is a possible answer
+                high = mid - 1; // Try to find a smaller speed
+            } else {
+                low = mid + 1;  // Need a faster speed
+            }
+        }
+        
+        return ans;
+    }
+};
