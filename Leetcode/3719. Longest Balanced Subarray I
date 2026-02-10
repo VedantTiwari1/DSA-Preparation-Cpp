@@ -1,0 +1,32 @@
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
+
+class Solution {
+public:
+    int longestBalanced(std::vector<int>& nums) {
+        int n = nums.size();
+        int maxLength = 0;
+
+        for (int i = 0; i < n; ++i) {
+            std::unordered_set<int> distinctEvens;
+            std::unordered_set<int> distinctOdds;
+
+            for (int j = i; j < n; ++j) {
+                // Classify and add to the appropriate set
+                if (nums[j] % 2 == 0) {
+                    distinctEvens.insert(nums[j]);
+                } else {
+                    distinctOdds.insert(nums[j]);
+                }
+
+                // If the number of distinct evens equals distinct odds
+                if (distinctEvens.size() == distinctOdds.size()) {
+                    maxLength = std::max(maxLength, j - i + 1);
+                }
+            }
+        }
+
+        return maxLength;
+    }
+};
