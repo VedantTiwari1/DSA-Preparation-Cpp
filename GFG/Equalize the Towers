@@ -1,0 +1,37 @@
+class Solution {
+public:
+    long long calculateCost(vector<int>& heights, vector<int>& cost, int targetH) {
+        long long totalCost = 0;
+        for (int i = 0; i < heights.size(); i++) {
+            totalCost += (long long)abs(heights[i] - targetH) * cost[i];
+        }
+        return totalCost;
+    }
+
+    long long minCost(vector<int>& heights, vector<int>& cost) {
+        int low = 0, high = 1e6; // Based on typical tower height constraints
+        for (int h : heights) {
+            high = max(high, h);
+            low = min(low, h);
+        }
+
+        long long ans = calculateCost(heights, cost, low);
+        
+        while (low <= high) {
+            int m1 = low + (high - low) / 3;
+            int m2 = high - (high - low) / 3;
+
+            long long cost1 = calculateCost(heights, cost, m1);
+            long long cost2 = calculateCost(heights, cost, m2);
+
+            ans = min({ans, cost1, cost2});
+
+            if (cost1 < cost2) {
+                high = m2 - 1;
+            } else {
+                low = m1 + 1;
+            }
+        }
+        return ans;
+    }
+};
