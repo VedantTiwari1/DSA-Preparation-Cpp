@@ -1,0 +1,46 @@
+class Solution {
+public:
+    bool isPossible(int n, int k, int w, vector<int>& arr, long long minH) {
+        vector<long long> added(n, 0);
+        long long daysUsed = 0;
+        long long currentExtra = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (i >= w) {
+                currentExtra -= added[i - w];
+            }
+
+            long long actualHeight = (long long)arr[i] + currentExtra;
+
+            if (actualHeight < minH) {
+                long long needed = minH - actualHeight;
+                daysUsed += needed;
+                if (daysUsed > k) return false;
+
+                added[i] = needed;
+                currentExtra += needed;
+            }
+        }
+        return daysUsed <= k;
+    }
+
+    // UPDATED: Removed 'int n' from parameters to match GFG's call: obj.maxMinHeight(arr, k, w)
+    long long maxMinHeight(vector<int> &arr, int k, int w) {
+        int n = arr.size(); // Derive n inside the function
+        long long low = *min_element(arr.begin(), arr.end());
+        long long high = low + k; 
+        long long ans = low;
+
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+
+            if (isPossible(n, k, w, arr, mid)) {
+                ans = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return ans;
+    }
+};
