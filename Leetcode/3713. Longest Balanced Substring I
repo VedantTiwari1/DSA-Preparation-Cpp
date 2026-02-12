@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int longestBalanced(string s) {
+        int n = s.length();
+        int maxLen = 0;
+
+        // Total unique characters in the string
+        unordered_set<char> totalUnique(s.begin(), s.end());
+        int maxK = totalUnique.size();
+
+        // k = number of distinct characters
+        // f = frequency of each character
+        for (int k = 1; k <= maxK; ++k) {
+            for (int f = 1; f * k <= n; ++f) {
+                int windowSize = k * f;
+                vector<int> count(26, 0);
+                int balancedCount = 0; // characters that have exactly frequency f
+                int uniqueInWindow = 0;
+
+                for (int i = 0; i < n; ++i) {
+                    // Add current character
+                    int addIdx = s[i] - 'a';
+                    if (count[addIdx] == 0) uniqueInWindow++;
+                    count[addIdx]++;
+                    if (count[addIdx] == f) balancedCount++;
+                    else if (count[addIdx] == f + 1) balancedCount--;
+
+                    // Remove character outside window
+                    if (i >= windowSize) {
+                        int removeIdx = s[i - windowSize] - 'a';
+                        if (count[removeIdx] == f) balancedCount--;
+                        count[removeIdx]--;
+                        if (count[removeIdx] == f) balancedCount++;
+                        if (count[removeIdx] == 0) uniqueInWindow--;
+                    }
+
+                    // Check if current window is balanced
+                    if (uniqueInWindow == k && balancedCount == k) {
+                        maxLen = max(maxLen, windowSize);
+                    }
+                }
+            }
+        }
+        return maxLen;
+    }
+};
