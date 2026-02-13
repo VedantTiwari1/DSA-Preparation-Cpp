@@ -1,0 +1,86 @@
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int longestBalanced(string s) {
+        // Case 1: Only 1 distinct character (any run of same characters is balanced)
+        int res1 = 0, currentRun = 0;
+        char lastChar = ' ';
+        for (char c : s) {
+            if (c == lastChar) currentRun++;
+            else {
+                currentRun = 1;
+                lastChar = c;
+            }
+            res1 = max(res1, currentRun);
+        }
+
+        // Case 2: Exactly 2 distinct characters (e.g., 'a' and 'b' only)
+        int res2 = max({calc2(s, 'a', 'b'), calc2(s, 'b', 'c'), calc2(s, 'a', 'c')});
+
+        // Case 3: Exactly 3 distinct characters ('a', 'b', and 'c')
+        int res3 = calc3(s);
+
+        return max({res1, res2, res3});
+    }
+
+private:
+    // Helper for substrings containing only two specific characters
+    int calc2(const string& s, char a, char b) {
+        int res = 0, n = s.size();
+        int i = 0;
+        while (i < n) {
+            // Skip characters that aren't 'a' or 'b'
+            while (i < n && s[i] != a && s[i] != b) i++;
+            
+            unordered_map<int, int> pos;
+            pos[0] = i - 1; // Base case for difference 0
+            int diff = 0;
+            
+            // Process the contiguous block of 'a's and 'b's
+            while (i < n && (s[i] == a || s[i] == b)) {
+                diff += (s[i] == a ? 1 : -1);
+                if (pos.count(diff)) {
+                    res = max(res, i - pos[diff]);
+                } else {
+                    pos[diff] = i;
+                }
+                i++;
+            }
+        }
+        return res;
+    }
+
+    // Helper for substrings containing all three characters
+    int calc3(const string& s) {
+        int res = 0;
+        // Use a hash function to pack two differences into one long long
+        unordered_map<long long, int> pos;
+        pos[f(0, 0)] = -1;
+        
+        int cnt[3] = {0, 0, 0};
+        for (int i = 0; i < s.size(); i++) {
+            cnt[s[i] - 'a']++;
+            
+            // State is defined by (count(a)-count(b)) and (count(b)-count(c))
+            long long state = f(cnt[0] - cnt[1], cnt[1] - cnt[2]);
+            
+            if (pos.count(state)) {
+                res = max(res, i - pos[state]);
+            } else {
+                pos[state] = i;
+            }
+        }
+        return res;
+    }
+
+    // Hash function to map two integers to one long long to avoid map overhead
+    static long long f(int x, int y) {
+        return ((long long)(x + 100000) << 20) | (long long)(y + 100000);
+    }
+};
