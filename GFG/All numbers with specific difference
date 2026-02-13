@@ -1,0 +1,31 @@
+class Solution {
+  public:
+    long long getSumOfDigits(long long x) {
+        long long sum = 0;
+        while (x > 0) {
+            sum += x % 10;
+            x /= 10;
+        }
+        return sum;
+    }
+
+    // Renamed this function to getCount
+    long long getCount(long long n, long long d) {
+        long long low = 1, high = n;
+        long long smallestK = -1;
+
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+            
+            if (mid - getSumOfDigits(mid) >= d) {
+                smallestK = mid;
+                high = mid - 1; 
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        if (smallestK == -1) return 0;
+        return (n - smallestK + 1);
+    }
+};
