@@ -1,0 +1,26 @@
+class Solution {
+public:
+    double champagneTower(int poured, int query_row, int query_glass) {
+        // We use a 2D array to represent the glasses in each row
+        // 101 because the problem mentions up to 100 rows
+        double tower[101][101] = {0.0};
+        
+        // Pour everything into the first glass
+        tower[0][0] = (double)poured;
+        
+        for (int i = 0; i <= query_row; ++i) {
+            for (int j = 0; j <= i; ++j) {
+                // Calculate overflow
+                double overflow = (tower[i][j] - 1.0) / 2.0;
+                
+                if (overflow > 0) {
+                    tower[i + 1][j] += overflow;
+                    tower[i + 1][j + 1] += overflow;
+                }
+            }
+        }
+        
+        // A glass cannot hold more than 1 unit, so we cap the result
+        return min(1.0, tower[query_row][query_glass]);
+    }
+};
