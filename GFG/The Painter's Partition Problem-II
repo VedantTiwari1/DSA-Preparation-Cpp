@@ -1,0 +1,45 @@
+class Solution {
+public:
+    // Helper function to check if it's possible to paint all boards 
+    // within 'mid' time using 'k' painters.
+    bool isPossible(vector<int>& arr, int k, long long mid) {
+        int paintersUsed = 1;
+        long long currentBoardSum = 0;
+        
+        for (int board : arr) {
+            if (currentBoardSum + board <= mid) {
+                currentBoardSum += board;
+            } else {
+                paintersUsed++;
+                // If more painters are needed than available, or a single 
+                // board is larger than mid, return false.
+                if (paintersUsed > k || board > mid) {
+                    return false;
+                }
+                currentBoardSum = board;
+            }
+        }
+        return true;
+    }
+
+    int minTime(vector<int>& arr, int k) {
+        long long low = 0, high = 0;
+        for (int board : arr) {
+            low = max(low, (long long)board);
+            high += board;
+        }
+
+        long long result = high;
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+            
+            if (isPossible(arr, k, mid)) {
+                result = mid; // This could be our answer, but try for a smaller time.
+                high = mid - 1;
+            } else {
+                low = mid + 1; // Need more time to paint with limited painters.
+            }
+        }
+        return (int)result;
+    }
+};
