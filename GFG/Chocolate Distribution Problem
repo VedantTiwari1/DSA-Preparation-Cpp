@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findMinDiff(vector<int>& a, int m) {
+        int n = a.size();
+        
+        // Edge case: if there are no students or packets
+        if (m == 0 || n == 0) return 0;
+        
+        // If students are more than available packets, return 0 or handle as per constraints
+        if (n < m) return -1;
+
+        // Step 1: Sort the array
+        sort(a.begin(), a.end());
+
+        int min_diff = INT_MAX;
+
+        // Step 2: Traverse the array with a window of size m
+        for (int i = 0; i + m - 1 < n; i++) {
+            // Calculate difference between last and first element in current window
+            int current_diff = a[i + m - 1] - a[i];
+            
+            // Update global minimum difference
+            if (current_diff < min_diff) {
+                min_diff = current_diff;
+            }
+        }
+
+        return min_diff;
+    }
+};
