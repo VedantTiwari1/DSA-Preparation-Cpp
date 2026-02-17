@@ -1,0 +1,21 @@
+class Solution {
+public:
+    vector<string> readBinaryWatch(int turnedOn) {
+        vector<string> result;
+        
+        // Iterate through all possible hours (0-11) and minutes (0-59)
+        for (int h = 0; h < 12; h++) {
+            for (int m = 0; m < 60; m++) {
+                // __builtin_popcount counts the number of set bits (1s) in an integer
+                if (__builtin_popcount(h) + __builtin_popcount(m) == turnedOn) {
+                    
+                    // Format the string: minutes must be 2 digits with leading zero if < 10
+                    string time = to_string(h) + ":" + (m < 10 ? "0" : "") + to_string(m);
+                    result.push_back(time);
+                }
+            }
+        }
+        
+        return result;
+    }
+};
