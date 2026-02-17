@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int overlapInt(vector<vector<int>> &arr) {
+        int n = arr.size();
+        if (n == 0) return 0;
+
+        vector<int> starts, ends;
+        for (const auto& interval : arr) {
+            starts.push_back(interval[0]);
+            ends.push_back(interval[1]);
+        }
+
+        sort(starts.begin(), starts.end());
+        sort(ends.begin(), ends.end());
+
+        int max_overlap = 0;
+        int current_overlap = 0;
+        int i = 0, j = 0;
+
+        // Use (i < n) because we only care about new intervals starting.
+        // Once all intervals have started, the max_overlap cannot increase further.
+        while (i < n) {
+            if (starts[i] <= ends[j]) {
+                current_overlap++;
+                if (current_overlap > max_overlap) {
+                    max_overlap = current_overlap;
+                }
+                i++; // Move to next start time
+            } else {
+                current_overlap--;
+                j++; // Move to next end time
+            }
+        }
+
+        return max_overlap;
+    }
+};
