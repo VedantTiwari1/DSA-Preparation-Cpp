@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int mergeAndCount(vector<int>& arr, int l, int m, int r) {
+        vector<int> left, right;
+        for (int i = l; i <= m; i++) left.push_back(arr[i]);
+        for (int i = m + 1; i <= r; i++) right.push_back(arr[i]);
+
+        int i = 0, j = 0, k = l, swaps = 0;
+
+        while (i < left.size() && j < right.size()) {
+            if (left[i] <= right[j]) {
+                arr[k++] = left[i++];
+            } else {
+                arr[k++] = right[j++];
+                // Key Insight: All remaining elements in left[] are inversions
+                swaps += (left.size() - i);
+            }
+        }
+        while (i < left.size()) arr[k++] = left[i++];
+        while (j < right.size()) arr[k++] = right[j++];
+        
+        return swaps;
+    }
+
+    int mergeSortAndCount(vector<int>& arr, int l, int r) {
+        int count = 0;
+        if (l < r) {
+            int m = l + (r - l) / 2;
+            count += mergeSortAndCount(arr, l, m);
+            count += mergeSortAndCount(arr, m + 1, r);
+            count += mergeAndCount(arr, l, m, r);
+        }
+        return count;
+    }
+
+    int inversionCount(vector<int> &arr) {
+        return mergeSortAndCount(arr, 0, arr.size() - 1);
+    }
+};
