@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int countBinarySubstrings(string s) {
+        int count = 0;
+        int prev = 0;
+        int curr = 1;
+        
+        for (int i = 1; i < s.length(); i++) {
+            if (s[i] == s[i-1]) {
+                curr++;
+            } else {
+                // We've hit a change (0 to 1 or 1 to 0)
+                // Add the min of the last two groups to our total
+                count += min(prev, curr);
+                prev = curr;
+                curr = 1;
+            }
+        }
+        
+        // Don't forget the last comparison after the loop ends
+        return count + min(prev, curr);
+    }
+};
