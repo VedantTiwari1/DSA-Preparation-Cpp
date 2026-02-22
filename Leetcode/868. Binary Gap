@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int binaryGap(int n) {
+        int maxGap = 0;
+        int lastPos = -1;
+        int currentPos = 0;
+
+        while (n > 0) {
+            // Check if the current bit is 1
+            if (n & 1) {
+                if (lastPos != -1) {
+                    // Update maxGap with the distance from the previous '1'
+                    maxGap = max(maxGap, currentPos - lastPos);
+                }
+                // Store the position of the current '1'
+                lastPos = currentPos;
+            }
+            
+            // Right shift n to check the next bit
+            n >>= 1;
+            currentPos++;
+        }
+
+        return maxGap;
+    }
+};
