@@ -1,0 +1,32 @@
+#include <unordered_map>
+#include <vector>
+
+class Solution {
+public:
+    long subarrayXor(vector<int> &arr, int k) {
+        long count = 0;
+        int xr = 0;
+        unordered_map<int, int> mpp;
+        
+        // Initial state: a prefix XOR of 0 has occurred once
+        mpp[0] = 1;
+
+        for (int i = 0; i < arr.size(); i++) {
+            // Update prefix XOR
+            xr = xr ^ arr[i];
+
+            // We need x such that x ^ k = xr => x = xr ^ k
+            int x = xr ^ k;
+
+            // If x exists in our map, add its frequency to count
+            if (mpp.find(x) != mpp.end()) {
+                count += mpp[x];
+            }
+
+            // Update the map with the current prefix XOR
+            mpp[xr]++;
+        }
+
+        return count;
+    }
+};
