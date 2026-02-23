@@ -1,0 +1,22 @@
+class Solution {
+  public:
+    // Function to return the count of number of elements in union of two arrays.
+    vector<int> findUnion(vector<int>& a, vector<int>& b) {
+        // Use a set to store unique elements from both arrays
+        unordered_set<int> st;
+
+        // Insert elements from the first array
+        for (int x : a) {
+            st.insert(x);
+        }
+
+        // Insert elements from the second array
+        for (int x : b) {
+            st.insert(x);
+        }
+
+        // Convert the set back to a vector to return
+        vector<int> result(st.begin(), st.end());
+        return result;
+    }
+};
