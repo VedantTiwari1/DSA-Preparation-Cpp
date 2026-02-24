@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int helper(TreeNode* root, int currSum) {
+        if (!root) return 0;
+
+        // Calculate the value for the current path
+        currSum = (currSum << 1) | root->val;
+
+        // If it's a leaf node, return the accumulated sum
+        if (!root->left && !root->right) {
+            return currSum;
+        }
+
+        // Otherwise, continue DFS on children and return their sum
+        return helper(root->left, currSum) + helper(root->right, currSum);
+    }
+
+    int sumRootToLeaf(TreeNode* root) {
+        return helper(root, 0);
+    }
+};
