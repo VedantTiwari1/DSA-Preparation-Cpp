@@ -1,0 +1,42 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int equalSumSpan(vector<int>& a1, vector<int>& a2) {
+        int n = a1.size();
+        
+        // Map to store the first occurrence of a specific prefix sum
+        // Key: prefix_sum, Value: index
+        unordered_map<int, int> first_occurrence;
+        
+        int maxLen = 0;
+        int current_prefix_sum = 0;
+
+        for (int i = 0; i < n; i++) {
+            // Logic: If sum(a1[i...j]) == sum(a2[i...j]), then
+            // sum(a1[i...j] - a2[i...j]) == 0.
+            // We treat (a1[i] - a2[i]) as elements of a new array.
+            current_prefix_sum += (a1[i] - a2[i]);
+
+            // Case 1: If the prefix sum is 0, the span is from index 0 to i
+            if (current_prefix_sum == 0) {
+                maxLen = i + 1;
+            }
+
+            // Case 2: If this prefix sum has been seen before, 
+            // the subarray between the first occurrence and now has a sum of 0.
+            if (first_occurrence.find(current_prefix_sum) != first_occurrence.end()) {
+                maxLen = max(maxLen, i - first_occurrence[current_prefix_sum]);
+            } else {
+                // Store the first time we see this specific prefix sum
+                first_occurrence[current_prefix_sum] = i;
+            }
+        }
+
+        return maxLen;
+    }
+};
