@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int numSteps(string s) {
+        int steps = 0;
+        int carry = 0;
+        
+        // Iterate from the rightmost bit to the second bit
+        for (int i = s.length() - 1; i > 0; i--) {
+            int currentBit = (s[i] - '0') + carry;
+            
+            if (currentBit == 1) {
+                // Odd case: 1 step to add 1 (making it even), 
+                // and 1 step to divide (shift right).
+                // Total 2 steps and we now have a carry.
+                steps += 2;
+                carry = 1;
+            } else if (currentBit == 0) {
+                // Even case: Just 1 step to divide (shift right).
+                steps += 1;
+                carry = 0;
+            } else if (currentBit == 2) {
+                // This happens if bit was 1 and carry was 1.
+                // It becomes 0 (even) and generates a carry.
+                // Just 1 step to divide (shift right).
+                steps += 1;
+                carry = 1;
+            }
+        }
+        
+        // Final check for the leftmost bit 's[0]' and the carry.
+        return steps + carry;
+    }
+};
