@@ -1,0 +1,40 @@
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    int countSquare(vector<vector<int>>& mat, int x) {
+        int n = mat.size();
+        int m = mat[0].size();
+        
+        // 1. Build 2D Prefix Sum Matrix (1-indexed for convenience)
+        vector<vector<long long>> pref(n + 1, vector<long long>(m + 1, 0));
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                pref[i][j] = mat[i-1][j-1] + pref[i-1][j] + pref[i][j-1] - pref[i-1][j-1];
+            }
+        }
+
+        int count = 0;
+        int max_L = min(n, m);
+
+        // 2. Iterate through all possible side lengths L
+        for (int L = 1; L <= max_L; L++) {
+            // 3. Iterate through all possible top-left corners (i, j)
+            for (int i = 1; i <= n - L + 1; i++) {
+                for (int j = 1; j <= m - L + 1; j++) {
+                    // Calculate sum of square starting at (i, j) with side L
+                    int r2 = i + L - 1;
+                    int c2 = j + L - 1;
+                    long long currentSum = pref[r2][c2] - pref[i-1][c2] - pref[r2][j-1] + pref[i-1][j-1];
+                    
+                    if (currentSum == x) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+};
