@@ -1,0 +1,33 @@
+class Solution {
+  public:
+    vector<int> findClosestPair(vector<int> &arr1, vector<int> &arr2, int x) {
+        int n = arr1.size();
+        int m = arr2.size();
+        
+        int left = 0;          // Starts at the beginning of arr1
+        int right = m - 1;     // Starts at the end of arr2
+        
+        int diff = INT_MAX;    // To track the minimum difference found
+        vector<int> result(2); // To store the closest pair [element1, element2]
+
+        while (left < n && right >= 0) {
+            int current_sum = arr1[left] + arr2[right];
+
+            // If we found a closer sum, update our result
+            if (abs(current_sum - x) < diff) {
+                diff = abs(current_sum - x);
+                result[0] = arr1[left];
+                result[1] = arr2[right];
+            }
+
+            // Move pointers based on the sum
+            if (current_sum > x) {
+                right--; // Sum is too large, move to a smaller value in arr2
+            } else {
+                left++;  // Sum is too small, move to a larger value in arr1
+            }
+        }
+
+        return result;
+    }
+};
