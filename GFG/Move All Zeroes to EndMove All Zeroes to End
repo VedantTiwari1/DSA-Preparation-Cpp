@@ -1,0 +1,17 @@
+class Solution {
+  public:
+    void pushZerosToEnd(vector<int>& arr) {
+        int nonZeroPos = 0; // Pointer for the next non-zero element
+        
+        // Traverse the array
+        for (int i = 0; i < arr.size(); i++) {
+            // If the current element is non-zero
+            if (arr[i] != 0) {
+                // Swap it with the element at nonZeroPos
+                swap(arr[i], arr[nonZeroPos]);
+                // Move the nonZeroPos forward
+                nonZeroPos++;
+            }
+        }
+    }
+};
