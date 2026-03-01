@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int minPartitions(string n) {
+        char maxDigit = '0';
+        for (char c : n) {
+            // Update maxDigit if the current character is larger
+            if (c > maxDigit) {
+                maxDigit = c;
+            }
+            // Optimization: Since 9 is the highest possible digit, 
+            // we can stop early if we find it.
+            if (maxDigit == '9') return 9;
+        }
+        // Convert the character digit back to its integer value
+        return maxDigit - '0';
+    }
+};
