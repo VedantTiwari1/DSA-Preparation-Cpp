@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int minSwaps(vector<vector<int>>& grid) {
+        int n = grid.size();
+        vector<int> trailingZeros;
+
+        // 1. Count trailing zeros for each row
+        for (int i = 0; i < n; i++) {
+            int count = 0;
+            for (int j = n - 1; j >= 0; j--) {
+                if (grid[i][j] == 0) count++;
+                else break;
+            }
+            trailingZeros.push_back(count);
+        }
+
+        int totalSwaps = 0;
+        // 2. Greedy approach: For each position i, find the first 
+        // row that satisfies the requirement (n - 1 - i) zeros.
+        for (int i = 0; i < n; i++) {
+            int required = n - 1 - i;
+            int foundIdx = -1;
+
+            for (int j = i; j < n; j++) {
+                if (trailingZeros[j] >= required) {
+                    foundIdx = j;
+                    break;
+                }
+            }
+
+            // If no such row exists, it's impossible
+            if (foundIdx == -1) return -1;
+
+            // 3. Swap the found row up to the current position i
+            for (int j = foundIdx; j > i; j--) {
+                swap(trailingZeros[j], trailingZeros[j - 1]);
+                totalSwaps++;
+            }
+        }
+
+        return totalSwaps;
+    }
+};
