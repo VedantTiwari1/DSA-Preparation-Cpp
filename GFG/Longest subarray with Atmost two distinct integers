@@ -1,0 +1,30 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+class Solution {
+public:
+    int totalElements(std::vector<int> &arr) {
+        std::unordered_map<int, int> freq;
+        int left = 0, maxLength = 0;
+        
+        for (int right = 0; right < arr.size(); ++right) {
+            // Add current element to the frequency map
+            freq[arr[right]]++;
+            
+            // If we have more than 2 distinct integers, shrink from the left
+            while (freq.size() > 2) {
+                freq[arr[left]]--;
+                if (freq[arr[left]] == 0) {
+                    freq.erase(arr[left]);
+                }
+                left++;
+            }
+            
+            // Update the maximum length found
+            maxLength = std::max(maxLength, right - left + 1);
+        }
+        
+        return maxLength;
+    }
+};
