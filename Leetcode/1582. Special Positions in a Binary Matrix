@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int numSpecial(vector<vector<int>>& mat) {
+        int rows = mat.size();
+        int cols = mat[0].size();
+        
+        vector<int> rowCount(rows, 0);
+        vector<int> colCount(cols, 0);
+        
+        // Step 1: Pre-calculate sums for each row and column
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (mat[i][j] == 1) {
+                    rowCount[i]++;
+                    colCount[j]++;
+                }
+            }
+        }
+        
+        int specialCount = 0;
+        
+        // Step 2: Check if a '1' is the only one in its row and column
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (mat[i][j] == 1 && rowCount[i] == 1 && colCount[j] == 1) {
+                    specialCount++;
+                }
+            }
+        }
+        
+        return specialCount;
+    }
+};
