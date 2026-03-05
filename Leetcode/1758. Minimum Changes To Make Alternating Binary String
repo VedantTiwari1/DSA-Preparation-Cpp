@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minOperations(string s) {
+        int count0 = 0; // Changes needed to make it start with '0'
+        int n = s.length();
+        
+        for (int i = 0; i < n; i++) {
+            // In a pattern starting with '0', even indices should be '0'
+            // and odd indices should be '1'.
+            if (i % 2 == 0) {
+                if (s[i] != '0') count0++;
+            } else {
+                if (s[i] != '1') count0++;
+            }
+        }
+        
+        // The number of changes to make it start with '1' is (n - count0).
+        // We return the minimum of the two.
+        return min(count0, n - count0);
+    }
+};
