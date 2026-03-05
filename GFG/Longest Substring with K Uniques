@@ -1,0 +1,33 @@
+#include <unordered_map>
+#include <algorithm>
+#include <string>
+
+class Solution {
+public:
+    int longestKSubstr(string s, int k) {
+        int n = s.length();
+        int left = 0, maxLen = -1;
+        unordered_map<char, int> charFreq;
+
+        for (int right = 0; right < n; right++) {
+            // Add current character to window
+            charFreq[s[right]]++;
+
+            // Shrink window if we have more than k unique characters
+            while (charFreq.size() > k) {
+                charFreq[s[left]]--;
+                if (charFreq[s[left]] == 0) {
+                    charFreq.erase(s[left]);
+                }
+                left++;
+            }
+
+            // If we have exactly k unique characters, update maxLen
+            if (charFreq.size() == k) {
+                maxLen = max(maxLen, right - left + 1);
+            }
+        }
+
+        return maxLen;
+    }
+};
