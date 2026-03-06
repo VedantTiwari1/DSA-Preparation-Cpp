@@ -1,0 +1,8 @@
+class Solution {
+public:
+    bool checkOnesSegment(string s) {
+        // Since there are no leading zeros, s[0] is always '1'.
+        // If "01" exists, there's more than one segment.
+        return s.find("01") == string::npos;
+    }
+};
