@@ -1,0 +1,47 @@
+class Solution {
+public:
+    string minWindow(string &s, string &p) {
+        int n = s.length();
+        int m = p.length();
+        
+        if (m > n) return ""; // Cannot contain p if s is shorter
+
+        // Frequency maps for characters (using 256 for all ASCII)
+        int p_freq[256] = {0};
+        int s_freq[256] = {0};
+        
+        for (char c : p) p_freq[c]++;
+
+        int start = 0, min_len = INT_MAX, start_index = -1;
+        int count = 0; // Number of characters currently matched
+
+        for (int j = 0; j < n; j++) {
+            s_freq[s[j]]++;
+
+            // If current char is needed and we haven't exceeded required count
+            if (p_freq[s[j]] != 0 && s_freq[s[j]] <= p_freq[s[j]]) {
+                count++;
+            }
+
+            // If all characters are matched, try to shrink the window
+            if (count == m) {
+                while (s_freq[s[start]] > p_freq[s[start]] || p_freq[s[start]] == 0) {
+                    if (s_freq[s[start]] > p_freq[s[start]]) {
+                        s_freq[s[start]]--;
+                    }
+                    start++;
+                }
+
+                // Update minimum window
+                int len = j - start + 1;
+                if (len < min_len) {
+                    min_len = len;
+                    start_index = start;
+                }
+            }
+        }
+
+        if (start_index == -1) return "";
+        return s.substr(start_index, min_len);
+    }
+};
