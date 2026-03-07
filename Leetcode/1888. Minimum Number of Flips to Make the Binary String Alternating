@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int minFlips(string s) {
+        int n = s.size();
+        string doubled = s + s;
+        string target1 = "", target2 = "";
+        
+        // Generate targets for the length of the doubled string
+        for(int i = 0; i < doubled.size(); i++) {
+            target1 += (i % 2 == 0 ? '0' : '1');
+            target2 += (i % 2 == 0 ? '1' : '0');
+        }
+        
+        int diff1 = 0, diff2 = 0;
+        int min_flips = INT_MAX;
+        
+        for(int i = 0; i < doubled.size(); i++) {
+            // Add current character to differences
+            if (doubled[i] != target1[i]) diff1++;
+            if (doubled[i] != target2[i]) diff2++;
+            
+            // Once window reaches size n, start tracking minimums
+            if (i >= n) {
+                // Remove the character that just left the window
+                if (doubled[i - n] != target1[i - n]) diff1--;
+                if (doubled[i - n] != target2[i - n]) diff2--;
+            }
+            
+            // Capture the min once the window is full
+            if (i >= n - 1) {
+                min_flips = min({min_flips, diff1, diff2});
+            }
+        }
+        
+        return min_flips;
+    }
+};
