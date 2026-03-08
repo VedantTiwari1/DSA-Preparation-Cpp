@@ -1,0 +1,37 @@
+class Solution {
+public:
+    bool pythagoreanTriplet(vector<int>& arr) {
+        int n = arr.size();
+        if (n < 3) return false;
+
+        // 1. Find the maximum element to limit our search space
+        int max_val = 0;
+        for (int x : arr) max_val = max(max_val, x);
+
+        // 2. Create a frequency array for elements (not squares, to keep it small)
+        // Using a vector as a hash map for O(1) lookups
+        vector<int> freq(max_val + 1, 0);
+        for (int x : arr) freq[x]++;
+
+        // 3. Iterate through all possible values of 'a' and 'b'
+        // This is O(max_val^2), which is faster than O(n^2) when n=10^5
+        for (int i = 1; i <= max_val; i++) {
+            if (freq[i] == 0) continue;
+
+            for (int j = 1; j <= max_val; j++) {
+                if (freq[j] == 0 || (i == j && freq[i] == 1)) continue;
+
+                // Calculate c^2 = a^2 + b^2
+                int val = i * i + j * j;
+                int c = sqrt(val);
+
+                // Check if 'c' is an integer and exists in our frequency array
+                if (c * c == val && c <= max_val && freq[c] > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+};
