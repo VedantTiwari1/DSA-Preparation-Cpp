@@ -1,0 +1,52 @@
+#include <vector>
+#include <cstring>
+
+class Solution {
+    int MOD = 1e9 + 7;
+    int memo[201][201][2];
+    int L;
+
+public:
+    int solve(int zero, int one, int last) {
+        // Base Case: All numbers used
+        if (zero == 0 && one == 0) return 1;
+        
+        if (memo[zero][one][last] != -1) return memo[zero][one][last];
+
+        long long count = 0;
+
+        if (last == 0) {
+            // We just placed a 0, so we MUST place some amount of 1s (from 1 to limit)
+            for (int k = 1; k <= std::min(one, L); ++k) {
+                count = (count + solve(zero, one - k, 1)) % MOD;
+            }
+        } else {
+            // We just placed a 1, so we MUST place some amount of 0s (from 1 to limit)
+            for (int k = 1; k <= std::min(zero, L); ++k) {
+                count = (count + solve(zero - k, one, 0)) % MOD;
+            }
+        }
+
+        return memo[zero][one][last] = (int)count;
+    }
+
+    int numberOfStableArrays(int zero, int one, int limit) {
+        memset(memo, -1, sizeof(memo));
+        L = limit;
+        
+        // Start by either placing a block of 0s or a block of 1s
+        long long ans = 0;
+        
+        // Try starting with 0s
+        for (int k = 1; k <= std::min(zero, L); ++k) {
+            ans = (ans + solve(zero - k, one, 0)) % MOD;
+        }
+        
+        // Try starting with 1s
+        for (int k = 1; k <= std::min(one, L); ++k) {
+            ans = (ans + solve(zero, one - k, 1)) % MOD;
+        }
+
+        return (int)ans;
+    }
+};
