@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int bitwiseComplement(int n) {
+        // Edge case: if n is 0, the complement is 1
+        if (n == 0) return 1;
+
+        int mask = 0;
+        int temp = n;
+
+        // Create a mask with all 1s of the same bit-length as n
+        while (temp != 0) {
+            mask = (mask << 1) | 1;
+            temp >>= 1;
+        }
+
+        // XORing n with the mask flips all bits
+        return n ^ mask;
+    }
+};
