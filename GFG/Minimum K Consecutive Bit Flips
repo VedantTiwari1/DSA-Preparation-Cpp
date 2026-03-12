@@ -1,0 +1,38 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    int kBitFlips(vector<int>& arr, int k) {
+        int n = arr.size();
+        int flipCount = 0; // Tracks active flips affecting the current index
+        int ans = 0;       // Total number of operations
+        
+        // This array marks the START of a flip operation
+        vector<int> isFlipped(n, 0); 
+
+        for (int i = 0; i < n; ++i) {
+            // If the window of a previous flip has passed, remove its effect
+            if (i >= k) {
+                flipCount ^= isFlipped[i - k];
+            }
+            
+            // Determine the actual current bit taking active flips into account.
+            // If the original bit is the same as the flip state (0^0=0 or 1^1=0), 
+            // it means the current actual bit is 0, so we MUST flip.
+            if (arr[i] == (flipCount % 2)) {
+                // If there isn't enough room to flip a subarray of length k, it's impossible.
+                if (i + k > n) {
+                    return -1;
+                }
+                
+                ans++;               // Perform a flip
+                flipCount ^= 1;      // Toggle the active flip state
+                isFlipped[i] = 1;    // Mark that a flip started here
+            }
+        }
+        
+        return ans;
+    }
+};
