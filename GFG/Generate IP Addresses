@@ -1,0 +1,37 @@
+class Solution {
+public:
+    bool isValid(string segment) {
+        if (segment.empty() || segment.length() > 3) return false;
+        // Check for leading zeros: if length > 1, first char can't be '0'
+        if (segment.length() > 1 && segment[0] == '0') return false;
+        
+        int val = stoi(segment);
+        return val >= 0 && val <= 255;
+    }
+
+    vector<string> generateIp(string &s) {
+        vector<string> result;
+        int n = s.length();
+        
+        // IPs must be between 4 and 12 characters long
+        if (n < 4 || n > 12) return result;
+
+        // i, j, k represent the end indices of the first three segments
+        // We try all possible positions for the 3 dots
+        for (int i = 1; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    string s1 = s.substr(0, i);
+                    string s2 = s.substr(i, j - i);
+                    string s3 = s.substr(j, k - j);
+                    string s4 = s.substr(k);
+
+                    if (isValid(s1) && isValid(s2) && isValid(s3) && isValid(s4)) {
+                        result.push_back(s1 + "." + s2 + "." + s3 + "." + s4);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
