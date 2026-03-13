@@ -1,0 +1,37 @@
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    long long minNumberOfSeconds(int mountainHeight, vector<int>& workerTimes) {
+        long long low = 1, high = 1e18; // Use a sufficiently large upper bound
+        long long ans = high;
+
+        auto canFinish = [&](long long maxTime) {
+            long long totalReduced = 0;
+            for (int t : workerTimes) {
+                // Solve: t * x * (x + 1) / 2 <= maxTime
+                // x^2 + x - (2 * maxTime / t) <= 0
+                // Using quadratic formula: x = (-1 + sqrt(1 + 8 * maxTime / t)) / 2
+                long long x = (-1 + sqrt(1 + 8.0 * maxTime / t)) / 2;
+                totalReduced += x;
+                if (totalReduced >= mountainHeight) return true;
+            }
+            return totalReduced >= mountainHeight;
+        };
+
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+            if (canFinish(mid)) {
+                ans = mid;
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return ans;
+    }
+};
