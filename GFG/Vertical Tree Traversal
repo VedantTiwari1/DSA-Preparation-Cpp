@@ -1,0 +1,38 @@
+class Solution {
+  public:
+    vector<vector<int>> verticalOrder(Node *root) {
+        vector<vector<int>> result;
+        if (!root) return result;
+
+        // Map: Horizontal Distance -> List of nodes at that distance
+        // Using map instead of unordered_map keeps keys sorted (-2, -1, 0, 1, 2...)
+        map<int, vector<int>> nodes;
+        
+        // Queue: Stores pair of (Node*, Horizontal Distance)
+        queue<pair<Node*, int>> q;
+        
+        q.push({root, 0});
+
+        while (!q.empty()) {
+            pair<Node*, int> temp = q.front();
+            q.pop();
+            
+            Node* curr = temp.first;
+            int hd = temp.second;
+
+            // Push the current node's data into the corresponding HD vector
+            nodes[hd].push_back(curr->data);
+
+            // Level order processing (Left then Right)
+            if (curr->left)  q.push({curr->left, hd - 1});
+            if (curr->right) q.push({curr->right, hd + 1});
+        }
+
+        // Extract values from the map in sorted order of HD
+        for (auto const& [hd, values] : nodes) {
+            result.push_back(values);
+        }
+
+        return result;
+    }
+};
