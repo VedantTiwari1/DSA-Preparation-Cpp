@@ -1,0 +1,44 @@
+class Fancy {
+    long long a = 1, b = 0;
+    long long mod = 1e9 + 7;
+    vector<long long> nums;
+
+    long long power(long long base, long long exp) {
+        long long res = 1;
+        base %= mod;
+        while (exp > 0) {
+            if (exp % 2 == 1) res = (res * base) % mod;
+            base = (base * base) % mod;
+            exp /= 2;
+        }
+        return res;
+    }
+
+    long long modInverse(long long n) {
+        return power(n, mod - 2);
+    }
+
+public:
+    Fancy() {}
+
+    void append(int val) {
+        // Reverse the current linear transformation: x = (val - b) / a
+        long long x = (val - b + mod) % mod;
+        x = (x * modInverse(a)) % mod;
+        nums.push_back(x);
+    }
+
+    void addAll(int inc) {
+        b = (b + inc) % mod;
+    }
+
+    void multAll(int m) {
+        a = (a * m) % mod;
+        b = (b * m) % mod;
+    }
+
+    int getIndex(int idx) {
+        if (idx >= nums.size()) return -1;
+        return (a * nums[idx] + b) % mod;
+    }
+};
