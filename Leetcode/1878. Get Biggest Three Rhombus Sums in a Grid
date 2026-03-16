@@ -1,0 +1,51 @@
+#include <vector>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> getBiggestThree(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        set<int> sums;
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                // Every single cell is a rhombus of "size 0"
+                sums.insert(grid[i][j]);
+
+                // Try larger rhombuses with (i, j) as the TOP vertex
+                // k is the "radius" or side length
+                for (int k = 1; ; ++k) {
+                    // Check if the bottom, left, and right vertices are within bounds
+                    if (i + 2 * k >= m || j - k < 0 || j + k >= n) break;
+
+                    int currentSum = 0;
+                    
+                    // Traverse 4 sides. Start from top (i, j)
+                    // Top to Right
+                    for (int x = 0; x < k; ++x) currentSum += grid[i + x][j + x];
+                    // Right to Bottom
+                    for (int x = 0; x < k; ++x) currentSum += grid[i + k + x][j + k - x];
+                    // Bottom to Left
+                    for (int x = 0; x < k; ++x) currentSum += grid[i + 2 * k - x][j - x];
+                    // Left to Top
+                    for (int x = 0; x < k; ++x) currentSum += grid[i + k - x][j - k + x];
+
+                    sums.insert(currentSum);
+                }
+                
+                // Keep only top 3 to save memory (optional but clean)
+                while (sums.size() > 3) {
+                    sums.erase(sums.begin());
+                }
+            }
+        }
+
+        // Convert set to a descending vector
+        vector<int> result(sums.rbegin(), sums.rend());
+        return result;
+    }
+};
