@@ -1,0 +1,37 @@
+class Solution {
+    unordered_map<int, int> prefixSumMap;
+    int totalPaths;
+
+public:
+    void solve(Node *root, int k, int currSum) {
+        if (!root) return;
+
+        currSum += root->data;
+
+        // Case 1: Path starts from the actual root
+        if (currSum == k) {
+            totalPaths++;
+        }
+
+        // Case 2: Path starts from an internal node
+        if (prefixSumMap.find(currSum - k) != prefixSumMap.end()) {
+            totalPaths += prefixSumMap[currSum - k];
+        }
+
+        prefixSumMap[currSum]++;
+        
+        solve(root->left, k, currSum);
+        solve(root->right, k, currSum);
+
+        // Backtrack: remove current sum before moving to a different branch
+        prefixSumMap[currSum]--;
+    }
+
+    // RENAME THIS FROM sumK TO countAllPaths
+    int countAllPaths(Node *root, int k) {
+        totalPaths = 0;
+        prefixSumMap.clear();
+        solve(root, k, 0);
+        return totalPaths;
+    }
+};
