@@ -1,0 +1,27 @@
+class Solution {
+    int moves = 0;
+
+    // This helper function returns the net balance of candies in the subtree
+    int traverse(Node* root) {
+        if (!root) return 0;
+
+        // Get balance from left and right subtrees
+        int leftBalance = traverse(root->left);
+        int rightBalance = traverse(root->right);
+
+        // Total moves is the sum of absolute balances from children
+        // because each excess/deficit must pass through the parent edge
+        moves += abs(leftBalance) + abs(rightBalance);
+
+        // Return current node's balance to its own parent:
+        // (Current candies + children's balance) - 1 (the candy this node keeps)
+        return (root->data + leftBalance + rightBalance) - 1;
+    }
+
+public:
+    int distCandy(Node* root) {
+        moves = 0; // Reset for each call
+        traverse(root);
+        return moves;
+    }
+};
