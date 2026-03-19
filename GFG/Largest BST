@@ -1,0 +1,42 @@
+class Info {
+public:
+    bool isBST;
+    int size;
+    int minVal;
+    int maxVal;
+};
+
+class Solution {
+public:
+    Info solve(Node* root, int &maxSize) {
+        // Base case: An empty tree is a BST of size 0
+        if (root == NULL) {
+            return {true, 0, INT_MAX, INT_MIN};
+        }
+
+        // Recurse for left and right subtrees
+        Info left = solve(root->left, maxSize);
+        Info right = solve(root->right, maxSize);
+
+        Info curr;
+        curr.size = left.size + right.size + 1;
+        curr.minVal = min(root->data, left.minVal);
+        curr.maxVal = max(root->data, right.maxVal);
+
+        // Check BST conditions
+        if (left.isBST && right.isBST && (root->data > left.maxVal && root->data < right.minVal)) {
+            curr.isBST = true;
+            maxSize = max(maxSize, curr.size);
+        } else {
+            curr.isBST = false;
+        }
+
+        return curr;
+    }
+
+    int largestBst(Node *root) {
+        int maxSize = 0;
+        solve(root, maxSize);
+        return maxSize;
+    }
+};
