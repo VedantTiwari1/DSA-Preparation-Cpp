@@ -1,0 +1,66 @@
+#include <vector>
+#include <map>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> minAbsDiff(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        // Initialize the answer matrix with the correct dimensions
+        vector<vector<int>> ans(m - k + 1, vector<int>(n - k + 1));
+
+        // Iterate through each possible top row of the submatrix
+        for (int i = 0; i <= m - k; ++i) {
+            map<int, int> window; 
+            
+            // Step 1: Build the very first window for this row
+            for (int r = i; r < i + k; ++r) {
+                for (int c = 0; c < k; ++c) {
+                    window[grid[r][c]]++;
+                }
+            }
+            
+            // Step 2: Slide the window across the columns
+            for (int j = 0; j <= n - k; ++j) {
+                
+                // If it's not the very first window, slide it!
+                // Remove the column that got left behind, add the new column on the right
+                if (j > 0) {
+                    for (int r = i; r < i + k; ++r) {
+                        // Remove left element
+                        int valToRemove = grid[r][j - 1];
+                        if (--window[valToRemove] == 0) {
+                            window.erase(valToRemove); // Completely remove if count is 0
+                        }
+                        // Add right element
+                        window[grid[r][j + k - 1]]++;
+                    }
+                }
+                
+                // Step 3: Calculate the minimum absolute difference for the current window
+                if (window.size() < 2) {
+                    ans[i][j] = 0;
+                } else {
+                    int minDiff = 1e9;
+                    int prev = -1e9; 
+                    
+                    for (auto const& [val, count] : window) {
+                        if (prev != -1e9) {
+                            minDiff = min(minDiff, val - prev);
+                        }
+                        prev = val;
+                        
+                        // Optimization: The smallest possible difference is 1
+                        if (minDiff == 1) break; 
+                    }
+                    ans[i][j] = minDiff;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
