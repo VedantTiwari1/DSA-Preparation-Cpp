@@ -1,0 +1,32 @@
+class Solution {
+public:
+    vector<Node*> findPreSuc(Node* root, int key) {
+        Node* pre = NULL;
+        Node* suc = NULL;
+        
+        Node* temp = root;
+        
+        // Find Predecessor
+        while (temp != NULL) {
+            if (temp->data < key) {
+                pre = temp; // Potential predecessor
+                temp = temp->right;
+            } else {
+                temp = temp->left;
+            }
+        }
+        
+        // Reset temp to find Successor
+        temp = root;
+        while (temp != NULL) {
+            if (temp->data > key) {
+                suc = temp; // Potential successor
+                temp = temp->left;
+            } else {
+                temp = temp->right;
+            }
+        }
+        
+        return {pre, suc};
+    }
+};
