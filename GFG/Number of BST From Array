@@ -1,0 +1,37 @@
+class Solution {
+public:
+    vector<int> countBSTs(vector<int>& arr) {
+        int n = arr.size();
+        if (n == 0) return {};
+
+        // 1. Precompute Catalan numbers up to n
+        vector<long long> catalan(n + 1, 0);
+        catalan[0] = 1;
+        catalan[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                catalan[i] += catalan[j] * catalan[i - 1 - j];
+            }
+        }
+
+        // 2. Sort to find how many elements are smaller/larger for any value
+        vector<int> sorted_arr = arr;
+        sort(sorted_arr.begin(), sorted_arr.end());
+
+        // Map value to its index in sorted array to get L and R counts
+        unordered_map<int, int> rank;
+        for (int i = 0; i < n; i++) {
+            rank[sorted_arr[i]] = i; 
+        }
+
+        // 3. Calculate result for each element in the original order
+        vector<int> result;
+        for (int x : arr) {
+            int L = rank[x];          // Number of elements smaller than x
+            int R = n - 1 - L;        // Number of elements larger than x
+            result.push_back((int)(catalan[L] * catalan[R]));
+        }
+
+        return result;
+    }
+};
