@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int orangesRot(vector<vector<int>>& mat) {
+        int n = mat.size();
+        int m = mat[0].size();
+        
+        // Queue to store {{row, col}, time}
+        queue<pair<pair<int, int>, int>> q;
+        int freshCount = 0;
+        
+        // Step 1: Scan the matrix for rotten and fresh oranges
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (mat[i][j] == 2) {
+                    q.push({{i, j}, 0});
+                } else if (mat[i][j] == 1) {
+                    freshCount++;
+                }
+            }
+        }
+        
+        int time = 0;
+        int cnt = 0;
+        int dRow[] = {-1, 0, 1, 0};
+        int dCol[] = {0, 1, 0, -1};
+        
+        // Step 2: BFS traversal
+        while (!q.empty()) {
+            int r = q.front().first.first;
+            int c = q.front().first.second;
+            int t = q.front().second;
+            time = max(time, t);
+            q.pop();
+            
+            for (int i = 0; i < 4; i++) {
+                int nrow = r + dRow[i];
+                int ncol = c + dCol[i];
+                
+                // If within boundaries and is a fresh orange
+                if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && 
+                    mat[nrow][ncol] == 1) {
+                    mat[nrow][ncol] = 2; // Rot the orange
+                    q.push({{nrow, ncol}, t + 1});
+                    cnt++;
+                }
+            }
+        }
+        
+        // Step 3: Final validation
+        // If the number of oranges we rotted equals the initial fresh count, return time
+        return (cnt == freshCount) ? time : -1;
+    }
+};
