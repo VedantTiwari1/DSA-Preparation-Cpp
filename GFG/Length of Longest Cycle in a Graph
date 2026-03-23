@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int longestCycle(int V, vector<vector<int>>& edges) {
+        // Convert edge list to adjacency list (though each node has only one neighbor)
+        vector<int> adj(V, -1);
+        for(auto& edge : edges) {
+            adj[edge[0]] = edge[1];
+        }
+
+        vector<int> timeVisited(V, 0);
+        vector<bool> visited(V, false);
+        int maxCycle = -1;
+        int timer = 1;
+
+        for (int i = 0; i < V; i++) {
+            if (visited[i]) continue;
+
+            int curr = i;
+            int startTime = timer;
+            
+            // Traverse the path
+            while (curr != -1 && !visited[curr]) {
+                visited[curr] = true;
+                timeVisited[curr] = timer++;
+                curr = adj[curr];
+            }
+
+            // If we hit a node that was part of the *current* traversal, it's a cycle
+            if (curr != -1 && timeVisited[curr] >= startTime) {
+                maxCycle = max(maxCycle, timer - timeVisited[curr]);
+            }
+        }
+
+        return maxCycle;
+    }
+};
