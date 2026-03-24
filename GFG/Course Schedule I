@@ -1,0 +1,44 @@
+#include <vector>
+#include <queue>
+
+class Solution {
+public:
+    bool canFinish(int n, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> adj(n);
+        vector<int> inDegree(n, 0);
+        
+        // 1. Build the graph and calculate in-degrees
+        for (auto& edge : prerequisites) {
+            int course = edge[0];
+            int prereq = edge[1];
+            adj[prereq].push_back(course);
+            inDegree[course]++;
+        }
+        
+        // 2. Queue courses with no prerequisites
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        
+        // 3. Process the queue (BFS)
+        int completedCount = 0;
+        while (!q.empty()) {
+            int current = q.front();
+            q.pop();
+            completedCount++;
+            
+            for (int neighbor : adj[current]) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    q.push(neighbor);
+                }
+            }
+        }
+        
+        // 4. If we completed all courses, no cycle was found
+        return completedCount == n;
+    }
+};
