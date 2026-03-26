@@ -1,0 +1,97 @@
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    bool canPartitionGrid(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        long long total_sum = 0;
+        
+        // Base frequency map of all elements
+        unordered_map<long long, int> full_map;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                full_map[grid[i][j]]++;
+                total_sum += grid[i][j];
+            }
+        }
+        
+        // Helper: Checks if 'diff' exists in the section AND can be removed safely
+        auto isValid = [&](long long diff, int r_start, int r_end, int c_start, int c_end, const unordered_map<long long, int>& current_map) {
+            if (diff <= 0) return false;
+            
+            int R = r_end - r_start + 1;
+            int C = c_end - c_start + 1;
+            
+            // Strict Connectivity Rule: If it's a 1xK or Kx1 strip, 
+            // we can ONLY remove the extreme endpoints.
+            if (R == 1) {
+                return diff == grid[r_start][c_start] || diff == grid[r_start][c_end];
+            }
+            if (C == 1) {
+                return diff == grid[r_start][c_start] || diff == grid[r_end][c_start];
+            }
+            
+            // If it's 2x2 or larger, removing ANY single cell maintains connectivity.
+            auto it = current_map.find(diff);
+            return it != current_map.end() && it->second > 0;
+        };
+
+        // --- 1. Evaluate Horizontal Cuts ---
+        unordered_map<long long, int> map1;
+        unordered_map<long long, int> map2 = full_map;
+        long long S1 = 0;
+        
+        for (int i = 0; i < m - 1; ++i) {
+            // Transfer row 'i' from Bottom Section (map2) to Top Section (map1)
+            for (int j = 0; j < n; ++j) {
+                int val = grid[i][j];
+                map1[val]++;
+                map2[val]--;
+                S1 += val;
+            }
+            long long S2 = total_sum - S1;
+            
+            if (S1 == S2) return true;
+            
+            if (S1 > S2) {
+                long long diff = S1 - S2;
+                if (isValid(diff, 0, i, 0, n - 1, map1)) return true;
+            } else {
+                long long diff = S2 - S1;
+                if (isValid(diff, i + 1, m - 1, 0, n - 1, map2)) return true;
+            }
+        }
+
+        // --- 2. Evaluate Vertical Cuts ---
+        map1.clear();
+        map2 = full_map; // Reset for vertical scan
+        S1 = 0;
+        
+        for (int j = 0; j < n - 1; ++j) {
+            // Transfer col 'j' from Right Section (map2) to Left Section (map1)
+            for (int i = 0; i < m; ++i) {
+                int val = grid[i][j];
+                map1[val]++;
+                map2[val]--;
+                S1 += val;
+            }
+            long long S2 = total_sum - S1;
+            
+            if (S1 == S2) return true;
+            
+            if (S1 > S2) {
+                long long diff = S1 - S2;
+                if (isValid(diff, 0, m - 1, 0, j, map1)) return true;
+            } else {
+                long long diff = S2 - S1;
+                if (isValid(diff, 0, m - 1, j + 1, n - 1, map2)) return true;
+            }
+        }
+
+        return false;
+    }
+};
