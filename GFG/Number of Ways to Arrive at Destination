@@ -1,0 +1,63 @@
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+class Solution {
+public:
+    int countPaths(int V, vector<vector<int>>& edges) {
+        // 1. Create the adjacency list: node -> {neighbor, time}
+        vector<vector<pair<int, int>>> adj(V);
+        for (auto& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int time = edge[2];
+            adj[u].push_back({v, time});
+            adj[v].push_back({u, time});
+        }
+
+        // 2. Initialize Distances and Ways arrays
+        // Use long long for distances to prevent overflow!
+        vector<long long> dist(V, 1e18); 
+        vector<long long> ways(V, 0);
+        
+        // 3. Min-Heap for Dijkstra: {current_time, node}
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+
+        // Base case: Starting at node 0
+        dist[0] = 0;
+        ways[0] = 1;
+        pq.push({0, 0});
+
+        int mod = 1e9 + 7;
+
+        // 4. Run Dijkstra's Algorithm
+        while (!pq.empty()) {
+            long long d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
+
+            // Optimization: Skip if we've already found a strictly better path to this node
+            if (d > dist[node]) continue;
+
+            for (auto& it : adj[node]) {
+                int adjNode = it.first;
+                long long edgeWeight = it.second;
+
+                // Case A: Strictly shorter path found
+                if (d + edgeWeight < dist[adjNode]) {
+                    dist[adjNode] = d + edgeWeight;
+                    ways[adjNode] = ways[node]; // Inherit ways from the parent node
+                    pq.push({dist[adjNode], adjNode});
+                } 
+                // Case B: Another path with the exact same shortest time found
+                else if (d + edgeWeight == dist[adjNode]) {
+                    ways[adjNode] = (ways[adjNode] + ways[node]) % mod;
+                }
+            }
+        }
+
+        // Return the number of ways to reach the destination (V - 1)
+        return ways[V - 1] % mod;
+    }
+};
