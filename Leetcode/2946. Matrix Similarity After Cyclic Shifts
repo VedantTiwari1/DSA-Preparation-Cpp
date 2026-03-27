@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool areSimilar(vector<vector<int>>& mat, int k) {
+        int m = mat.size();
+        int n = mat[0].size();
+        
+        // Effective shift
+        k = k % n;
+        
+        // If no effective shift is needed, it's already similar
+        if (k == 0) return true;
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                // For both left and right shifts, 
+                // we check if the element matches its shifted counterpart.
+                if (mat[i][j] != mat[i][(j + k) % n]) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+};
