@@ -1,0 +1,41 @@
+class Solution {
+    int n, m;
+    int memo[101][101][101];
+
+    int solve(int r, int c1, int c2, vector<vector<int>>& grid) {
+        // 1. Boundary Check
+        if (c1 < 0 || c1 >= m || c2 < 0 || c2 >= m) return -1e8;
+
+        // 2. Base Case: Reached the bottom row
+        if (r == n - 1) {
+            if (c1 == c2) return grid[r][c1]; // Same cell, collect once
+            else return grid[r][c1] + grid[r][c2]; // Different cells
+        }
+
+        // 3. Memoization Check
+        if (memo[r][c1][c2] != -1) return memo[r][c1][c2];
+
+        int maxChoco = 0;
+        
+        // 4. Current row collection
+        int current = (c1 == c2) ? grid[r][c1] : (grid[r][c1] + grid[r][c2]);
+
+        // 5. Explore all 9 possible move combinations for next row
+        for (int i = -1; i <= 1; i++) {      // Robot 1 moves
+            for (int j = -1; j <= 1; j++) {  // Robot 2 moves
+                maxChoco = max(maxChoco, current + solve(r + 1, c1 + i, c2 + j, grid));
+            }
+        }
+
+        return memo[r][c1][c2] = maxChoco;
+    }
+
+public:
+    int maxChocolate(vector<vector<int>>& grid) {
+        n = grid.size();
+        m = grid[0].size();
+        memset(memo, -1, sizeof(memo));
+        
+        return solve(0, 0, m - 1, grid);
+    }
+};
