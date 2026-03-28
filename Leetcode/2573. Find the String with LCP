@@ -1,0 +1,43 @@
+class Solution {
+public:
+    string findTheString(vector<vector<int>>& lcp) {
+        int n = lcp.size();
+        string word(n, ' ');
+        char currentChar = 'a';
+
+        // 1. Greedily construct the candidate string
+        for (int i = 0; i < n; ++i) {
+            if (word[i] != ' ') continue; // Already assigned
+            
+            if (currentChar > 'z') return ""; // Requires more than 26 chars
+
+            // Assign the current character to index i and all matching indices j
+            for (int j = i; j < n; ++j) {
+                if (lcp[i][j] > 0) {
+                    // If word[j] already has a DIFFERENT character, the matrix is invalid
+                    if (word[j] != ' ') return ""; 
+                    word[j] = currentChar;
+                }
+            }
+            currentChar++;
+        }
+
+        // 2. Validate the constructed string against the given LCP matrix
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int expected = 0;
+                if (word[i] == word[j]) {
+                    // If characters match, LCP is 1 + LCP of the remaining substrings
+                    expected = 1 + ((i + 1 < n && j + 1 < n) ? lcp[i + 1][j + 1] : 0);
+                }
+                
+                // If our expected LCP doesn't match the input, the matrix is invalid
+                if (lcp[i][j] != expected) {
+                    return "";
+                }
+            }
+        }
+
+        return word;
+    }
+};
