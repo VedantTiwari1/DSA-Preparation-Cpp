@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int minCost(vector<vector<int>>& houses) {
+        int n = houses.size();
+        if (n == 0) return 0;
+
+        // Min-heap to store {cost, house_index}
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<bool> visited(n, false);
+        
+        int min_total_cost = 0;
+        int edges_connected = 0;
+        
+        // Start with the first house
+        pq.push({0, 0});
+        
+        while (!pq.empty() && edges_connected < n) {
+            int cost = pq.top().first;
+            int u = pq.top().second;
+            pq.pop();
+            
+            // If already in MST, skip
+            if (visited[u]) continue;
+            
+            // Add house to MST
+            visited[u] = true;
+            min_total_cost += cost;
+            edges_connected++;
+            
+            // Check distances to all other unvisited houses
+            for (int v = 0; v < n; v++) {
+                if (!visited[v]) {
+                    int dist = abs(houses[u][0] - houses[v][0]) + 
+                               abs(houses[u][1] - houses[v][1]);
+                    pq.push({dist, v});
+                }
+            }
+        }
+        
+        return min_total_cost;
+    }
+};
