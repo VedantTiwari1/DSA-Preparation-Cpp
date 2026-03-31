@@ -1,0 +1,89 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    string generateString(string str1, string str2) {
+        int n = str1.length();
+        int m = str2.length();
+        int L = n + m - 1;
+        string ans(L, '?');
+        
+        // Phase 1: Apply 'T' conditions
+        for (int i = 0; i < n; i++) {
+            if (str1[i] == 'T') {
+                for (int j = 0; j < m; j++) {
+                    if (ans[i + j] != '?' && ans[i + j] != str2[j]) {
+                        return ""; // Conflict between overlapping 'T' constraints
+                    }
+                    ans[i + j] = str2[j];
+                }
+            }
+        }
+        
+        vector<int> unfixed_count(n, 0);
+        vector<int> mismatch_count(n, 0);
+        
+        // Phase 2: Initialize tracking counts for 'F' conditions
+        for (int i = 0; i < n; i++) {
+            if (str1[i] == 'F') {
+                for (int j = 0; j < m; j++) {
+                    if (ans[i + j] == '?') {
+                        unfixed_count[i]++;
+                    } else if (ans[i + j] != str2[j]) {
+                        mismatch_count[i]++;
+                    }
+                }
+                // If an 'F' window is already fully fixed and matches completely, it's impossible
+                if (unfixed_count[i] == 0 && mismatch_count[i] == 0) {
+                    return "";
+                }
+            }
+        }
+        
+        // Phase 3: Greedily fill '?' from left to right
+        for (int k = 0; k < L; k++) {
+            if (ans[k] == '?') {
+                vector<bool> forbidden(26, false);
+                
+                // Only windows that overlap with index 'k' can be affected
+                int start_i = max(0, k - m + 1);
+                int end_i = min(n - 1, k);
+                
+                for (int i = start_i; i <= end_i; i++) {
+                    // If this is the LAST '?' for this window and there are no mismatches yet
+                    if (str1[i] == 'F' && unfixed_count[i] == 1 && mismatch_count[i] == 0) {
+                        forbidden[str2[k - i] - 'a'] = true;
+                    }
+                }
+                
+                char best_c = '?';
+                for (char c = 'a'; c <= 'z'; c++) {
+                    if (!forbidden[c - 'a']) {
+                        best_c = c;
+                        break;
+                    }
+                }
+                
+                if (best_c == '?') return ""; 
+                
+                ans[k] = best_c;
+                
+                // Update the counts for overlapping windows based on our choice
+                for (int i = start_i; i <= end_i; i++) {
+                    if (str1[i] == 'F') {
+                        unfixed_count[i]--;
+                        if (best_c != str2[k - i]) {
+                            mismatch_count[i]++;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
