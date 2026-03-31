@@ -1,0 +1,30 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxProfit(vector<int>& arr, int k) {
+        if (arr.empty()) return 0;
+        
+        // Initial state on day 0
+        // If we buy on day 0, our profit is negative the price.
+        int hold = -arr[0]; 
+        // If we do nothing, our profit is 0.
+        int free = 0;       
+        
+        for (int i = 1; i < arr.size(); i++) {
+            // Calculate the new states for today based on yesterday's states
+            int new_hold = max(hold, free - arr[i]);
+            int new_free = max(free, hold + arr[i] - k);
+            
+            // Move to the next day
+            hold = new_hold;
+            free = new_free;
+        }
+        
+        // At the end, we should have sold all stocks to maximize profit
+        return free; 
+    }
+};
