@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int countStrings(int n) {
+        // Base cases for length 1
+        // For n = 1, we have "0" and "1"
+        int endsWithZero = 1; 
+        int endsWithOne = 1;  
+        
+        // Build up to length n
+        for (int i = 2; i <= n; i++) {
+            // Calculate new values based on the previous step
+            int newEndsWithZero = endsWithZero + endsWithOne;
+            int newEndsWithOne = endsWithZero;
+            
+            // Update the state for the next iteration
+            endsWithZero = newEndsWithZero;
+            endsWithOne = newEndsWithOne;
+        }
+        
+        // The total valid strings is the sum of both states
+        return endsWithZero + endsWithOne;
+    }
+};
