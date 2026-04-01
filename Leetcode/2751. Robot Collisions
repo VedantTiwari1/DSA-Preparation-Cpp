@@ -1,0 +1,61 @@
+#include <vector>
+#include <string>
+#include <numeric>
+#include <algorithm>
+#include <stack>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> survivedRobotsHealths(vector<int>& positions, vector<int>& healths, string directions) {
+        int n = positions.size();
+        vector<int> ids(n);
+        
+        // Fill ids with 0, 1, 2, ..., n-1
+        iota(ids.begin(), ids.end(), 0); 
+        
+        // Sort ids based on their actual positions on the line
+        sort(ids.begin(), ids.end(), [&](int a, int b) {
+            return positions[a] < positions[b];
+        });
+        
+        stack<int> st; // Stores ids of robots moving Right ('R')
+        
+        for (int id : ids) {
+            if (directions[id] == 'R') {
+                st.push(id);
+            } else { // directions[id] == 'L'
+                while (!st.empty() && healths[id] > 0) {
+                    int top_id = st.top();
+                    
+                    if (healths[top_id] > healths[id]) {
+                        // Stack robot wins
+                        healths[top_id] -= 1;
+                        healths[id] = 0; 
+                    } else if (healths[top_id] < healths[id]) {
+                        // Current 'L' robot wins
+                        healths[id] -= 1;
+                        healths[top_id] = 0;
+                        st.pop();
+                    } else {
+                        // Both destroyed
+                        healths[id] = 0;
+                        healths[top_id] = 0;
+                        st.pop();
+                    }
+                }
+            }
+        }
+        
+        // Collect surviving robots in original order
+        vector<int> result;
+        for (int i = 0; i < n; ++i) {
+            if (healths[i] > 0) {
+                result.push_back(healths[i]);
+            }
+        }
+        
+        return result;
+    }
+};
