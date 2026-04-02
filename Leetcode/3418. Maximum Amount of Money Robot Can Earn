@@ -1,0 +1,58 @@
+class Solution {
+public:
+    int maximumAmount(vector<vector<int>>& coins) {
+        int m = coins.size();
+        int n = coins[0].size();
+        
+        // Use a significantly large negative number to represent -infinity.
+        // Since max grid size is 500x500 and min value is -10^5, -1e9 is safe.
+        const int INF = 1e9; 
+        
+        // dp[i][j][k] = max profit at (i, j) using exactly k neutralizations
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(3, -INF)));
+        
+        // 1. Base case initialization for the starting cell (0, 0)
+        dp[0][0][0] = coins[0][0];
+        if (coins[0][0] < 0) {
+            dp[0][0][1] = 0; // We used 1 neutralization on the starting cell
+        }
+        
+        // 2. Iterate through the grid
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                // Skip the starting cell as it's already initialized
+                if (i == 0 && j == 0) continue;
+                
+                for (int k = 0; k < 3; ++k) {
+                    int max_prev = -INF;
+                    
+                    // Look at the cell above
+                    if (i > 0) max_prev = max(max_prev, dp[i-1][j][k]);
+                    // Look at the cell to the left
+                    if (j > 0) max_prev = max(max_prev, dp[i][j-1][k]);
+                    
+                    // Transition 1: Accept the cell's value (whether positive or negative loss)
+                    if (max_prev != -INF) {
+                        dp[i][j][k] = max(dp[i][j][k], max_prev + coins[i][j]);
+                    }
+                    
+                    // Transition 2: If it's a robber and we can use a neutralization (k > 0)
+                    if (coins[i][j] < 0 && k > 0) {
+                        int max_prev_k_minus_1 = -INF;
+                        if (i > 0) max_prev_k_minus_1 = max(max_prev_k_minus_1, dp[i-1][j][k-1]);
+                        if (j > 0) max_prev_k_minus_1 = max(max_prev_k_minus_1, dp[i][j-1][k-1]);
+                        
+                        if (max_prev_k_minus_1 != -INF) {
+                            // We neutralize, so we add 0 instead of the negative coin value
+                            dp[i][j][k] = max(dp[i][j][k], max_prev_k_minus_1 + 0);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // The answer is the maximum value reaching the bottom-right corner 
+        // across all possible numbers of neutralizations used (0, 1, or 2).
+        return max({dp[m-1][n-1][0], dp[m-1][n-1][1], dp[m-1][n-1][2]});
+    }
+};
