@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int countWays(int n, int k) {
+        // Base cases
+        if (n == 0) return 0;
+        if (n == 1) return k;
+
+        // We use long long to prevent integer overflow during intermediate calculations.
+        // The problem guarantees the final answer fits in a 32-bit integer.
+        long long prev2 = k;                  // Ways to paint 1 post
+        long long prev1 = (long long)k * k;   // Ways to paint 2 posts
+
+        for (int i = 3; i <= n; i++) {
+            long long curr = (prev1 + prev2) * (k - 1);
+            
+            // Shift the window forward
+            prev2 = prev1;
+            prev1 = curr;
+        }
+
+        return (int)prev1;
+    }
+};
