@@ -1,0 +1,83 @@
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxWalls(vector<int>& robots, vector<int>& distance, vector<int>& walls) {
+        int n = robots.size();
+        
+        // Pair each robot with its distance and sort them by position
+        vector<pair<int, int>> robs(n);
+        for (int i = 0; i < n; i++) {
+            robs[i] = {robots[i], distance[i]};
+        }
+        sort(robs.begin(), robs.end());
+        
+        // Sort walls for binary search
+        sort(walls.begin(), walls.end());
+
+        // Helper lambda to count walls strictly within the inclusive range [L, R]
+        auto count_walls = [&](int L, int R) {
+            if (L > R) return 0;
+            auto it1 = lower_bound(walls.begin(), walls.end(), L);
+            auto it2 = upper_bound(walls.begin(), walls.end(), R);
+            return (int)std::distance(it1, it2);
+        };
+
+        // dp[i][0] = max walls destroyed up to robs[i].pos, assuming robot i shoots LEFT
+        // dp[i][1] = max walls destroyed up to robs[i].pos, assuming robot i shoots RIGHT
+        vector<vector<int>> dp(n, vector<int>(2, 0));
+
+        // Base case: First robot
+        dp[0][0] = count_walls(robs[0].first - robs[0].second, robs[0].first);
+        dp[0][1] = count_walls(robs[0].first, robs[0].first);
+
+        for (int i = 1; i < n; i++) {
+            int P_prev = robs[i-1].first;
+            int D_prev = robs[i-1].second;
+            int P_curr = robs[i].first;
+            int D_curr = robs[i].second;
+
+            // X is the furthest the previous robot can shoot right (blocked by current robot)
+            int X = min(P_prev + D_prev, P_curr);
+            // Y is the furthest the current robot can shoot left (blocked by previous robot)
+            int Y = max(P_curr - D_curr, P_prev);
+
+            // 1. Prev shoots Left, Curr shoots Left
+            int valLL = dp[i-1][0] + count_walls(max(P_prev + 1, Y), P_curr);
+
+            // 2. Prev shoots Right, Curr shoots Left
+            int valRL;
+            if (X >= Y) { // Bullet paths overlap
+                valRL = dp[i-1][1] + count_walls(P_prev + 1, P_curr);
+            } else {      // Bullet paths have a gap
+                valRL = dp[i-1][1] + count_walls(P_prev + 1, X) + count_walls(Y, P_curr);
+            }
+
+            // 3. Prev shoots Left, Curr shoots Right
+            // Curr shooting right only destroys the wall exactly at its position in this segment
+            int valLR = dp[i-1][0] + count_walls(P_curr, P_curr);
+
+            // 4. Prev shoots Right, Curr shoots Right
+            int valRR;
+            if (X == P_curr) { // Prev bullet reaches all the way to Curr
+                valRR = dp[i-1][1] + count_walls(P_prev + 1, P_curr);
+            } else {
+                valRR = dp[i-1][1] + count_walls(P_prev + 1, X) + count_walls(P_curr, P_curr);
+            }
+
+            dp[i][0] = max(valLL, valRL);
+            dp[i][1] = max(valLR, valRR);
+        }
+
+        // Final step: If the last robot shot right, we must add the walls it destroys to its right
+        int last_P = robs[n-1].first;
+        int last_D = robs[n-1].second;
+        int final_right_walls = count_walls(last_P + 1, last_P + last_D);
+        
+        return max(dp[n-1][0], dp[n-1][1] + final_right_walls);
+    }
+};
