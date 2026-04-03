@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> diagView(vector<vector<int>>& mat) {
+        int n = mat.size();
+        vector<int> ans;
+        
+        // Phase 1: Start from each column in the top row (row 0)
+        for (int c = 0; c < n; c++) {
+            int row = 0;
+            int col = c;
+            
+            // Traverse down-left until we hit a boundary
+            while (row < n && col >= 0) {
+                ans.push_back(mat[row][col]);
+                row++;
+                col--;
+            }
+        }
+        
+        // Phase 2: Start from each row in the rightmost column (starting at row 1)
+        for (int r = 1; r < n; r++) {
+            int row = r;
+            int col = n - 1;
+            
+            // Traverse down-left until we hit a boundary
+            while (row < n && col >= 0) {
+                ans.push_back(mat[row][col]);
+                row++;
+                col--;
+            }
+        }
+        
+        return ans;
+    }
+};
