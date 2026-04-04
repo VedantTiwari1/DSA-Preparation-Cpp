@@ -1,0 +1,24 @@
+class Solution {
+  public:
+    vector<string> graycode(int n) {
+        // Base case for n = 1
+        vector<string> result = {"0", "1"};
+        
+        // Iteratively build up to n bits
+        for (int i = 2; i <= n; i++) {
+            int current_size = result.size();
+            
+            // Traverse backwards through the current results and prepend '1'
+            for (int j = current_size - 1; j >= 0; j--) {
+                result.push_back("1" + result[j]);
+            }
+            
+            // Traverse forwards through the original half and prepend '0'
+            for (int j = 0; j < current_size; j++) {
+                result[j] = "0" + result[j];
+            }
+        }
+        
+        return result;
+    }
+};
