@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<int> stableMarriage(vector<vector<int>>& men, vector<vector<int>>& women) {
+        int n = men.size();
+        
+        // Precompute rankings for women to achieve O(1) preference lookups.
+        // womenRank[w][m] stores the rank of man m for woman w. Lower is better.
+        vector<vector<int>> womenRank(n, vector<int>(n));
+        for (int w = 0; w < n; ++w) {
+            for (int rank = 0; rank < n; ++rank) {
+                womenRank[w][women[w][rank]] = rank;
+            }
+        }
+        
+        vector<int> womenPartner(n, -1); // Tracks who each woman is engaged to
+        vector<bool> manFree(n, true);   // Tracks if a man is free
+        int freeCount = n;
+        
+        // nextProposal[m] tracks the index of the next woman man m should propose to
+        vector<int> nextProposal(n, 0);
+        
+        while (freeCount > 0) {
+            // 1. Find the first free man
+            int m;
+            for (m = 0; m < n; ++m) {
+                if (manFree[m]) break;
+            }
+            
+            // 2. Man m proposes to his next preferred woman
+            int w = men[m][nextProposal[m]];
+            nextProposal[m]++; 
+            
+            // 3. Evaluate the proposal
+            if (womenPartner[w] == -1) {
+                // Woman is free, so she accepts
+                womenPartner[w] = m;
+                manFree[m] = false;
+                freeCount--;
+            } else {
+                // Woman is already engaged to m1
+                int m1 = womenPartner[w];
+                
+                // She checks if she prefers the new proposer (m) over her current partner (m1)
+                if (womenRank[w][m] < womenRank[w][m1]) {
+                    // She prefers m! She breaks the engagement with m1.
+                    womenPartner[w] = m;
+                    manFree[m] = false;
+                    manFree[m1] = true; // Dumped man becomes free again
+                }
+                // If she prefers m1, she just rejects m, and m remains free (handled inherently)
+            }
+        }
+        
+        // The problem asks for the matches from the men's perspective: 
+        // result[i] = the woman matched with the i-th man
+        vector<int> result(n);
+        for (int w = 0; w < n; ++w) {
+            result[womenPartner[w]] = w;
+        }
+        
+        return result;
+    }
+};
