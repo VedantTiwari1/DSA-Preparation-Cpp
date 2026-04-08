@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int xorAfterQueries(vector<int>& nums, vector<vector<int>>& queries) {
+        long long mod = 1e9 + 7;
+        int n = nums.size();
+
+        // 1. Process each query
+        for (const auto& query : queries) {
+            int l = query[0];
+            int r = query[1];
+            int k = query[2];
+            int v = query[3];
+
+            // Update elements from l to r with step k
+            for (int idx = l; idx <= r; idx += k) {
+                // Using long long to prevent overflow during multiplication
+                nums[idx] = (1LL * nums[idx] * v) % mod;
+            }
+        }
+
+        // 2. Calculate the bitwise XOR of the final array
+        int finalXor = 0;
+        for (int val : nums) {
+            finalXor ^= val;
+        }
+
+        return finalXor;
+    }
+};
