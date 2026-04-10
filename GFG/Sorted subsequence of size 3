@@ -1,0 +1,43 @@
+class Solution {
+  public:
+    vector<int> find3Numbers(vector<int> &arr) {
+        int n = arr.size();
+        if (n < 3) return {};
+
+        vector<int> leftMin(n);
+        vector<int> rightMax(n);
+
+        // Fill leftMin: stores index of min element found so far from left
+        leftMin[0] = 0;
+        int minIdx = 0;
+        for (int i = 1; i < n; i++) {
+            if (arr[i] <= arr[minIdx]) {
+                minIdx = i;
+                leftMin[i] = i;
+            } else {
+                leftMin[i] = minIdx;
+            }
+        }
+
+        // Fill rightMax: stores index of max element found so far from right
+        rightMax[n - 1] = n - 1;
+        int maxIdx = n - 1;
+        for (int i = n - 2; i >= 0; i--) {
+            if (arr[i] >= arr[maxIdx]) {
+                maxIdx = i;
+                rightMax[i] = i;
+            } else {
+                rightMax[i] = maxIdx;
+            }
+        }
+
+        // Check for the condition arr[leftMin[i]] < arr[i] < arr[rightMax[i]]
+        for (int i = 0; i < n; i++) {
+            if (arr[leftMin[i]] < arr[i] && arr[i] < arr[rightMax[i]]) {
+                return {arr[leftMin[i]], arr[i], arr[rightMax[i]]};
+            }
+        }
+
+        return {}; // No such subsequence found
+    }
+};
