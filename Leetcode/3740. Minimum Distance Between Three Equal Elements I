@@ -1,0 +1,39 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    int minimumDistance(vector<int>& nums) {
+        // Map to store all indices for each unique number
+        unordered_map<int, vector<int>> indicesMap;
+        for (int i = 0; i < nums.size(); ++i) {
+            indicesMap[nums[i]].push_back(i);
+        }
+
+        int min_dist = INT_MAX;
+        bool found = false;
+
+        for (auto const& [val, indices] : indicesMap) {
+            // We need at least 3 occurrences to form a "good" tuple
+            if (indices.size() >= 3) {
+                found = true;
+                // Check every consecutive triplet of indices for this number
+                // Triplets further apart will always result in a larger distance
+                for (int i = 0; i <= (int)indices.size() - 3; ++i) {
+                    int first = indices[i];
+                    int third = indices[i + 2];
+                    
+                    // Distance = 2 * (max_index - min_index)
+                    int current_dist = 2 * (third - first);
+                    min_dist = min(min_dist, current_dist);
+                }
+            }
+        }
+
+        return found ? min_dist : -1;
+    }
+};
