@@ -1,0 +1,36 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    int minimumDistance(vector<int>& nums) {
+        unordered_map<int, vector<int>> indexMap;
+        
+        // Step 1: Store all indices for each number
+        for (int i = 0; i < nums.size(); ++i) {
+            indexMap[nums[i]].push_back(i);
+        }
+        
+        int minDistance = INT_MAX;
+        bool found = false;
+        
+        // Step 2: Iterate through the map to find triplets
+        for (auto const& [val, indices] : indexMap) {
+            if (indices.size() >= 3) {
+                found = true;
+                // Step 3: Check every consecutive triplet of indices
+                for (int p = 0; p <= (int)indices.size() - 3; ++p) {
+                    // Formula: 2 * (k - i) where k is the 3rd index and i is the 1st
+                    int currentDist = 2 * (indices[p + 2] - indices[p]);
+                    minDistance = min(minDistance, currentDist);
+                }
+            }
+        }
+        
+        return found ? minDistance : -1;
+    }
+};
