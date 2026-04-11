@@ -1,0 +1,30 @@
+class Solution {
+  public:
+    int countIncreasing(vector<int>& arr) {
+        int n = arr.size();
+        if (n < 2) return 0;
+        
+        int count = 0;
+        int len = 1; // Current length of an increasing segment
+
+        for (int i = 1; i < n; i++) {
+            // Check if strictly increasing
+            if (arr[i] > arr[i - 1]) {
+                len++;
+            } else {
+                // Segment ended, calculate subarrays for the previous segment
+                if (len >= 2) {
+                    count += (len * (len - 1)) / 2;
+                }
+                len = 1; // Reset length for the new segment
+            }
+        }
+        
+        // Final check for the last segment in the array
+        if (len >= 2) {
+            count += (len * (len - 1)) / 2;
+        }
+
+        return count;
+    }
+};
