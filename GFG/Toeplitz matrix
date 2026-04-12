@@ -1,0 +1,21 @@
+class Solution {
+public:
+    bool isToeplitz(vector<vector<int>>& mat) {
+        int rows = mat.size();
+        if (rows == 0) return true; // Edge case for empty matrix
+        int cols = mat[0].size();
+
+        // Loop through the matrix, stopping before the last row and last column
+        for (int i = 0; i < rows - 1; i++) {
+            for (int j = 0; j < cols - 1; j++) {
+                // If an element doesn't match its bottom-right neighbor, it's not Toeplitz
+                if (mat[i][j] != mat[i + 1][j + 1]) {
+                    return false;
+                }
+            }
+        }
+        
+        // If we checked everything and found no mismatches, it is Toeplitz
+        return true;
+    }
+};
