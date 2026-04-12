@@ -1,0 +1,42 @@
+class Solution {
+    int memo[301][27][27];
+
+    // Helper function to calculate distance on the 6-col grid
+    int getDistance(int a, int b) {
+        // 26 represents a finger that hasn't pressed any key yet
+        if (a == 26 || b == 26) return 0; 
+        
+        int rowA = a / 6, colA = a % 6;
+        int rowB = b / 6, colB = b % 6;
+        
+        return abs(rowA - rowB) + abs(colA - colB);
+    }
+
+    int solve(string& word, int idx, int f1, int f2) {
+        // Base case: If we've typed the whole word, cost is 0
+        if (idx == word.length()) return 0;
+        
+        // Return pre-calculated result if it exists
+        if (memo[idx][f1][f2] != -1) return memo[idx][f1][f2];
+
+        int target = word[idx] - 'A';
+
+        // Option 1: Move Finger 1 to the target character
+        int cost1 = getDistance(f1, target) + solve(word, idx + 1, target, f2);
+
+        // Option 2: Move Finger 2 to the target character
+        int cost2 = getDistance(f2, target) + solve(word, idx + 1, f1, target);
+
+        // Store and return the minimum of the two choices
+        return memo[idx][f1][f2] = min(cost1, cost2);
+    }
+
+public:
+    int minimumDistance(string word) {
+        // Initialize memoization table with -1
+        memset(memo, -1, sizeof(memo));
+        
+        // Start with both fingers "hovering" (state 26)
+        return solve(word, 0, 26, 26); 
+    }
+};
