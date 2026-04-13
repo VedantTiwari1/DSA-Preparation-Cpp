@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<int> nextPalindrome(vector<int>& num) {
+        int n = num.size();
+        vector<int> res = num;
+        
+        // Step 1: Check if all digits are 9
+        bool allNine = true;
+        for (int x : num) if (x != 9) allNine = false;
+        if (allNine) {
+            vector<int> ans(n + 1, 0);
+            ans[0] = 1;
+            ans[n] = 1;
+            return ans;
+        }
+
+        // Step 2: Mirror the left half to the right half
+        int mid = n / 2;
+        int i = mid - 1;
+        int j = (n % 2 == 0) ? mid : mid + 1;
+
+        while (i >= 0) {
+            res[j] = res[i];
+            i--;
+            j++;
+        }
+
+        // Check if the mirrored number is already greater than the original
+        bool isGreater = false;
+        for (int k = 0; k < n; k++) {
+            if (res[k] > num[k]) {
+                isGreater = true;
+                break;
+            } else if (res[k] < num[k]) {
+                break;
+            }
+        }
+
+        // Step 3: If not greater, increment the middle and propagate carry
+        if (!isGreater) {
+            int carry = 1;
+            i = (n % 2 == 0) ? mid - 1 : mid;
+            
+            while (i >= 0 && carry > 0) {
+                res[i] += carry;
+                carry = res[i] / 10;
+                res[i] %= 10;
+                i--;
+            }
+            
+            // Mirror the updated left half to the right half again
+            i = 0;
+            j = n - 1;
+            while (i < j) {
+                res[j] = res[i];
+                i++;
+                j--;
+            }
+        }
+
+        return res;
+    }
+};
