@@ -1,0 +1,67 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> solveQueries(vector<int>& nums, vector<int>& queries) {
+        int n = nums.size();
+        unordered_map<int, vector<int>> posMap;
+
+        // Step 1: Store all indices for each number
+        for (int i = 0; i < n; i++) {
+            posMap[nums[i]].push_back(i);
+        }
+
+        vector<int> answer;
+        for (int qIdx : queries) {
+            int targetVal = nums[qIdx];
+            const vector<int>& indices = posMap[targetVal];
+
+            // If the element appears only once, no "other" index exists
+            if (indices.size() <= 1) {
+                answer.push_back(-1);
+                continue;
+            }
+
+            int minDistance = n; // Initialize with max possible distance
+
+            // Step 2: Find the closest index to qIdx
+            // Since indices are sorted (we pushed them 0 to n-1), 
+            // we can use binary search to find the neighbors of qIdx.
+            auto it = lower_bound(indices.begin(), indices.end(), qIdx);
+            
+            // Check neighbors in the sorted indices list
+            // 1. Element to the left in the list
+            if (it != indices.begin()) {
+                int prevIdx = *prev(it);
+                minDistance = min(minDistance, getCircularDist(qIdx, prevIdx, n));
+            } else {
+                // If qIdx is the first, the "left" neighbor is the very last element (circular)
+                minDistance = min(minDistance, getCircularDist(qIdx, indices.back(), n));
+            }
+
+            // 2. Element to the right in the list
+            if (next(it) != indices.end()) {
+                int nextIdx = *next(it);
+                minDistance = min(minDistance, getCircularDist(qIdx, nextIdx, n));
+            } else {
+                // If qIdx is the last, the "right" neighbor is the very first element (circular)
+                minDistance = min(minDistance, getCircularDist(qIdx, indices.front(), n));
+            }
+
+            answer.push_back(minDistance);
+        }
+
+        return answer;
+    }
+
+private:
+    int getCircularDist(int i, int j, int n) {
+        int direct = abs(i - j);
+        return min(direct, n - direct);
+    }
+};
