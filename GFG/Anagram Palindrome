@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool canFormPalindrome(string &s) {
+        int charCounts[26] = {0}; 
+        
+        // Step 1: Count the frequency of each character
+        for (char c : s) {
+            charCounts[c - 'a']++; 
+        }
+        
+        // Step 2: Count how many characters have an odd frequency
+        int oddCount = 0;
+        for (int i = 0; i < 26; ++i) {
+            if (charCounts[i] % 2 != 0) {
+                oddCount++;
+            }
+        }
+        
+        // Step 3: Check the golden rule
+        return oddCount <= 1;
+    }
+};
