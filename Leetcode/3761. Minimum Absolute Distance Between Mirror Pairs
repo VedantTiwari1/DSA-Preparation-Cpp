@@ -1,0 +1,38 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    // Helper function to reverse the digits
+    int reverseNum(int n) {
+        int rev = 0;
+        while (n > 0) {
+            rev = rev * 10 + (n % 10);
+            n /= 10;
+        }
+        return rev;
+    }
+
+    int minMirrorPairDistance(vector<int>& nums) {
+        // Map stores: {reversed_value_of_nums[i] -> latest_index_i}
+        unordered_map<int, int> lastSeenReversed;
+        int minDistance = INT_MAX;
+
+        for (int j = 0; j < nums.size(); ++j) {
+            // 1. Check if the current number matches a previously seen reversed number
+            if (lastSeenReversed.count(nums[j])) {
+                minDistance = min(minDistance, j - lastSeenReversed[nums[j]]);
+            }
+
+            // 2. Reverse the current number and store/update its latest index
+            int rev = reverseNum(nums[j]);
+            lastSeenReversed[rev] = j;
+        }
+
+        return minDistance == INT_MAX ? -1 : minDistance;
+    }
+};
