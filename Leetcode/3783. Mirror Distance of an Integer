@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int mirrorDistance(int n) {
+        int originalN = n;
+        long long reversedN = 0; // Use long long to prevent overflow during reversal
+        
+        int temp = n;
+        while (temp > 0) {
+            int lastDigit = temp % 10;
+            reversedN = reversedN * 10 + lastDigit;
+            temp /= 10;
+        }
+        
+        // Return the absolute difference
+        return abs(originalN - (int)reversedN);
+    }
+};
