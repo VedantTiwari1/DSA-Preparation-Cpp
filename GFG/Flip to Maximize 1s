@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int maxOnes(vector<int>& arr) {
+        int initial_ones = 0;
+        int current_gain = 0;
+        int max_gain = 0;
+
+        for (int x : arr) {
+            // Count existing ones
+            if (x == 1) initial_ones++;
+
+            // Convert 0 to +1 gain, 1 to -1 gain
+            int value = (x == 0) ? 1 : -1;
+
+            // Standard Kadane's Algorithm
+            current_gain += value;
+            if (current_gain < 0) {
+                current_gain = 0;
+            }
+            max_gain = max(max_gain, current_gain);
+        }
+
+        return initial_ones + max_gain;
+    }
+};
