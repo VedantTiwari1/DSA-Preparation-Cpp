@@ -1,0 +1,58 @@
+#include <vector>
+#include <numeric>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    // Standard Find function for DSU with path compression
+    int find(vector<int>& parent, int i) {
+        if (parent[i] == i) return i;
+        return parent[i] = find(parent, parent[i]);
+    }
+
+    // Standard Union function
+    void unite(vector<int>& parent, int i, int j) {
+        int rootI = find(parent, i);
+        int rootJ = find(parent, j);
+        if (rootI != rootJ) parent[rootI] = rootJ;
+    }
+
+    int minimumHammingDistance(vector<int>& source, vector<int>& target, vector<vector<int>>& allowedSwaps) {
+        int n = source.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0); // Initialize: parent[i] = i
+
+        // 1. Group indices using DSU
+        for (const auto& swap : allowedSwaps) {
+            unite(parent, swap[0], swap[1]);
+        }
+
+        // 2. Map root of each component to the multiset of values it contains
+        // Using unordered_map<root, unordered_map<value, frequency>>
+        unordered_map<int, unordered_map<int, int>> components;
+        for (int i = 0; i < n; ++i) {
+            int root = find(parent, i);
+            components[root][source[i]]++;
+        }
+
+        int hammingDistance = 0;
+
+        // 3. For each index, check if target[i] exists in its component's pool
+        for (int i = 0; i < n; ++i) {
+            int root = find(parent, i);
+            int val = target[i];
+            
+            if (components[root][val] > 0) {
+                // If the value exists in the component, "use" it to match
+                components[root][val]--;
+            } else {
+                // No match possible for this position within the component
+                hammingDistance++;
+            }
+        }
+
+        return hammingDistance;
+    }
+};
