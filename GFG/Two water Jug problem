@@ -1,0 +1,57 @@
+class Solution {
+private:
+    // Helper function to find Greatest Common Divisor (GCD)
+    int gcd(int a, int b) {
+        if (b == 0) return a;
+        return gcd(b, a % b);
+    }
+
+    // Helper function to simulate pouring from one jug to another
+    int pour(int fromCap, int toCap, int d) {
+        int from = fromCap; // Start by filling the 'from' jug
+        int to = 0;
+        int steps = 1;      // First step is already taken by filling 'from'
+
+        // Continue until one of the jugs has exactly 'd' liters
+        while (from != d && to != d) {
+            // Find out how much we can actually pour
+            int temp = min(from, toCap - to);
+
+            // Pour the water
+            to += temp;
+            from -= temp;
+            steps++;
+
+            // If we reached the target, stop immediately
+            if (from == d || to == d) {
+                break;
+            }
+
+            // If the 'from' jug becomes empty, fill it up again
+            if (from == 0) {
+                from = fromCap;
+                steps++;
+            }
+
+            // If the 'to' jug becomes completely full, empty it out
+            if (to == toCap) {
+                to = 0;
+                steps++;
+            }
+        }
+        return steps;
+    }
+
+public:
+    int minSteps(int m, int n, int d) {
+        // Base edge cases
+        if (m == d || n == d) return 1;
+        if (d > max(m, n)) return -1;
+        
+        // Diophantine check: d must be divisible by gcd(m, n)
+        if (d % gcd(m, n) != 0) return -1;
+
+        // Calculate steps for both possible routes and return the minimum
+        return min(pour(m, n, d), pour(n, m, d));
+    }
+};
