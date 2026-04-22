@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> findMean(vector<int>& arr, vector<vector<int>>& queries) {
+        int n = arr.size();
+        
+        // Use long long for the prefix sum to prevent potential overflow
+        vector<long long> pref(n);
+        pref[0] = arr[0];
+        
+        // 1. Build the prefix sum array
+        for (int i = 1; i < n; ++i) {
+            pref[i] = pref[i - 1] + arr[i];
+        }
+        
+        vector<int> result;
+        
+        // 2. Process each query
+        for (const auto& q : queries) {
+            int l = q[0];
+            int r = q[1];
+            
+            // Get the sum of the subarray [l, r]
+            long long sum = pref[r];
+            if (l > 0) {
+                sum -= pref[l - 1];
+            }
+            
+            // Calculate the number of elements in the range
+            int count = r - l + 1;
+            
+            // Calculate the mean (integer division naturally floors positive values)
+            int mean = sum / count;
+            
+            result.push_back(mean);
+        }
+        
+        return result;
+    }
+};
