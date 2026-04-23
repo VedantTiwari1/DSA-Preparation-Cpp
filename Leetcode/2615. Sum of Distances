@@ -1,0 +1,47 @@
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<long long> distance(vector<int>& nums) {
+        int n = nums.size();
+        vector<long long> arr(n, 0);
+        unordered_map<int, vector<int>> indicesMap;
+
+        // Group indices by their values
+        for (int i = 0; i < n; i++) {
+            indicesMap[nums[i]].push_back(i);
+        }
+
+        // For each group of indices, calculate the sum of distances
+        for (auto& entry : indicesMap) {
+            vector<int>& indices = entry.second;
+            long long totalSum = 0;
+            for (int idx : indices) {
+                totalSum += idx;
+            }
+
+            long long leftSum = 0;
+            int k = indices.size();
+            
+            for (int i = 0; i < k; i++) {
+                long long currentIdx = indices[i];
+                // Right sum is totalSum - leftSum - currentIdx
+                long long rightSum = totalSum - leftSum - currentIdx;
+                
+                // Calculate distance using the formula
+                long long leftDist = (long long)i * currentIdx - leftSum;
+                long long rightDist = rightSum - (long long)(k - 1 - i) * currentIdx;
+                
+                arr[currentIdx] = leftDist + rightDist;
+                
+                // Update leftSum for the next index
+                leftSum += currentIdx;
+            }
+        }
+
+        return arr;
+    }
+};
