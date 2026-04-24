@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int furthestDistanceFromOrigin(string moves) {
+        int lCount = 0;
+        int rCount = 0;
+        int underscoreCount = 0;
+
+        for (char c : moves) {
+            if (c == 'L') {
+                lCount++;
+            } else if (c == 'R') {
+                rCount++;
+            } else {
+                underscoreCount++;
+            }
+        }
+
+        // The furthest distance is the absolute difference of L and R,
+        // plus all the underscores (which we can turn into whichever 
+        // direction helps us most).
+        return abs(lCount - rCount) + underscoreCount;
+    }
+};
