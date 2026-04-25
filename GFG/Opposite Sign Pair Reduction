@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> reducePairs(vector<int>& arr) {
+        vector<int> st;
+        
+        for (int x : arr) {
+            bool alive = true;
+            
+            while (!st.empty() && alive) {
+                int top = st.back();
+                
+                // Check if they have opposite signs.
+                // Using explicit > 0 and < 0 checks prevents potential integer overflow issues 
+                // that can happen if you try to use (top * x < 0).
+                if ((top > 0 && x < 0) || (top < 0 && x > 0)) {
+                    if (abs(top) > abs(x)) {
+                        alive = false; // x is eliminated, top stays
+                    } else if (abs(top) < abs(x)) {
+                        st.pop_back(); // top is eliminated, x continues to check the next top
+                    } else {
+                        st.pop_back(); // both are eliminated
+                        alive = false;
+                    }
+                } else {
+                    // Signs are the same, no collision
+                    break;
+                }
+            }
+            
+            // If x survived all potential collisions, add it to the final array
+            if (alive) {
+                st.push_back(x);
+            }
+        }
+        
+        return st;
+    }
+};
