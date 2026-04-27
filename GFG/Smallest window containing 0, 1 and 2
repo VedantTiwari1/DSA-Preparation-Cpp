@@ -1,0 +1,30 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+  public:
+    int smallestSubstring(string S) {
+        int last0 = -1, last1 = -1, last2 = -1;
+        int minLen = INT_MAX;
+        
+        for (int i = 0; i < S.length(); i++) {
+            if (S[i] == '0') last0 = i;
+            else if (S[i] == '1') last1 = i;
+            else if (S[i] == '2') last2 = i;
+            
+            // Check if we have seen all three characters at least once
+            if (last0 != -1 && last1 != -1 && last2 != -1) {
+                int start = min({last0, last1, last2});
+                int end = max({last0, last1, last2});
+                minLen = min(minLen, end - start + 1);
+            }
+        }
+        
+        // If minLen was never updated, no such substring exists
+        return (minLen == INT_MAX) ? -1 : minLen;
+    }
+};
