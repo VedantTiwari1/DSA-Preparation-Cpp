@@ -1,0 +1,70 @@
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+class Solution {
+    // Directions: 0: Up, 1: Right, 2: Down, 3: Left
+    int dr[4] = {-1, 0, 1, 0};
+    int dc[4] = {0, 1, 0, -1};
+
+    // street_connections[type] = {dir1, dir2}
+    // Type 1: Left (3), Right (1) | Type 2: Up (0), Down (2) | etc.
+    vector<vector<int>> street_connections = {
+        {},             // Placeholder for index 0
+        {1, 3},         // 1: Left, Right
+        {0, 2},         // 2: Up, Down
+        {2, 3},         // 3: Left, Down
+        {1, 2},         // 4: Right, Down
+        {0, 3},         // 5: Left, Up
+        {0, 1}          // 6: Right, Up
+    };
+
+public:
+    bool hasValidPath(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        queue<pair<int, int>> q;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+
+        q.push({0, 0});
+        visited[0][0] = true;
+
+        while (!q.empty()) {
+            auto [r, c] = q.front();
+            q.pop();
+
+            if (r == m - 1 && c == n - 1) return true;
+
+            int currentType = grid[r][c];
+            for (int dir : street_connections[currentType]) {
+                int nr = r + dr[dir];
+                int nc = c + dc[dir];
+
+                // 1. Check boundaries and if already visited
+                if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {
+                    int nextType = grid[nr][nc];
+                    
+                    // 2. Check if the next cell connects back to the current cell
+                    // The "back direction" is (dir + 2) % 4
+                    int backDir = (dir + 2) % 4;
+                    bool canConnect = false;
+                    for (int nextDir : street_connections[nextType]) {
+                        if (nextDir == backDir) {
+                            canConnect = true;
+                            break;
+                        }
+                    }
+
+                    if (canConnect) {
+                        visited[nr][nc] = true;
+                        q.push({nr, nc});
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+};
