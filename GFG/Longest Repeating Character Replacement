@@ -1,0 +1,32 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int longestSubstr(std::string& s, int k) {
+        int n = s.length();
+        std::vector<int> count(26, 0);
+        int left = 0, maxFreq = 0, maxLength = 0;
+
+        for (int right = 0; right < n; ++right) {
+            // Increment frequency of current character
+            count[s[right] - 'A']++;
+            
+            // Update the max frequency found in the current window
+            maxFreq = std::max(maxFreq, count[s[right] - 'A']);
+
+            // Current window length is (right - left + 1)
+            // If (length - maxFreq) > k, we must shrink the window
+            if ((right - left + 1) - maxFreq > k) {
+                count[s[left] - 'A']--;
+                left++;
+            }
+
+            // Update the maximum length found so far
+            maxLength = std::max(maxLength, right - left + 1);
+        }
+
+        return maxLength;
+    }
+};
