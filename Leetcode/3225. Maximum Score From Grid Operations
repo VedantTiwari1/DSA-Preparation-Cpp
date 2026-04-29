@@ -1,0 +1,70 @@
+class Solution {
+    // Helper to calculate the score contribution for the current column
+    long long get_score(int c, int prev, int curr, int next, const vector<vector<long long>>& pref) {
+        int m = max(prev, next);
+        if (m <= curr) return 0;
+        return pref[c][m] - pref[c][curr];
+    }
+
+public:
+    long long maximumScore(vector<vector<int>>& grid) {
+        int n = grid.size();
+        
+        // Precompute prefix sums for each column for O(1) range sum queries
+        vector<vector<long long>> pref(n, vector<long long>(n + 1, 0));
+        for (int j = 0; j < n; ++j) {
+            for (int i = 0; i < n; ++i) {
+                pref[j][i + 1] = pref[j][i] + grid[i][j];
+            }
+        }
+
+        // dp[curr][nxt] stores the max score considering columns up to the current one,
+        // given the current column's height is `curr` and the next column's height is `nxt`.
+        vector<vector<long long>> dp(n + 1, vector<long long>(n + 1, 0));
+        for (int curr = 0; curr <= n; ++curr) {
+            for (int nxt = 0; nxt <= n; ++nxt) {
+                dp[curr][nxt] = get_score(0, 0, curr, nxt, pref);
+            }
+        }
+
+        // Preallocate arrays to prevent reallocation overhead in the loop
+        vector<vector<long long>> new_dp(n + 1, vector<long long>(n + 1, 0));
+        vector<long long> pref_max(n + 1, 0);
+        vector<long long> suff_max(n + 2, 0);
+        const long long INF = 1e18;
+
+        for (int c = 1; c < n; ++c) {
+            for (int curr = 0; curr <= n; ++curr) {
+                // Precompute prefix maximums for the current state
+                pref_max[0] = dp[0][curr];
+                for (int p = 1; p <= n; ++p) {
+                    pref_max[p] = max(pref_max[p - 1], dp[p][curr]);
+                }
+
+                // Precompute suffix maximums for the current state
+                suff_max[n + 1] = -INF;
+                for (int p = n; p >= 0; --p) {
+                    long long score_p = get_score(c, p, curr, 0, pref);
+                    suff_max[p] = max(suff_max[p + 1], dp[p][curr] + score_p);
+                }
+
+                // Calculate the optimal transitions in O(1)
+                for (int nxt = 0; nxt <= n; ++nxt) {
+                    long long val1 = pref_max[nxt] + get_score(c, 0, curr, nxt, pref);
+                    long long val2 = suff_max[nxt + 1];
+                    new_dp[curr][nxt] = max(val1, val2);
+                }
+            }
+            dp = new_dp;
+        }
+
+        // The answer is the maximum score ending at the last column
+        // (where the imaginary "next" column has height 0).
+        long long ans = 0;
+        for (int curr = 0; curr <= n; ++curr) {
+            ans = max(ans, dp[curr][0]);
+        }
+        
+        return ans;
+    }
+};
