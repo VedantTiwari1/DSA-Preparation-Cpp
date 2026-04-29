@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int minSwaps(vector<int>& arr) {
+        int n = arr.size();
+        int totalOnes = 0;
+        
+        // Step 1: Count the total number of 1s in the array
+        for (int num : arr) {
+            if (num == 1) {
+                totalOnes++;
+            }
+        }
+        
+        // Edge case: If there are no 1s, return -1
+        if (totalOnes == 0) {
+            return -1;
+        }
+        
+        // Step 2: Initialize the first window of size `totalOnes`
+        int currentZeros = 0;
+        for (int i = 0; i < totalOnes; ++i) {
+            if (arr[i] == 0) {
+                currentZeros++;
+            }
+        }
+        
+        int minSwapsReq = currentZeros;
+        
+        // Step 3: Slide the window across the rest of the array
+        for (int i = totalOnes; i < n; ++i) {
+            // Remove the element going out of the left side of the window
+            if (arr[i - totalOnes] == 0) {
+                currentZeros--;
+            }
+            // Add the new element coming into the right side of the window
+            if (arr[i] == 0) {
+                currentZeros++;
+            }
+            
+            // Update the minimum swaps needed
+            minSwapsReq = min(minSwapsReq, currentZeros);
+        }
+        
+        return minSwapsReq;
+    }
+};
