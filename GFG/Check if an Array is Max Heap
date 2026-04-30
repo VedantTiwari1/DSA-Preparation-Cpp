@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool isMaxHeap(vector<int>& arr) {
+        int n = arr.size();
+        
+        // Iterate only up to the last internal (non-leaf) node
+        for (int i = 0; i < n / 2; i++) {
+            
+            // Check the left child
+            int leftChild = 2 * i + 1;
+            if (leftChild < n && arr[leftChild] > arr[i]) {
+                return false;
+            }
+            
+            // Check the right child
+            int rightChild = 2 * i + 2;
+            if (rightChild < n && arr[rightChild] > arr[i]) {
+                return false;
+            }
+        }
+        
+        // If no violations are found, it's a max heap
+        return true;
+    }
+};
