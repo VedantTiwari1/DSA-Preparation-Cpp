@@ -1,0 +1,62 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxPathScore(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        // dp[i][j][cost] = max_score
+        // Initialize with -1 to represent unreachable states
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k + 1, -1)));
+
+        // Helper to get score and cost for a cell value
+        auto getStats = [](int val) {
+            if (val == 0) return make_pair(0, 0);
+            if (val == 1) return make_pair(1, 1);
+            return make_pair(2, 1); // val == 2
+        };
+
+        auto [s0, c0] = getStats(grid[0][0]);
+        if (c0 <= k) {
+            dp[0][0][c0] = s0;
+        } else {
+            return -1; // Starting cell alone exceeds cost k
+        }
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int c = 0; c <= k; ++c) {
+                    if (dp[i][j][c] == -1) continue;
+
+                    // Try moving Right
+                    if (j + 1 < n) {
+                        auto [nextS, nextC] = getStats(grid[i][j + 1]);
+                        if (c + nextC <= k) {
+                            dp[i][j + 1][c + nextC] = max(dp[i][j + 1][c + nextC], dp[i][j][c] + nextS);
+                        }
+                    }
+
+                    // Try moving Down
+                    if (i + 1 < m) {
+                        auto [nextS, nextC] = getStats(grid[i + 1][j]);
+                        if (c + nextC <= k) {
+                            // CORRECTED LINE: Added [j]
+                            dp[i + 1][j][c + nextC] = max(dp[i + 1][j][c + nextC], dp[i][j][c] + nextS);
+                        }
+                    }
+                }
+            }
+        }
+
+        int maxScore = -1;
+        for (int c = 0; c <= k; ++c) {
+            maxScore = max(maxScore, dp[m - 1][n - 1][c]);
+        }
+
+        return maxScore;
+    }
+};
