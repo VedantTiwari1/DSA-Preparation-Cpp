@@ -1,0 +1,19 @@
+class Solution {
+  public:
+    int findPosition(int n) {
+        // Step 1: A number with exactly one set bit must be > 0 
+        // and must satisfy the (n & (n-1)) == 0 property.
+        if (n <= 0 || (n & (n - 1)) != 0) {
+            return -1;
+        }
+
+        int position = 0;
+        // Step 2: Find the position of the set bit
+        while (n > 0) {
+            n = n >> 1; // Right shift
+            position++;
+        }
+
+        return position;
+    }
+};
