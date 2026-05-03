@@ -1,0 +1,18 @@
+class Solution {
+public:
+    // Custom comparator to sort based on set bit count
+    static bool compare(int a, int b) {
+        int countA = __builtin_popcount(a);
+        int countB = __builtin_popcount(b);
+        
+        // Return true if 'a' should come before 'b'
+        // Since we need descending order, 'a' comes first if its count is greater
+        return countA > countB;
+    }
+
+    vector<int> sortBySetBitCount(vector<int>& arr) {
+        // Use stable_sort to maintain relative order for equal set bits
+        std::stable_sort(arr.begin(), arr.end(), compare);
+        return arr;
+    }
+};
