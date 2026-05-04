@@ -1,0 +1,28 @@
+class Solution {
+public:
+    bool isBinaryPalindrome(int n) {
+        // Step 1: Convert integer to binary string
+        string s = "";
+        while (n > 0) {
+            s += (n % 2 == 0) ? '0' : '1';
+            n /= 2;
+        }
+        
+        // Note: The string 's' will be in reverse order, but for 
+        // a palindrome check, the orientation doesn't matter.
+        
+        // Step 2: Check if string 's' is a palindrome
+        int left = 0;
+        int right = s.length() - 1;
+        
+        while (left < right) {
+            if (s[left] != s[right]) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        
+        return true;
+    }
+};
