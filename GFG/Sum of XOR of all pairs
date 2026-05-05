@@ -1,0 +1,28 @@
+class Solution {
+public:
+    long long sumXOR(vector<int> &arr) {
+        long long totalSum = 0;
+        int n = arr.size();
+
+        // Iterate through each bit position (0 to 31)
+        for (int i = 0; i < 32; i++) {
+            long long count0 = 0;
+            long long count1 = 0;
+
+            // Count how many numbers have the i-th bit set or unset
+            for (int j = 0; j < n; j++) {
+                if (arr[j] & (1 << i)) {
+                    count1++;
+                } else {
+                    count0++;
+                }
+            }
+
+            // Contribution of this bit to the total sum:
+            // (Number of pairs with different bits) * (Value of the bit)
+            totalSum += (count1 * count0) * (1LL << i);
+        }
+
+        return totalSum;
+    }
+};
