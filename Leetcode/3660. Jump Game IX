@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> maxValue(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return {};
+
+        // Step 1: Compute Prefix Maximums
+        vector<int> prefMax(n);
+        prefMax[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            prefMax[i] = max(prefMax[i - 1], nums[i]);
+        }
+
+        // Step 2: Compute Suffix Minimums
+        vector<int> suffMin(n);
+        suffMin[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; --i) {
+            suffMin[i] = min(suffMin[i + 1], nums[i]);
+        }
+
+        // Step 3: Identify components and fill answers
+        vector<int> ans(n);
+        int start = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            // If we are at the end, or we found a valid component boundary
+            if (i == n - 1 || prefMax[i] <= suffMin[i + 1]) {
+                // The max value for this entire isolated component is prefMax[i]
+                for (int j = start; j <= i; ++j) {
+                    ans[j] = prefMax[i];
+                }
+                // Move start pointer to the beginning of the next component
+                start = i + 1;
+            }
+        }
+        
+        return ans;
+    }
+};
