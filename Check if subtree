@@ -1,0 +1,40 @@
+class Solution {
+private:
+    // Helper function to check if two trees are exactly the same
+    bool isIdentical(Node* n1, Node* n2) {
+        // If both nodes are null, they are identical
+        if (n1 == nullptr && n2 == nullptr) {
+            return true;
+        }
+        // If only one is null, they cannot be identical
+        if (n1 == nullptr || n2 == nullptr) {
+            return false;
+        }
+        
+        // Check if current data matches, then check left and right subtrees
+        return (n1->data == n2->data) && 
+               isIdentical(n1->left, n2->left) && 
+               isIdentical(n1->right, n2->right);
+    }
+
+public:
+    // Function to check if S is a subtree of tree T.
+    bool isSubTree(Node* root1, Node* root2) {
+        // An empty tree is always a subtree
+        if (root2 == nullptr) {
+            return true;
+        }
+        // If the main tree is empty but the subtree isn't, it's false
+        if (root1 == nullptr) {
+            return false;
+        }
+        
+        // If the current roots match and their whole trees are identical, we found it
+        if (isIdentical(root1, root2)) {
+            return true;
+        }
+        
+        // Otherwise, keep searching down the left and right branches of the main tree
+        return isSubTree(root1->left, root2) || isSubTree(root1->right, root2);
+    }
+};
