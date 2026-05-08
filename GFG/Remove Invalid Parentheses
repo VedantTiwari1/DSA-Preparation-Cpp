@@ -1,0 +1,83 @@
+#include <vector>
+#include <string>
+#include <unordered_set>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+private:
+    // Helper function to check if a string is a valid parenthesis sequence
+    bool isValid(const string& s) {
+        int count = 0;
+        for (char c : s) {
+            if (c == '(') count++;
+            else if (c == ')') count--;
+            
+            // If at any point we have more ')' than '(', it's invalid
+            if (count < 0) return false;
+        }
+        return count == 0;
+    }
+
+    // DFS backtracking
+    void backtrack(string s, int index, int l, int r, unordered_set<string>& validStrings) {
+        // Base Case: If we've removed the required number of brackets
+        if (l == 0 && r == 0) {
+            if (isValid(s)) {
+                validStrings.insert(s);
+            }
+            return;
+        }
+
+        for (int i = index; i < s.length(); i++) {
+            // Optimization: Skip consecutive identical brackets to avoid duplicate work
+            if (i > index && s[i] == s[i - 1]) continue;
+            
+            // We only care about removing '(' or ')' (ignore lowercase letters if any)
+            if (s[i] != '(' && s[i] != ')') continue;
+
+            // Slice the string to remove the character at index 'i'
+            string nextStr = s.substr(0, i) + s.substr(i + 1);
+            
+            // If we still need to remove right parentheses, prioritize that
+            if (r > 0 && s[i] == ')') {
+                backtrack(nextStr, i, l, r - 1, validStrings);
+            } 
+            // Otherwise, if we need to remove left parentheses
+            else if (l > 0 && s[i] == '(') {
+                backtrack(nextStr, i, l - 1, r, validStrings);
+            }
+        }
+    }
+
+public:
+    vector<string> validParenthesis(string &s) {
+        int leftExtra = 0;
+        int rightExtra = 0;
+        
+        // Step 1: Find out exactly how many '(' and ')' are misplaced
+        for (char c : s) {
+            if (c == '(') {
+                leftExtra++;
+            } else if (c == ')') {
+                if (leftExtra > 0) {
+                    leftExtra--; // A valid pair is formed, cancel out one '('
+                } else {
+                    rightExtra++; // No matching '(', so this ')' is extra
+                }
+            }
+        }
+
+        unordered_set<string> validSet;
+        
+        // Step 2: Backtrack to find all combinations removing exactly leftExtra and rightExtra
+        backtrack(s, 0, leftExtra, rightExtra, validSet);
+
+        // Step 3: Format the result as required by the problem
+        vector<string> result(validSet.begin(), validSet.end());
+        sort(result.begin(), result.end()); // Lexicographical sorting
+        
+        return result;
+    }
+};
