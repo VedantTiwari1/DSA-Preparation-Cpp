@@ -1,0 +1,75 @@
+#include <vector>
+#include <queue>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    // Helper to check if the current number is strictly prime
+    bool isPrime(int n) {
+        if (n <= 1) return false;
+        if (n <= 3) return true;
+        if (n % 2 == 0 || n % 3 == 0) return false;
+        for (int i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0) return false;
+        }
+        return true;
+    }
+
+    int minJumps(vector<int>& nums) {
+        int n = nums.size();
+        if (n <= 1) return 0;
+
+        // Precompute destinations: Map prime factors to indices divisible by them
+        unordered_map<int, vector<int>> primeToIndices;
+        for (int i = 0; i < n; i++) {
+            int val = nums[i];
+            for (int p = 2; p * p <= val; p++) {
+                if (val % p == 0) {
+                    primeToIndices[p].push_back(i);
+                    while (val % p == 0) val /= p;
+                }
+            }
+            if (val > 1) primeToIndices[val].push_back(i);
+        }
+
+        queue<pair<int, int>> q; 
+        q.push({0, 0});
+        
+        vector<bool> visitedIndex(n, false);
+        unordered_map<int, bool> visitedPrime;
+        visitedIndex[0] = true;
+
+        while (!q.empty()) {
+            auto [curr, dist] = q.front();
+            q.pop();
+
+            if (curr == n - 1) return dist;
+
+            // 1. Adjacent Steps
+            for (int nextIdx : {curr - 1, curr + 1}) {
+                if (nextIdx >= 0 && nextIdx < n && !visitedIndex[nextIdx]) {
+                    visitedIndex[nextIdx] = true;
+                    q.push({nextIdx, dist + 1});
+                }
+            }
+
+            // 2. Prime Teleportation (FIXED: Only if current value IS prime)
+            int val = nums[curr];
+            if (isPrime(val)) {
+                if (!visitedPrime[val]) {
+                    visitedPrime[val] = true;
+                    for (int targetIdx : primeToIndices[val]) {
+                        if (!visitedIndex[targetIdx]) {
+                            visitedIndex[targetIdx] = true;
+                            q.push({targetIdx, dist + 1});
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1; 
+    }
+};
