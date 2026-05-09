@@ -1,0 +1,43 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int numLayers = min(m, n) / 2;
+
+        for (int layer = 0; layer < numLayers; ++layer) {
+            // Define boundaries for the current layer
+            int top = layer, left = layer;
+            int bottom = m - 1 - layer, right = n - 1 - layer;
+
+            // 1. Extract elements of the current layer into a vector
+            vector<int> elements;
+            for (int j = left; j < right; ++j) elements.push_back(grid[top][j]); // Top row
+            for (int i = top; i < bottom; ++i) elements.push_back(grid[i][right]); // Right col
+            for (int j = right; j > left; --j) elements.push_back(grid[bottom][j]); // Bottom row
+            for (int i = bottom; i > top; --i) elements.push_back(grid[i][left]); // Left col
+
+            int total = elements.size();
+            int shift = k % total;
+            
+            // 2. Map elements back to the grid with rotation
+            // The problem asks for anti-clockwise rotation. 
+            // In our 'elements' list, an anti-clockwise move is an index increase.
+            int idx = shift; 
+
+            for (int j = left; j < right; ++j) {
+                grid[top][j] = elements[idx++ % total];
+            }
+            for (int i = top; i < bottom; ++i) {
+                grid[i][right] = elements[idx++ % total];
+            }
+            for (int j = right; j > left; --j) {
+                grid[bottom][j] = elements[idx++ % total];
+            }
+            for (int i = bottom; i > top; --i) {
+                grid[i][left] = elements[idx++ % total];
+            }
+        }
+        return grid;
+    }
+};
