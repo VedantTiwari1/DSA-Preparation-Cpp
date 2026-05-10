@@ -1,0 +1,41 @@
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxProfit(int x, int y, vector<int> &a, vector<int> &b) {
+        int n = a.size();
+        vector<int> diff(n);
+        long long totalProfit = 0;
+
+        for (int i = 0; i < n; i++) {
+            totalProfit += b[i]; // Start by assuming Machine B does everything
+            diff[i] = a[i] - b[i]; // Potential gain/loss by switching to A
+        }
+
+        // Sort differences in descending order
+        sort(diff.begin(), diff.end(), greater<int>());
+
+        // We must pick at least (n - y) tasks for Machine A
+        // We can pick at most x tasks for Machine A
+        int minA = max(0, n - y);
+        int maxA = x;
+
+        for (int i = 0; i < n; i++) {
+            // If we haven't reached the minimum tasks for A, we MUST swap.
+            // If we are between min and max, we ONLY swap if it increases profit.
+            if (i < minA) {
+                totalProfit += diff[i];
+            } else if (i < maxA && diff[i] > 0) {
+                totalProfit += diff[i];
+            } else {
+                break;
+            }
+        }
+
+        return (int)totalProfit;
+    }
+};
