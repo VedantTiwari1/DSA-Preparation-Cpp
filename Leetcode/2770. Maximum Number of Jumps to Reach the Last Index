@@ -1,0 +1,30 @@
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+class Solution {
+public:
+    int maximumJumps(vector<int>& nums, int target) {
+        int n = nums.size();
+        // dp[i] stores the max jumps to reach index i. 
+        // Initialized to -1 to signify the index hasn't been reached yet.
+        vector<int> dp(n, -1);
+        dp[0] = 0;
+
+        for (int j = 1; j < n; ++j) {
+            for (int i = 0; i < j; ++i) {
+                // Only jump from i to j if i itself was reachable
+                if (dp[i] != -1) {
+                    long long diff = (long long)nums[j] - nums[i];
+                    if (diff >= -target && diff <= target) {
+                        dp[j] = max(dp[j], dp[i] + 1);
+                    }
+                }
+            }
+        }
+
+        return dp[n - 1];
+    }
+};
