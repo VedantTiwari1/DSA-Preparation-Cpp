@@ -1,0 +1,51 @@
+class Solution {
+public:
+    bool isPalindrome(string& s) {
+        int l = 0, r = s.length() - 1;
+        while (l < r) {
+            if (s[l++] != s[r--]) return false;
+        }
+        return true;
+    }
+
+    bool palindromePair(vector<string>& arr) {
+        unordered_map<string, int> mp;
+        int n = arr.size();
+        
+        // Map each string to its index for O(1) lookup
+        for (int i = 0; i < n; i++) {
+            mp[arr[i]] = i;
+        }
+
+        for (int i = 0; i < n; i++) {
+            string word = arr[i];
+            int len = word.length();
+
+            // Check every possible split point in the word
+            for (int j = 0; j <= len; j++) {
+                string left = word.substr(0, j);
+                string right = word.substr(j);
+
+                // Case 1: Left part is palindrome, check if reverse of right exists
+                if (isPalindrome(left)) {
+                    string revRight = right;
+                    reverse(revRight.begin(), revRight.end());
+                    if (mp.count(revRight) && mp[revRight] != i) {
+                        return true;
+                    }
+                }
+
+                // Case 2: Right part is palindrome, check if reverse of left exists
+                // j < len prevents double-counting the full word cases handled above
+                if (j < len && isPalindrome(right)) {
+                    string revLeft = left;
+                    reverse(revLeft.begin(), revLeft.end());
+                    if (mp.count(revLeft) && mp[revLeft] != i) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};
