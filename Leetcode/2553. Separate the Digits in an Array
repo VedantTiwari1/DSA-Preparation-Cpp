@@ -1,0 +1,17 @@
+class Solution {
+public:
+    vector<int> separateDigits(vector<int>& nums) {
+        vector<int> answer;
+        
+        for (int val : nums) {
+            // Convert current number to string to easily access digits in order
+            string s = to_string(val);
+            for (char c : s) {
+                // Convert char back to int and push to result
+                answer.push_back(c - '0');
+            }
+        }
+        
+        return answer;
+    }
+};
