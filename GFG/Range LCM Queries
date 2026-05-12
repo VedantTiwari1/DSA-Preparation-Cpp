@@ -1,0 +1,64 @@
+class Solution {
+    vector<long long> tree;
+    int n;
+
+    long long gcd(long long a, long long b) {
+        while (b) {
+            a %= b;
+            swap(a, b);
+        }
+        return a;
+    }
+
+    long long lcm(long long a, long long b) {
+        if (a == 0 || b == 0) return 0;
+        return (a / gcd(a, b)) * b;
+    }
+
+    void build(vector<int>& arr, int node, int start, int end) {
+        if (start == end) {
+            tree[node] = arr[start];
+            return;
+        }
+        int mid = (start + end) / 2;
+        build(arr, 2 * node, start, mid);
+        build(arr, 2 * node + 1, mid + 1, end);
+        tree[node] = lcm(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    void update(int node, int start, int end, int idx, int val) {
+        if (start == end) {
+            tree[node] = val;
+            return;
+        }
+        int mid = (start + end) / 2;
+        if (idx <= mid) update(2 * node, start, mid, idx, val);
+        else update(2 * node + 1, mid + 1, end, idx, val);
+        tree[node] = lcm(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    long long query(int node, int start, int end, int l, int r) {
+        if (r < start || end < l) return 1; // Identity for LCM
+        if (l <= start && end <= r) return tree[node];
+        int mid = (start + end) / 2;
+        return lcm(query(2 * node, start, mid, l, r), 
+                   query(2 * node + 1, mid + 1, end, l, r));
+    }
+
+public:
+    vector<long long> RangeLCMQuery(vector<int> &arr, vector<vector<int>> &queries) {
+        n = arr.size();
+        tree.assign(4 * n, 0);
+        build(arr, 1, 0, n - 1);
+
+        vector<long long> results;
+        for (auto& q : queries) {
+            if (q[0] == 1) { // Update Query
+                update(1, 0, n - 1, q[1], q[2]);
+            } else { // Range Query
+                results.push_back(query(1, 0, n - 1, q[1], q[2]));
+            }
+        }
+        return results;
+    }
+};
