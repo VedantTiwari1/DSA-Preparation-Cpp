@@ -1,0 +1,48 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int minMoves(vector<int>& nums, int limit) {
+        // Difference array to track change in moves for each possible sum
+        // Possible sums range from 2 to 2 * limit
+        vector<int> diff(2 * limit + 2, 0);
+        int n = nums.size();
+
+        for (int i = 0; i < n / 2; ++i) {
+            int a = nums[i];
+            int b = nums[n - 1 - i];
+            
+            // Ensure a is the smaller value for easier range logic
+            int low = min(a, b);
+            int high = max(a, b);
+
+            // 1. Initially, assume 2 moves for all sums [2, 2 * limit]
+            diff[2] += 2;
+            diff[2 * limit + 1] -= 2;
+
+            // 2. Range that requires only 1 move: [low + 1, high + limit]
+            // We subtract 1 move from the default 2 in this range
+            diff[low + 1] -= 1;
+            diff[high + limit + 1] += 1;
+
+            // 3. The exact sum (low + high) requires 0 moves
+            // We subtract another 1 move from the 1 move already calculated
+            diff[low + high] -= 1;
+            diff[low + high + 1] += 1;
+        }
+
+        int ans = n; // Maximum possible moves is n
+        int current_moves = 0;
+        
+        // Sweep through the difference array to find the minimum
+        for (int i = 2; i <= 2 * limit; ++i) {
+            current_moves += diff[i];
+            ans = min(ans, current_moves);
+        }
+
+        return ans;
+    }
+};
