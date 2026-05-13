@@ -1,0 +1,46 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+class Solution {
+private:
+    void dfs(int node, vector<vector<int>>& adj, vector<bool>& visited) {
+        visited[node] = true;
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited);
+            }
+        }
+    }
+
+public:
+    int findMotherVertex(int V, vector<vector<int>>& edges) {
+        // Build adjacency list
+        vector<vector<int>> adj(V);
+        for (auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+        }
+
+        vector<bool> visited(V, false);
+        int lastFinished = 0;
+
+        // Step 1: Find the last finished vertex in DFS
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                dfs(i, adj, visited);
+                lastFinished = i;
+            }
+        }
+
+        // Step 2: Verify if lastFinished can reach all other vertices
+        fill(visited.begin(), visited.end(), false);
+        dfs(lastFinished, adj, visited);
+
+        for (bool v : visited) {
+            if (!v) return -1;
+        }
+
+        return lastFinished;
+    }
+};
