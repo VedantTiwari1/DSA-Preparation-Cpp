@@ -1,0 +1,28 @@
+class Solution {
+public:
+    long long int optimalKeys(int n) {
+        // If n is less than 7, the optimal way is just pressing 'A' n times.
+        if (n < 7) return n;
+
+        // dp[i] stores the maximum number of 'A's using i key presses.
+        vector<long long int> dp(n + 1, 0);
+
+        // Base cases for 1 to 6
+        for (int i = 1; i <= 6; i++) {
+            dp[i] = i;
+        }
+
+        for (int i = 7; i <= n; i++) {
+            // Check all possible break points for Ctrl-A, Ctrl-C, Ctrl-V
+            // We need at least 3 keys for the copy-paste sequence.
+            for (int j = i - 3; j >= 1; j--) {
+                long long int curr = dp[j] * (i - j - 1);
+                if (curr > dp[i]) {
+                    dp[i] = curr;
+                }
+            }
+        }
+
+        return dp[n];
+    }
+};
