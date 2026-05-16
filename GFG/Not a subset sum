@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findSmallest(vector<int>& arr) {
+        // Sort the array to process smaller elements first
+        sort(arr.begin(), arr.end());
+        
+        // 'res' tracks the smallest positive integer we CANNOT form.
+        // We start by trying to form 1.
+        long long res = 1;
+        
+        for (int i = 0; i < arr.size(); i++) {
+            // If the current element is strictly greater than the sum we want to form (res),
+            // we have found our answer because all subsequent elements will be even larger.
+            if (arr[i] > res) {
+                break;
+            }
+            
+            // If arr[i] <= res, we can add this element to all previous subset sums.
+            // This extends our continuous range of reachable sums up to (res + arr[i] - 1).
+            // Thus, the new smallest unformable sum becomes res + arr[i].
+            res += arr[i];
+        }
+        
+        return res;
+    }
+};
