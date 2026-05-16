@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int low = 0;
+        int high = nums.size() - 1;
+        
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            
+            if (nums[mid] < nums[high]) {
+                // The right half is strictly increasing. 
+                // The minimum must be in the left half, including mid.
+                high = mid;
+            } else if (nums[mid] > nums[high]) {
+                // The minimum must be in the right half.
+                low = mid + 1;
+            } else {
+                // nums[mid] == nums[high]
+                // We aren't sure which half the minimum is in.
+                // However, since we have a duplicate at nums[mid], 
+                // it is safe to discard nums[high] and shrink the search space.
+                high--;
+            }
+        }
+        
+        // When low == high, we have found the minimum element.
+        return nums[low];
+    }
+};
