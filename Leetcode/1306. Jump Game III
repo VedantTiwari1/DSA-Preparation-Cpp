@@ -1,0 +1,24 @@
+class Solution {
+public:
+    bool canReach(vector<int>& arr, int start) {
+        // Base case: Out of bounds check or already visited
+        if (start < 0 || start >= arr.size() || arr[start] < 0) {
+            return false;
+        }
+        
+        // Target found!
+        if (arr[start] == 0) {
+            return true;
+        }
+        
+        // Cache the jump step and mark the current index as visited
+        int jump = arr[start];
+        arr[start] = -arr[start]; // Mark as negative to avoid cycle
+        
+        // Explore both options: jump right or jump left
+        bool jumpRight = canReach(arr, start + jump);
+        bool jumpLeft = canReach(arr, start - jump);
+        
+        return jumpRight || jumpLeft;
+    }
+};
