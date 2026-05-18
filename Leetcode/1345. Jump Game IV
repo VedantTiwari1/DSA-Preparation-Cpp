@@ -1,0 +1,70 @@
+#include <vector>
+#include <unordered_map>
+#include <queue>
+
+using namespace std;
+
+class Solution {
+public:
+    int minJumps(vector<int>& arr) {
+        int n = arr.size();
+        
+        // Base case: If the array has 1 or fewer elements, we are already at the end.
+        if (n <= 1) return 0;
+
+        // Map to store all indices where a particular value occurs
+        unordered_map<int, vector<int>> graph;
+        for (int i = 0; i < n; ++i) {
+            graph[arr[i]].push_back(i);
+        }
+
+        queue<int> q;
+        vector<bool> visited(n, false);
+        
+        q.push(0);
+        visited[0] = true;
+        int steps = 0;
+
+        // BFS traversal
+        while (!q.empty()) {
+            int size = q.size();
+            
+            // Process all nodes at the current level (current number of steps)
+            for (int i = 0; i < size; ++i) {
+                int curr = q.front();
+                q.pop();
+
+                // If we've reached the last index, return the step count
+                if (curr == n - 1) return steps;
+
+                // 1. Jump to identical values
+                if (graph.count(arr[curr])) {
+                    for (int next_idx : graph[arr[curr]]) {
+                        if (!visited[next_idx]) {
+                            visited[next_idx] = true;
+                            q.push(next_idx);
+                        }
+                    }
+                    // CRUCIAL: Clear the map entry to prevent redundant processing and TLE
+                    graph.erase(arr[curr]);
+                }
+
+                // 2. Jump backward (i - 1)
+                if (curr - 1 >= 0 && !visited[curr - 1]) {
+                    visited[curr - 1] = true;
+                    q.push(curr - 1);
+                }
+
+                // 3. Jump forward (i + 1)
+                if (curr + 1 < n && !visited[curr + 1]) {
+                    visited[curr + 1] = true;
+                    q.push(curr + 1);
+                }
+            }
+            // Increment steps after processing the current level
+            steps++;
+        }
+
+        return -1; // Should not be reached
+    }
+};
