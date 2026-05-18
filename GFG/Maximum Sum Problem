@@ -1,0 +1,27 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxSum(int n) {
+        // Base cases: 0 and 1 cannot be broken down further to yield a larger sum
+        if (n == 0 || n == 1) return n;
+
+        // Create a DP array to store the maximum sum for every number up to n
+        vector<int> dp(n + 1, 0);
+        
+        dp[0] = 0;
+        dp[1] = 1;
+
+        // Build the table bottom-up
+        for (int i = 2; i <= n; ++i) {
+            // The max sum for 'i' is the maximum of 'i' itself, 
+            // or the sum of the optimal breakdowns of i/2, i/3, and i/4.
+            dp[i] = max(i, dp[i / 2] + dp[i / 3] + dp[i / 4]);
+        }
+
+        return dp[n];
+    }
+};
