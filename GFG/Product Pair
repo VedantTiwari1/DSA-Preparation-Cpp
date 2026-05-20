@@ -1,0 +1,33 @@
+#include <vector>
+#include <unordered_set>
+
+using namespace std;
+
+class Solution {
+public:
+    bool isProduct(vector<int>& arr, long long target) {
+        unordered_set<long long> seen;
+        
+        for (int num : arr) {
+            // Handle 0 explicitly to prevent division by zero
+            if (num == 0) {
+                // If target is 0, any previously seen number forms a valid pair with 0
+                if (target == 0 && !seen.empty()) {
+                    return true;
+                }
+            } else {
+                // Check if target is perfectly divisible by the current number
+                if (target % num == 0) {
+                    long long complement = target / num;
+                    if (seen.count(complement)) {
+                        return true;
+                    }
+                }
+            }
+            // Add the current number to our set
+            seen.insert(num);
+        }
+        
+        return false;
+    }
+};
