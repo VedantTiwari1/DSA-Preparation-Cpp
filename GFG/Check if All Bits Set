@@ -1,0 +1,12 @@
+class Solution {
+public:
+    bool isBitSet(int n) {
+        // Base case: If n is 0, not all bits are set (as per the example)
+        if (n == 0) return false;
+        
+        // If all bits are set, adding 1 to 'n' will result in a power of 2.
+        // For example: n = 7 (0111 in binary). n + 1 = 8 (1000 in binary).
+        // Doing a bitwise AND between (n + 1) and n will yield 0.
+        return ((n + 1) & n) == 0;
+    }
+};
