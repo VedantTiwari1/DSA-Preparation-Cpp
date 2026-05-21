@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int longestCommonPrefix(vector<int>& arr1, vector<int>& arr2) {
+        unordered_set<int> prefixes;
+        
+        // Step 1: Store all numeric prefixes from arr1 into a hash set
+        for (int val : arr1) {
+            while (val > 0) {
+                prefixes.insert(val);
+                val /= 10; // Remove the last digit to get the next prefix
+            }
+        }
+        
+        int maxLength = 0;
+        
+        // Step 2: Check prefixes of elements in arr2 against the hash set
+        for (int val : arr2) {
+            while (val > 0) {
+                if (prefixes.count(val)) {
+                    // If a match is found, calculate its length
+                    int len = to_string(val).length();
+                    maxLength = max(maxLength, len);
+                    break; // Since we check longest to shortest, break early on first match
+                }
+                val /= 10;
+            }
+        }
+        
+        return maxLength;
+    }
+};
