@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool check(vector<int>& nums) {
+        int count = 0;
+        int n = nums.size();
+        
+        for (int i = 0; i < n; i++) {
+            // Compare current element with the next element.
+            // (i + 1) % n wraps around to compare the last element with the first.
+            if (nums[i] > nums[(i + 1) % n]) {
+                count++;
+            }
+            
+            // If there's more than 1 drop, it can't be a sorted and rotated array
+            if (count > 1) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
