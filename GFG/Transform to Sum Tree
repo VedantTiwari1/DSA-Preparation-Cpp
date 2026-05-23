@@ -1,0 +1,27 @@
+class Solution {
+private:
+    int solve(Node* node) {
+        if (node == nullptr) {
+            return 0;
+        }
+
+        // 1. Store the old value of the current node
+        int old_val = node->data;
+
+        // 2. Recursively get the sum of left and right subtrees
+        int left_sum = solve(node->left);
+        int right_sum = solve(node->right);
+
+        // 3. Update the current node's value to the sum of its subtrees
+        node->data = left_sum + right_sum;
+
+        // 4. Return the total sum of the tree rooted at 'node' 
+        // (which is its new updated value + its original value)
+        return old_val + node->data;
+    }
+
+public:
+    void toSumTree(Node *root) {
+        solve(root);
+    }
+};
