@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int coin(vector<int>& arr) {
+        int left = 0;
+        int right = arr.size() - 1;
+        
+        // Continue the game until only one coin is left
+        while (left < right) {
+            // The player takes the maximum of the two ends
+            if (arr[left] >= arr[right]) {
+                left++;  // Left coin is picked, move left pointer inwards
+            } else {
+                right--; // Right coin is picked, move right pointer inwards
+            }
+        }
+        
+        // Both pointers now point to the last remaining coin
+        return arr[left]; 
+    }
+};
