@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int maxJumps(vector<int>& arr, int d) {
+        int n = arr.size();
+        vector<int> dp(n, 0);
+        int max_visited = 0;
+        
+        // Try starting from every possible index
+        for (int i = 0; i < n; ++i) {
+            max_visited = max(max_visited, dfs(arr, d, i, dp));
+        }
+        
+        return max_visited;
+    }
+    
+private:
+    int dfs(const vector<int>& arr, int d, int i, vector<int>& dp) {
+        // If already computed, return the stored result
+        if (dp[i] != 0) {
+            return dp[i];
+        }
+        
+        int n = arr.size();
+        int max_jumps = 1; // You always visit at least the starting index
+        
+        // Check possible jumps to the Right
+        for (int j = i + 1; j <= min(i + d, n - 1); ++j) {
+            // Stop if we hit an element greater than or equal to arr[i]
+            if (arr[j] >= arr[i]) {
+                break; 
+            }
+            max_jumps = max(max_jumps, 1 + dfs(arr, d, j, dp));
+        }
+        
+        // Check possible jumps to the Left
+        for (int j = i - 1; j >= max(i - d, 0); --j) {
+            // Stop if we hit an element greater than or equal to arr[i]
+            if (arr[j] >= arr[i]) {
+                break;
+            }
+            max_jumps = max(max_jumps, 1 + dfs(arr, d, j, dp));
+        }
+        
+        // Memoize and return
+        return dp[i] = max_jumps;
+    }
+};
