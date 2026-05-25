@@ -1,0 +1,17 @@
+class Solution {
+public:
+    bool checkElements(int start, int end, vector<int> &arr) {
+        int count = 0;
+        int required_elements = end - start + 1;
+        
+        for (int num : arr) {
+            // If the current number falls within the target range, count it
+            if (num >= start && num <= end) {
+                count++;
+            }
+        }
+        
+        // Check if we found all the required distinct elements
+        return count == required_elements;
+    }
+};
