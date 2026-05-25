@@ -1,0 +1,36 @@
+class Solution {
+public:
+    bool canReach(string s, int minJump, int maxJump) {
+        int n = s.length();
+        
+        // Early exit: if the last character is '1', we can never land on it.
+        if (s[n - 1] == '1') return false;
+
+        vector<bool> dp(n, false);
+        dp[0] = true;
+        
+        // This tracks the number of reachable indices within our valid jump window
+        int available = 0; 
+
+        for (int i = 1; i < n; ++i) {
+            // As 'i' increases, the valid window [i - maxJump, i - minJump] shifts forward.
+            
+            // 1. Add the index that just entered the left side of our valid window
+            if (i >= minJump && dp[i - minJump]) {
+                available++;
+            }
+            
+            // 2. Remove the index that just exited the right side of our valid window
+            if (i > maxJump && dp[i - maxJump - 1]) {
+                available--;
+            }
+
+            // 3. If the current spot is '0' and we have at least one valid jump point in the window
+            if (s[i] == '0' && available > 0) {
+                dp[i] = true;
+            }
+        }
+
+        return dp[n - 1];
+    }
+};
