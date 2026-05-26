@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int minToggle(vector<int>& arr) {
+        int total_zeros = 0;
+        for (int x : arr) {
+            if (x == 0) total_zeros++;
+        }
+        
+        // Base case: If we partition before index 0 (meaning the whole array should be 1s)
+        // the number of toggles is simply flipping all the existing 0s.
+        int min_toggles = total_zeros; 
+        
+        int ones_left = 0;
+        int zeros_left = 0;
+        
+        // Slide the partition from left to right
+        for (int i = 0; i < arr.size(); i++) {
+            if (arr[i] == 1) {
+                ones_left++;
+            } else {
+                zeros_left++;
+            }
+            
+            // Calculate toggles if the 0s section ends at index i
+            int zeros_right = total_zeros - zeros_left;
+            int current_toggles = ones_left + zeros_right;
+            
+            // Keep track of the minimum toggles found
+            min_toggles = min(min_toggles, current_toggles);
+        }
+        
+        return min_toggles;
+    }
+};
