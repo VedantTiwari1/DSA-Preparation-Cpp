@@ -1,0 +1,37 @@
+#include <string>
+#include <vector>
+
+class Solution {
+public:
+    int numberOfSpecialChars(std::string word) {
+        // Arrays to store the target indices, initialized to -1
+        std::vector<int> last_lower(26, -1);
+        std::vector<int> first_upper(26, -1);
+        
+        for (int i = 0; i < word.length(); ++i) {
+            char c = word[i];
+            
+            if (c >= 'a' && c <= 'z') {
+                // Continuously update to get the LAST occurrence
+                last_lower[c - 'a'] = i;
+            } 
+            else if (c >= 'A' && c <= 'Z') {
+                // Only update if it hasn't been set yet to get the FIRST occurrence
+                if (first_upper[c - 'A'] == -1) {
+                    first_upper[c - 'A'] = i;
+                }
+            }
+        }
+        
+        int specialCount = 0;
+        
+        for (int i = 0; i < 26; ++i) {
+            // A letter is special if both cases exist and the last lower is before the first upper
+            if (last_lower[i] != -1 && first_upper[i] != -1 && last_lower[i] < first_upper[i]) {
+                specialCount++;
+            }
+        }
+        
+        return specialCount;
+    }
+};
