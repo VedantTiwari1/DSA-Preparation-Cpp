@@ -1,0 +1,36 @@
+class Solution {
+private:
+    void getVerticalSum(Node* root, int hd, map<int, int>& hdSum) {
+        if (root == nullptr) {
+            return;
+        }
+        
+        // Traverse left, decreasing HD
+        getVerticalSum(root->left, hd - 1, hdSum);
+        
+        // Add current node's data to the sum for its HD
+        hdSum[hd] += root->data;
+        
+        // Traverse right, increasing HD
+        getVerticalSum(root->right, hd + 1, hdSum);
+    }
+
+public:
+    vector<int> verticalSum(Node *root) {
+        // Map to store the sum of nodes at each Horizontal Distance (HD)
+        // map automatically sorts keys (HDs) in ascending order
+        map<int, int> hdSum;
+        
+        // Start DFS from root with an HD of 0
+        getVerticalSum(root, 0, hdSum);
+        
+        vector<int> ans;
+        
+        // Iterate through the map and push the sums into the result vector
+        for (auto const& [hd, sum] : hdSum) {
+            ans.push_back(sum);
+        }
+        
+        return ans;
+    }
+};
