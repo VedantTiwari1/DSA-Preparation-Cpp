@@ -1,0 +1,67 @@
+class Solution {
+    struct TrieNode {
+        int children[26];
+        int bestIndex;
+        
+        TrieNode(int idx) {
+            // Use -1 to represent null/empty children
+            for (int i = 0; i < 26; i++) {
+                children[i] = -1;
+            }
+            bestIndex = idx;
+        }
+    };
+
+public:
+    vector<int> stringIndices(vector<string>& wordsContainer, vector<string>& wordsQuery) {
+        int globalBestIdx = 0;
+        for (int i = 1; i < wordsContainer.size(); ++i) {
+            if (wordsContainer[i].length() < wordsContainer[globalBestIdx].length()) {
+                globalBestIdx = i;
+            }
+        }
+        
+        vector<TrieNode> trie;
+        // Reserve memory upfront to avoid vector reallocations. 
+        // Max sum of lengths is 5 * 10^5, so this safely covers the max possible nodes.
+        trie.reserve(500005); 
+        trie.push_back(TrieNode(globalBestIdx)); // Root node at index 0
+        
+        for (int i = 0; i < wordsContainer.size(); ++i) {
+            int curr = 0; // Start at root
+            int len = wordsContainer[i].length();
+            
+            for (int j = len - 1; j >= 0; --j) {
+                int charIdx = wordsContainer[i][j] - 'a';
+                
+                if (trie[curr].children[charIdx] == -1) {
+                    // Create new node and link it via its integer index in the vector
+                    trie[curr].children[charIdx] = trie.size();
+                    trie.push_back(TrieNode(i));
+                }
+                curr = trie[curr].children[charIdx];
+                
+                if (len < wordsContainer[trie[curr].bestIndex].length()) {
+                    trie[curr].bestIndex = i;
+                }
+            }
+        }
+        
+        vector<int> ans;
+        ans.reserve(wordsQuery.size());
+        
+        for (const string& q : wordsQuery) {
+            int curr = 0;
+            for (int j = q.length() - 1; j >= 0; --j) {
+                int charIdx = q[j] - 'a';
+                if (trie[curr].children[charIdx] == -1) {
+                    break; 
+                }
+                curr = trie[curr].children[charIdx];
+            }
+            ans.push_back(trie[curr].bestIndex);
+        }
+        
+        return ans;
+    }
+};
