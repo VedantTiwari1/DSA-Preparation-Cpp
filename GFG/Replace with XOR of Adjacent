@@ -1,0 +1,25 @@
+class Solution {
+public:
+    void replaceElements(vector<int>& arr) {
+        int n = arr.size();
+        
+        // Edge case: If the array has 1 or fewer elements, no adjacent elements exist to XOR.
+        if (n <= 1) return;
+
+        // Store the original first element
+        int prev = arr[0];
+        
+        // Update the first element
+        arr[0] = arr[0] ^ arr[1];
+
+        // Update the middle elements
+        for (int i = 1; i < n - 1; ++i) {
+            int curr = arr[i]; // Temporarily store the current element
+            arr[i] = prev ^ arr[i + 1]; // XOR with the original previous element and the next element
+            prev = curr; // Move the original current element to prev for the next iteration
+        }
+
+        // Update the last element
+        arr[n - 1] = prev ^ arr[n - 1];
+    }
+};
