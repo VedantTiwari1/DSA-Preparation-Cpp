@@ -1,0 +1,76 @@
+class Solution {
+    vector<int> tree;
+
+    void update(int node, int start, int end, int idx, int val) {
+        if (start == end) {
+            tree[node] = val;
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        if (idx <= mid) {
+            update(2 * node, start, mid, idx, val);
+        } else {
+            update(2 * node + 1, mid + 1, end, idx, val);
+        }
+        tree[node] = max(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    int query(int node, int start, int end, int l, int r) {
+        if (r < start || l > end) return 0;
+        if (l <= start && end <= r) return tree[node];
+        int mid = start + (end - start) / 2;
+        return max(query(2 * node, start, mid, l, r),
+                   query(2 * node + 1, mid + 1, end, l, r));
+    }
+
+public:
+    vector<bool> getResults(vector<vector<int>>& queries) {
+        // Find the maximum coordinate to size our segment tree dynamically
+        int n = 0;
+        for (const auto& q : queries) {
+            n = max(n, q[1]);
+        }
+
+        tree.assign(4 * (n + 1), 0);
+        set<int> obstacles;
+        obstacles.insert(0);
+
+        vector<bool> results;
+
+        for (const auto& q : queries) {
+            if (q[0] == 1) {
+                int x = q[1];
+                auto it = obstacles.upper_bound(x);
+                
+                // If there is an obstacle to the right, update its gap
+                if (it != obstacles.end()) {
+                    int r = *it;
+                    int l = *prev(it);
+                    update(1, 0, n, x, x - l);
+                    update(1, 0, n, r, r - x);
+                } else {
+                    int l = *prev(it);
+                    update(1, 0, n, x, x - l);
+                }
+                obstacles.insert(x);
+            } else {
+                int x = q[1];
+                int sz = q[2];
+                
+                auto it = obstacles.upper_bound(x);
+                int l = *prev(it);
+                
+                // Max gap bounded completely between obstacles up to L
+                int max_gap = query(1, 0, n, 0, l);
+                
+                // Check if the bounded max gap OR the trailing gap to x is large enough
+                if (max(max_gap, x - l) >= sz) {
+                    results.push_back(true);
+                } else {
+                    results.push_back(false);
+                }
+            }
+        }
+        return results;
+    }
+};
