@@ -1,0 +1,26 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    bool asteroidsDestroyed(int mass, std::vector<int>& asteroids) {
+        // Sort asteroids in ascending order
+        std::sort(asteroids.begin(), asteroids.end());
+        
+        // Use a 64-bit integer to prevent overflow as mass accumulates
+        long long currentMass = mass;
+        
+        for (int asteroid : asteroids) {
+            // If the planet's mass is enough to destroy the current asteroid
+            if (currentMass >= asteroid) {
+                currentMass += asteroid;
+            } else {
+                // Planet is destroyed
+                return false; 
+            }
+        }
+        
+        // All asteroids were successfully destroyed
+        return true;
+    }
+};
