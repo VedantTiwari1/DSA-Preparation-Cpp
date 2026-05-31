@@ -1,0 +1,13 @@
+class Solution {
+public:
+    bool isSumOfConsecutive(int n) {
+        // A number less than or equal to 1 cannot be a sum of consecutive positive numbers
+        if (n <= 1) {
+            return false;
+        }
+        
+        // Check if n is a power of 2 using bitwise AND.
+        // If it is a power of 2, return false. Otherwise, return true.
+        return (n & (n - 1)) != 0;
+    }
+};
