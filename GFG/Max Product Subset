@@ -1,0 +1,59 @@
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+class Solution {
+public:
+    long long int findMaxProduct(std::vector<int>& arr) {
+        int n = arr.size();
+        
+        // Base case: If there's only one element, return it.
+        if (n == 1) return arr[0];
+
+        long long MOD = 1e9 + 7;
+        int count_zero = 0;
+        int count_neg = 0;
+        long long max_neg = LLONG_MIN; 
+
+        // First pass: Count zeros, negatives, and find the largest negative number
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == 0) {
+                count_zero++;
+            } else if (arr[i] < 0) {
+                count_neg++;
+                max_neg = std::max(max_neg, (long long)arr[i]);
+            }
+        }
+
+        // Edge case: All elements are 0
+        if (count_zero == n) return 0;
+
+        // Edge case: Only one negative number and the rest are 0
+        if (count_neg == 1 && count_zero + count_neg == n) return 0;
+
+        long long prod = 1;
+        bool removed_max_neg = false;
+
+        // Second pass: Calculate the product
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == 0) continue; // Skip zeros
+            
+            // If there's an odd number of negatives, skip the largest negative once
+            if (count_neg % 2 != 0 && arr[i] == max_neg && !removed_max_neg) {
+                removed_max_neg = true;
+                continue;
+            }
+            
+            prod = (prod * arr[i]) % MOD;
+        }
+        
+        // In C++, modulo operations on negative numbers can yield negative results.
+        // Since we paired the negatives properly, our mathematical product is positive.
+        // We normalize it here just to be safe.
+        if (prod < 0) {
+            prod = (prod + MOD) % MOD;
+        }
+
+        return prod;
+    }
+};
