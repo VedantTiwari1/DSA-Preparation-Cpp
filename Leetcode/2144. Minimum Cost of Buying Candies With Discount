@@ -1,0 +1,23 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int minimumCost(std::vector<int>& cost) {
+        // Sort the array in descending order
+        std::sort(cost.rbegin(), cost.rend());
+        
+        int totalCost = 0;
+        
+        // Iterate through the sorted costs
+        for (int i = 0; i < cost.size(); ++i) {
+            // If the (0-indexed) position + 1 is a multiple of 3, it's free.
+            // Otherwise, we pay for it.
+            if ((i + 1) % 3 != 0) {
+                totalCost += cost[i];
+            }
+        }
+        
+        return totalCost;
+    }
+};
