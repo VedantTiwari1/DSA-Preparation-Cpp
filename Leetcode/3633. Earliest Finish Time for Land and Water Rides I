@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int earliestFinishTime(vector<int>& landStartTime, vector<int>& landDuration, vector<int>& waterStartTime, vector<int>& waterDuration) {
+        int n = landStartTime.size();
+        int m = waterStartTime.size();
+        
+        // 1. Find the absolute earliest finish time for a Land ride
+        int min_L_end = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            min_L_end = min(min_L_end, landStartTime[i] + landDuration[i]);
+        }
+        
+        // 2. Find the absolute earliest finish time for a Water ride
+        int min_W_end = INT_MAX;
+        for (int j = 0; j < m; ++j) {
+            min_W_end = min(min_W_end, waterStartTime[j] + waterDuration[j]);
+        }
+        
+        int ans = INT_MAX;
+        
+        // Scenario A: Land Ride FIRST, then Water Ride
+        for (int j = 0; j < m; ++j) {
+            int finish = max(min_L_end, waterStartTime[j]) + waterDuration[j];
+            ans = min(ans, finish);
+        }
+        
+        // Scenario B: Water Ride FIRST, then Land Ride
+        for (int i = 0; i < n; ++i) {
+            int finish = max(min_W_end, landStartTime[i]) + landDuration[i];
+            ans = min(ans, finish);
+        }
+        
+        return ans;
+    }
+};
