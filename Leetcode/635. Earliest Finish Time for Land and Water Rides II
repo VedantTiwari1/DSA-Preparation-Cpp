@@ -1,0 +1,86 @@
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+    // Helper function to calculate the minimum finish time if we do type 1 then type 2
+    int getMinTime(const vector<int>& start1, const vector<int>& dur1,
+                   const vector<int>& start2, const vector<int>& dur2) {
+        
+        int n = start1.size();
+        int m = start2.size();
+        
+        // Pair up start times and durations for the second ride type and sort by start time
+        vector<pair<int, int>> rides2(m);
+        for (int i = 0; i < m; ++i) {
+            rides2[i] = {start2[i], dur2[i]};
+        }
+        sort(rides2.begin(), rides2.end());
+        
+        // Prefix minimum of durations (for Case A: start time <= T)
+        vector<int> prefMinDur(m);
+        prefMinDur[0] = rides2[0].second;
+        for (int i = 1; i < m; ++i) {
+            prefMinDur[i] = min(prefMinDur[i - 1], rides2[i].second);
+        }
+        
+        // Suffix minimum of (start time + duration) (for Case B: start time > T)
+        vector<int> suffMinSum(m);
+        suffMinSum[m - 1] = rides2[m - 1].first + rides2[m - 1].second;
+        for (int i = m - 2; i >= 0; --i) {
+            suffMinSum[i] = min(suffMinSum[i + 1], rides2[i].first + rides2[i].second);
+        }
+        
+        int minTotalTime = INT_MAX;
+        
+        // Iterate through all possible choices for the first ride
+        for (int i = 0; i < n; ++i) {
+            long long t_finish = (long long)start1[i] + dur1[i];
+            
+            // Binary search to find the boundary between Case A and Case B
+            int l = 0, r = m - 1;
+            int p = -1; 
+            
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (rides2[mid].first <= t_finish) {
+                    p = mid;
+                    l = mid + 1; // Look for a later start time that is still <= t_finish
+                } else {
+                    r = mid - 1;
+                }
+            }
+            
+            // Evaluate Case A
+            if (p >= 0) {
+                long long candidateTime = t_finish + prefMinDur[p];
+                if (candidateTime < minTotalTime) {
+                    minTotalTime = candidateTime;
+                }
+            }
+            
+            // Evaluate Case B
+            if (p + 1 < m) {
+                long long candidateTime = suffMinSum[p + 1];
+                if (candidateTime < minTotalTime) {
+                    minTotalTime = candidateTime;
+                }
+            }
+        }
+        
+        return minTotalTime;
+    }
+
+public:
+    int earliestFinishTime(vector<int>& landStartTime, vector<int>& landDuration, 
+                           vector<int>& waterStartTime, vector<int>& waterDuration) {
+        
+        // Calculate the minimum time for both sequential orderings
+        int minLandFirst = getMinTime(landStartTime, landDuration, waterStartTime, waterDuration);
+        int minWaterFirst = getMinTime(waterStartTime, waterDuration, landStartTime, landDuration);
+        
+        return min(minLandFirst, minWaterFirst);
+    }
+};
