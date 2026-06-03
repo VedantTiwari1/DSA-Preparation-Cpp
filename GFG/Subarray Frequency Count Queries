@@ -1,0 +1,45 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> freqInRange(vector<int>& arr, vector<vector<int>>& queries) {
+        // Map to store the list of indices for each element
+        unordered_map<int, vector<int>> indices;
+        
+        // Populate the map (indices will be naturally sorted)
+        for (int i = 0; i < arr.size(); ++i) {
+            indices[arr[i]].push_back(i);
+        }
+        
+        vector<int> result;
+        result.reserve(queries.size()); // Small optimization to prevent reallocations
+        
+        for (const auto& q : queries) {
+            int l = q[0];
+            int r = q[1];
+            int x = q[2];
+            
+            // If x is not in the array at all, return 0
+            if (indices.find(x) == indices.end()) {
+                result.push_back(0);
+            } else {
+                const vector<int>& pos = indices[x];
+                
+                // Find the first index >= l
+                auto it_start = lower_bound(pos.begin(), pos.end(), l);
+                
+                // Find the first index > r
+                auto it_end = upper_bound(pos.begin(), pos.end(), r);
+                
+                // The difference between iterators gives the count of elements in range
+                result.push_back(it_end - it_start);
+            }
+        }
+        
+        return result;
+    }
+};
