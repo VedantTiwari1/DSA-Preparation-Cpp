@@ -1,0 +1,79 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+    pair<long long, long long> memo[20][2][11][11];
+
+    pair<long long, long long> solveDP(int idx, bool tight, bool lz, int p2, int p1, const string& s) {
+        if (idx == s.length()) {
+            return {1, 0}; 
+        }
+        
+        if (!tight && memo[idx][lz][p2][p1].first != -1) {
+            return memo[idx][lz][p2][p1];
+        }
+
+        int limit = tight ? (s[idx] - '0') : 9;
+        long long ways = 0;
+        long long waves = 0;
+
+        for (int d = 0; d <= limit; ++d) {
+            bool new_tight = tight && (d == limit);
+            bool new_lz = lz && (d == 0);
+            
+            int new_p2 = 10; 
+            int new_p1 = 10;
+            int add_wave = 0;
+
+            if (new_lz) {
+                new_p2 = 10;
+                new_p1 = 10;
+            } else if (lz) { 
+                new_p2 = 10;
+                new_p1 = d;
+            } else if (p2 == 10) { 
+                new_p2 = p1;
+                new_p1 = d;
+            } else { 
+                new_p2 = p1;
+                new_p1 = d;
+                
+                if ((p1 > p2 && p1 > d) || (p1 < p2 && p1 < d)) {
+                    add_wave = 1;
+                }
+            }
+
+            auto res = solveDP(idx + 1, new_tight, new_lz, new_p2, new_p1, s);
+            
+            ways += res.first;
+            waves += res.second + res.first * add_wave;
+        }
+
+        if (!tight) {
+            memo[idx][lz][p2][p1] = {ways, waves};
+        }
+        return {ways, waves};
+    }
+
+    long long getWaviness(long long num) {
+        if (num < 100) return 0; 
+        string s = to_string(num);
+
+        // FIX: Clear the memo table for every new number evaluated
+        // This ensures suffix lengths from a previous evaluation don't contaminate this one
+        for (int i = 0; i < 20; ++i)
+            for (int k = 0; k < 2; ++k)
+                for (int l = 0; l < 11; ++l)
+                    for (int m = 0; m < 11; ++m)
+                        memo[i][k][l][m] = {-1, -1};
+
+        return solveDP(0, true, true, 10, 10, s).second;
+    }
+
+public:
+    long long totalWaviness(long long num1, long long num2) {
+        return getWaviness(num2) - getWaviness(num1 - 1);
+    }
+};
