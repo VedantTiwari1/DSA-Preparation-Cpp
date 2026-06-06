@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int numOfWays(int n, int m) {
+        // Total squares on the board
+        long long N = 1LL * n * m;
+        
+        // Total unrestricted ways to place 2 distinct knights
+        long long totalWays = N * (N - 1);
+        
+        // Calculate ways they can attack each other
+        long long attackingWays = 0;
+        
+        // Knights attack within 2x3 blocks
+        if (n >= 2 && m >= 3) {
+            attackingWays += 4LL * (n - 1) * (m - 2);
+        }
+        
+        // Knights attack within 3x2 blocks
+        if (n >= 3 && m >= 2) {
+            attackingWays += 4LL * (n - 2) * (m - 1);
+        }
+        
+        // Valid ways = Total - Attacking
+        // The return type is int, so the long long result will implicitly cast back to int.
+        return totalWays - attackingWays;
+    }
+};
