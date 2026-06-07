@@ -1,0 +1,14 @@
+class Solution {
+public:
+    string profession(int level, int pos) {
+        // Count the number of set bits in (pos - 1)
+        int setBits = __builtin_popcount(pos - 1);
+        
+        // Even parity means original state (Engineer), odd means flipped (Doctor)
+        if (setBits % 2 == 0) {
+            return "Engineer";
+        } else {
+            return "Doctor";
+        }
+    }
+};
