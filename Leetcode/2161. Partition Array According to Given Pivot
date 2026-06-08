@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> pivotArray(vector<int>& nums, int pivot) {
+        vector<int> result;
+        // Reserving space prevents reallocation overhead
+        result.reserve(nums.size()); 
+        
+        // Pass 1: Elements less than the pivot
+        for (int num : nums) {
+            if (num < pivot) {
+                result.push_back(num);
+            }
+        }
+        
+        // Pass 2: Elements equal to the pivot
+        for (int num : nums) {
+            if (num == pivot) {
+                result.push_back(num);
+            }
+        }
+        
+        // Pass 3: Elements greater than the pivot
+        for (int num : nums) {
+            if (num > pivot) {
+                result.push_back(num);
+            }
+        }
+        
+        return result;
+    }
+};
