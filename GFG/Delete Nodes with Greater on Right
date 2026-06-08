@@ -1,0 +1,63 @@
+/*
+struct Node
+{
+    int data;
+    Node* next;
+    
+    Node(int x){
+        data = x;
+        next = NULL;
+    }
+};
+*/
+
+class Solution {
+private:
+    // Helper function to reverse the linked list
+    Node* reverseList(Node* head) {
+        Node* prev = nullptr;
+        Node* curr = head;
+        Node* next = nullptr;
+        
+        while (curr != nullptr) {
+            next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
+public:
+    Node *compute(Node *head) {
+        // Base case: empty list or single node
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+
+        // Step 1: Reverse the linked list
+        head = reverseList(head);
+
+        // Step 2: Traverse and remove nodes smaller than the max seen so far
+        Node* maxNode = head;
+        Node* curr = head;
+
+        while (curr != nullptr && curr->next != nullptr) {
+            if (curr->next->data < maxNode->data) {
+                // Delete the smaller node
+                Node* temp = curr->next;
+                curr->next = temp->next;
+                delete temp; 
+            } else {
+                // Move to the next node and update the maximum
+                curr = curr->next;
+                maxNode = curr;
+            }
+        }
+
+        // Step 3: Reverse the list back to its original order
+        head = reverseList(head);
+
+        return head;
+    }
+};
