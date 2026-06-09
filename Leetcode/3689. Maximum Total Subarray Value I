@@ -1,0 +1,18 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    long long maxTotalValue(std::vector<int>& nums, int k) {
+        if (nums.empty()) return 0;
+        
+        // Find both the min and max elements in a single pass
+        auto [min_it, max_it] = std::minmax_element(nums.begin(), nums.end());
+        
+        // Calculate the maximum possible difference for a single subarray
+        long long max_diff = *max_it - *min_it;
+        
+        // Return the difference multiplied by k (ensure long long to prevent overflow)
+        return max_diff * k;
+    }
+};
