@@ -1,0 +1,120 @@
+#include <vector>
+#include <deque>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+    // Helper to count subarrays with (max - min) <= V
+    long long countLessEqual(long long V, const vector<int>& nums) {
+        long long count = 0;
+        int l = 0;
+        deque<int> dq_max, dq_min;
+        
+        for (int r = 0; r < nums.size(); ++r) {
+            while(!dq_max.empty() && nums[dq_max.back()] <= nums[r]) dq_max.pop_back();
+            dq_max.push_back(r);
+            
+            while(!dq_min.empty() && nums[dq_min.back()] >= nums[r]) dq_min.pop_back();
+            dq_min.push_back(r);
+
+            while(nums[dq_max.front()] - nums[dq_min.front()] > V) {
+                if (dq_max.front() == l) dq_max.pop_front();
+                if (dq_min.front() == l) dq_min.pop_front();
+                l++;
+            }
+            count += (r - l + 1);
+        }
+        return count;
+    }
+
+    // Helper to count subarrays AND return the exact sum of their ranges
+    pair<long long, long long> countAndSumLessEqual(long long V, const vector<int>& nums) {
+        long long count = 0;
+        long long total_sum = 0;
+        long long sum_max = 0;
+        long long sum_min = 0;
+        int l = 0;
+        deque<int> dq_max, dq_min;
+        
+        for (int r = 0; r < nums.size(); ++r) {
+            // Maintain max deque and dynamic sum of maxes
+            while(!dq_max.empty() && nums[dq_max.back()] <= nums[r]) {
+                int idx = dq_max.back();
+                dq_max.pop_back();
+                int prev_idx = dq_max.empty() ? l - 1 : dq_max.back();
+                sum_max -= (long long)(idx - prev_idx) * nums[idx];
+            }
+            int prev_max_idx = dq_max.empty() ? l - 1 : dq_max.back();
+            sum_max += (long long)(r - prev_max_idx) * nums[r];
+            dq_max.push_back(r);
+
+            // Maintain min deque and dynamic sum of mins
+            while(!dq_min.empty() && nums[dq_min.back()] >= nums[r]) {
+                int idx = dq_min.back();
+                dq_min.pop_back();
+                int prev_idx = dq_min.empty() ? l - 1 : dq_min.back();
+                sum_min -= (long long)(idx - prev_idx) * nums[idx];
+            }
+            int prev_min_idx = dq_min.empty() ? l - 1 : dq_min.back();
+            sum_min += (long long)(r - prev_min_idx) * nums[r];
+            dq_min.push_back(r);
+
+            // Shrink window if range exceeds V
+            while(nums[dq_max.front()] - nums[dq_min.front()] > V) {
+                sum_max -= nums[dq_max.front()];
+                if (dq_max.front() == l) dq_max.pop_front();
+                
+                sum_min -= nums[dq_min.front()];
+                if (dq_min.front() == l) dq_min.pop_front();
+                
+                l++;
+            }
+            
+            count += (r - l + 1);
+            total_sum += (sum_max - sum_min);
+        }
+        return {count, total_sum};
+    }
+
+public:
+    long long maxTotalValue(vector<int>& nums, int k) {
+        if (nums.empty() || k == 0) return 0;
+
+        long long max_val = nums[0], min_val = nums[0];
+        for(int x : nums) {
+            if (x > max_val) max_val = x;
+            if (x < min_val) min_val = x;
+        }
+        
+        long long L = 0, R = max_val - min_val;
+        long long V = 0;
+        long long n = nums.size();
+        long long tot = n * (n + 1) / 2; // Total possible subarrays
+        
+        // 1. Binary Search for the k-th largest range threshold
+        while (L <= R) {
+            long long mid = L + (R - L) / 2;
+            long long count_ge_mid = tot - (mid > 0 ? countLessEqual(mid - 1, nums) : 0);
+            
+            if (count_ge_mid >= k) {
+                V = mid;      // Valid threshold found, log it
+                L = mid + 1;  // Try finding a stricter (larger) threshold
+            } else {
+                R = mid - 1;
+            }
+        }
+        
+        // 2. Compute the aggregate total sum of ALL subarrays (by passing unbounded range)
+        long long total_sum = countAndSumLessEqual(max_val - min_val, nums).second;
+        
+        // 3. Get the sum of all subarrays strictly smaller than the threshold V
+        pair<long long, long long> less_V = (V > 0) ? countAndSumLessEqual(V - 1, nums) : make_pair(0LL, 0LL);
+        
+        long long count_ge_V = tot - less_V.first;
+        long long sum_ge_V = total_sum - less_V.second;
+        
+        // 4. Return the exact sum (stripping away excessive ties hitting the exact threshold V)
+        return sum_ge_V - (count_ge_V - k) * V;
+    }
+};
