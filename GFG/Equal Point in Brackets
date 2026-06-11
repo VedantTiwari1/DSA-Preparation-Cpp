@@ -1,0 +1,16 @@
+class Solution {
+  public:
+    int findIndex(string &s) {
+        int closingCount = 0;
+        
+        // Count the total number of closing brackets in the string
+        for (char c : s) {
+            if (c == ')') {
+                closingCount++;
+            }
+        }
+        
+        // The index of the equal point is exactly the total count of ')'
+        return closingCount;
+    }
+};
