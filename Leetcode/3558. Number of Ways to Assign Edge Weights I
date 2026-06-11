@@ -1,0 +1,52 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int assignEdgeWeights(vector<vector<int>>& edges) {
+        int n = edges.size() + 1;
+        if (n == 1) return 0; 
+        
+        // Build the adjacency list
+        vector<vector<int>> adj(n + 1);
+        for (const auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        
+        int max_depth = 0;
+        
+        // Lambda for DFS traversal to find max depth
+        auto dfs = [&](auto& self, int node, int parent, int depth) -> void {
+            max_depth = max(max_depth, depth);
+            for (int neighbor : adj[node]) {
+                if (neighbor != parent) {
+                    self(self, neighbor, node, depth + 1);
+                }
+            }
+        };
+        
+        // Start DFS from root node 1, initial depth 0
+        dfs(dfs, 1, 0, 0);
+        
+        if (max_depth == 0) return 0;
+        
+        // Calculate 2^(max_depth - 1) % (10^9 + 7) using fast exponentiation
+        long long ans = 1;
+        long long base = 2;
+        int power = max_depth - 1;
+        int mod = 1e9 + 7;
+        
+        while (power > 0) {
+            if (power % 2 == 1) {
+                ans = (ans * base) % mod;
+            }
+            base = (base * base) % mod;
+            power /= 2;
+        }
+        
+        return ans;
+    }
+};
