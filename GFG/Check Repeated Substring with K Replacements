@@ -1,0 +1,43 @@
+#include <string>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    bool kSubstr(string &s, int k) {
+        int n = s.length();
+        
+        // If the string length is not a multiple of k, we can't split it evenly
+        if (n % k != 0) {
+            return false;
+        }
+
+        unordered_map<string, int> chunkCounts;
+        
+        // Split the string into chunks of size k and count their frequencies
+        for (int i = 0; i < n; i += k) {
+            string chunk = s.substr(i, k);
+            chunkCounts[chunk]++;
+        }
+
+        // If there's only 1 unique chunk, it's already a repeating string
+        if (chunkCounts.size() == 1) {
+            return true;
+        }
+        
+        // If there are more than 2 unique chunks, 1 replacement isn't enough
+        if (chunkCounts.size() > 2) {
+            return false;
+        }
+        
+        // If there are exactly 2 unique chunks, one of them MUST appear exactly once
+        for (const auto& pair : chunkCounts) {
+            if (pair.second == 1) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+};
