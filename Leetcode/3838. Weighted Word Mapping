@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string mapWordWeights(vector<string>& words, vector<int>& weights) {
+        string result = "";
+        
+        for (const string& word : words) {
+            int current_weight = 0;
+            
+            // Calculate the total weight of the current word
+            for (char c : word) {
+                current_weight += weights[c - 'a'];
+            }
+            
+            // Get the modulo 26
+            int mod_val = current_weight % 26;
+            
+            // Map to reverse alphabetical order (0 -> 'z', 1 -> 'y', ..., 25 -> 'a')
+            char mapped_char = 'z' - mod_val;
+            
+            // Append to the final string
+            result += mapped_char;
+        }
+        
+        return result;
+    }
+};
