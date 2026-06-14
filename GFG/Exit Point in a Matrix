@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> exitPoint(vector<vector<int>>& mat) {
+        int n = mat.size();
+        int m = mat[0].size();
+        
+        int i = 0, j = 0;
+        int dir = 0; // 0: Right, 1: Down, 2: Left, 3: Up
+        
+        while (true) {
+            // If we land on a 1, turn right and flip it to 0
+            if (mat[i][j] == 1) {
+                mat[i][j] = 0;
+                dir = (dir + 1) % 4;
+            }
+            
+            // Calculate the intended next move
+            int next_i = i;
+            int next_j = j;
+            
+            if (dir == 0) next_j++;      // Moving Right
+            else if (dir == 1) next_i++; // Moving Down
+            else if (dir == 2) next_j--; // Moving Left
+            else if (dir == 3) next_i--; // Moving Up
+            
+            // Check if the next move takes us out of bounds
+            if (next_i < 0 || next_i >= n || next_j < 0 || next_j >= m) {
+                return {i, j}; // Current cell is the exit point
+            }
+            
+            // Proceed to the next cell
+            i = next_i;
+            j = next_j;
+        }
+        
+        return {-1, -1}; // Fallback, shouldn't be reached given problem constraints
+    }
+};
