@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minimumCost(vector<int>& cost, int w) {
+        int n = cost.size();
+        
+        // Initialize DP array with a large value representing infinity.
+        // We use 1e9 instead of INT_MAX to prevent integer overflow 
+        // when adding costs.
+        vector<int> dp(w + 1, 1e9); 
+        
+        // Base case: 0 cost to buy 0 kg
+        dp[0] = 0; 
+        
+        // Iterate through all target weights from 1 to w
+        for (int i = 1; i <= w; i++) {
+            // Check all available packets for the current target weight
+            for (int j = 0; j < n; j++) {
+                int weight = j + 1;
+                int packetCost = cost[j];
+                
+                // If the packet is available and fits in the current weight 'i'
+                if (packetCost != -1 && weight <= i) {
+                    dp[i] = min(dp[i], dp[i - weight] + packetCost);
+                }
+            }
+        }
+        
+        // If dp[w] is still 1e9, it's impossible to form the exact weight
+        return dp[w] == 1e9 ? -1 : dp[w];
+    }
+};
