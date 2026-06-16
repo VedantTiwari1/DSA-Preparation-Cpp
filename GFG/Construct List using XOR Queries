@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> constructList(vector<vector<int>>& queries) {
+        vector<int> ans;
+        int cumulative_xor = 0;
+        
+        // Process queries in reverse order to determine final values in O(1) time
+        for (int i = queries.size() - 1; i >= 0; i--) {
+            if (queries[i][0] == 0) {
+                // Type 0: Insert operation
+                // The element is only affected by XORs that come AFTER it.
+                ans.push_back(queries[i][1] ^ cumulative_xor);
+            } else {
+                // Type 1: XOR operation
+                // Accumulate the XOR effect for preceding elements
+                cumulative_xor ^= queries[i][1];
+            }
+        }
+        
+        // The initial '0' is affected by ALL XOR operations in the queries
+        ans.push_back(0 ^ cumulative_xor);
+        
+        // The problem requires returning the list in sorted order
+        sort(ans.begin(), ans.end());
+        
+        return ans;
+    }
+};
