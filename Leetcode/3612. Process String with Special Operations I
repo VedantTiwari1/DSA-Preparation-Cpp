@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string processStr(string s) {
+        string result = "";
+        
+        for (char c : s) {
+            if (c >= 'a' && c <= 'z') {
+                // Append lowercase letters
+                result += c;
+            } else if (c == '*') {
+                // Remove the last character if it exists
+                if (!result.empty()) {
+                    result.pop_back();
+                }
+            } else if (c == '#') {
+                // Duplicate the current string
+                result += result;
+            } else if (c == '%') {
+                // Reverse the current string
+                reverse(result.begin(), result.end());
+            }
+        }
+        
+        return result;
+    }
+};
