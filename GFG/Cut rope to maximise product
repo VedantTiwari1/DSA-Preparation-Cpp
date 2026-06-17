@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int maxProduct(int n) {
+        // Base cases: The problem states at least one cut is mandatory.
+        if (n == 2) return 1; // 1 * 1
+        if (n == 3) return 2; // 1 * 2
+        
+        int product = 1;
+        
+        // Keep cutting pieces of length 3 until the remaining rope is 4 or less.
+        while (n > 4) {
+            product *= 3;
+            n -= 3;
+        }
+        
+        // Multiply the accumulated product by whatever length is left (2, 3, or 4).
+        product *= n;
+        
+        return product;
+    }
+};
