@@ -1,0 +1,154 @@
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+    struct BigInt {
+        vector<uint64_t> d;
+
+        BigInt() { d.reserve(1600); }
+        
+        BigInt(long long v) {
+            d.reserve(1600);
+            if (v > 0) d.push_back(v);
+        }
+
+        bool is_zero() const {
+            return d.empty();
+        }
+
+        void add1() {
+            for (size_t i = 0; i < d.size(); ++i) {
+                if (++d[i] != 0) return;
+            }
+            d.push_back(1);
+        }
+
+        void sub1() {
+            if (d.empty()) return;
+            for (size_t i = 0; i < d.size(); ++i) {
+                if (d[i]-- != 0) break;
+            }
+            while (!d.empty() && d.back() == 0) d.pop_back();
+        }
+
+        void mul2() {
+            uint64_t carry = 0;
+            for (size_t i = 0; i < d.size(); ++i) {
+                uint64_t next_carry = d[i] >> 63;
+                d[i] = (d[i] << 1) | carry;
+                carry = next_carry;
+            }
+            if (carry) d.push_back(carry);
+        }
+
+        void div2() {
+            uint64_t carry = 0;
+            for (int i = (int)d.size() - 1; i >= 0; --i) {
+                uint64_t current = d[i];
+                d[i] = (current >> 1) | (carry << 63);
+                carry = current & 1;
+            }
+            while (!d.empty() && d.back() == 0) d.pop_back();
+        }
+
+        bool operator>(const BigInt& other) const {
+            if (d.size() != other.d.size()) return d.size() > other.d.size();
+            for (int i = (int)d.size() - 1; i >= 0; --i) {
+                if (d[i] != other.d[i]) return d[i] > other.d[i];
+            }
+            return false;
+        }
+
+        bool operator==(const BigInt& other) const {
+            if (d.size() != other.d.size()) return false;
+            for (size_t i = 0; i < d.size(); ++i) {
+                if (d[i] != other.d[i]) return false;
+            }
+            return true;
+        }
+
+        void sub(const BigInt& other) {
+            uint64_t borrow = 0;
+            for (size_t i = 0; i < d.size(); ++i) {
+                uint64_t o_val = (i < other.d.size() ? other.d[i] : 0);
+                uint64_t next_borrow = 0;
+                
+                if (d[i] < o_val) {
+                    next_borrow = 1;
+                } else if (d[i] == o_val && borrow == 1) {
+                    next_borrow = 1;
+                }
+                
+                d[i] = d[i] - o_val - borrow;
+                borrow = next_borrow;
+            }
+            while (!d.empty() && d.back() == 0) d.pop_back();
+        }
+
+        static BigInt reversed_k(const BigInt& L, const BigInt& k) {
+            BigInt res = L;
+            res.sub(k);
+            res.add1();
+            return res;
+        }
+    };
+
+public:
+    char processStr(string s, long long k_val) {
+        BigInt L;
+        int n = s.length();
+        
+        vector<bool> ignored(n, false);
+
+        // 1. Forward Pass
+        for (int i = 0; i < n; ++i) {
+            char c = s[i];
+            if (c == '*') {
+                if (L.is_zero()) {
+                    ignored[i] = true;
+                } else {
+                    L.sub1();
+                }
+            } else if (c == '#') {
+                L.mul2();
+            } else if (c == '%') {
+                // Length remains unchanged
+            } else {
+                L.add1();
+            }
+        }
+
+        // --- THE FIX: Convert 0-based k to 1-based k ---
+        BigInt k(k_val);
+        k.add1(); 
+        // -----------------------------------------------
+
+        if (k > L) return '.';
+
+        // 2. Backward Pass
+        for (int i = n - 1; i >= 0; --i) {
+            char c = s[i];
+            if (c == '*') {
+                if (!ignored[i]) {
+                    L.add1();
+                }
+            } else if (c == '#') {
+                L.div2();
+                if (k > L) {
+                    k.sub(L);
+                }
+            } else if (c == '%') {
+                k = BigInt::reversed_k(L, k);
+            } else {
+                if (k == L) {
+                    return c;
+                }
+                L.sub1();
+            }
+        }
+        
+        return '.';
+    }
+};
