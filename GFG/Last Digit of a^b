@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int getLastDigit(string a, string b) {
+        // Edge case: anything to the power of 0 is 1
+        if (b == "0") return 1;
+        
+        // Edge case: 0 to any non-zero power is 0
+        if (a == "0") return 0;
+        
+        // We only care about the last digit of the base
+        int base = a.back() - '0';
+        
+        // We only need the last two digits of the exponent to find modulo 4
+        int exp = 0;
+        int b_len = b.length();
+        
+        if (b_len == 1) {
+            exp = b[0] - '0';
+        } else {
+            exp = (b[b_len - 2] - '0') * 10 + (b[b_len - 1] - '0');
+        }
+        
+        // Find the position in the cycle
+        exp = exp % 4;
+        
+        // If exp % 4 is 0, it means it's the end of the cycle (the 4th position)
+        if (exp == 0) {
+            exp = 4; 
+        }
+        
+        // Calculate the power for the reduced base and exponent
+        int res = 1;
+        for (int i = 0; i < exp; i++) {
+            res = (res * base) % 10;
+        }
+        
+        return res;
+    }
+};
