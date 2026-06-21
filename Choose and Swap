@@ -1,0 +1,42 @@
+class Solution {
+public:
+    string chooseSwap(string &s) {
+        // Step 1: Store all unique characters in a sorted set
+        set<char> available_chars;
+        for (char c : s) {
+            available_chars.insert(c);
+        }
+        
+        // Step 2: Traverse to find the first valid greedy swap
+        for (int i = 0; i < s.length(); i++) {
+            // Remove the current character from available options
+            available_chars.erase(s[i]);
+            
+            // If no characters are left to compare, continue
+            if (available_chars.empty()) {
+                continue;
+            }
+            
+            // Get the smallest character that appears later in the string
+            char smallest_available = *available_chars.begin();
+            
+            // Step 3: If we found a smaller character, perform the global swap
+            if (smallest_available < s[i]) {
+                char char_to_replace = s[i];
+                char replacement_char = smallest_available;
+                
+                for (int j = 0; j < s.length(); j++) {
+                    if (s[j] == char_to_replace) {
+                        s[j] = replacement_char;
+                    } else if (s[j] == replacement_char) {
+                        s[j] = char_to_replace;
+                    }
+                }
+                // We are only allowed to do this at most once, so break
+                break;
+            }
+        }
+        
+        return s;
+    }
+};
