@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int maxIceCream(vector<int>& costs, int coins) {
+        // Step 1: Find the maximum cost to size our counting array
+        int maxCost = 0;
+        for (int cost : costs) {
+            maxCost = max(maxCost, cost);
+        }
+        
+        // Step 2: Create and populate the frequency array
+        vector<int> freq(maxCost + 1, 0);
+        for (int cost : costs) {
+            freq[cost]++;
+        }
+        
+        int totalIceCreams = 0;
+        
+        // Step 3: Greedily buy ice creams starting from the cheapest
+        for (int price = 1; price <= maxCost; ++price) {
+            if (freq[price] > 0) {
+                // If we don't have enough coins for even one of this price, we are done
+                if (coins < price) {
+                    break;
+                }
+                
+                // Calculate how many we can actually buy
+                int affordableCount = coins / price;
+                int amountToBuy = min(freq[price], affordableCount);
+                
+                // Update totals
+                totalIceCreams += amountToBuy;
+                coins -= amountToBuy * price;
+            }
+        }
+        
+        return totalIceCreams;
+    }
+};
