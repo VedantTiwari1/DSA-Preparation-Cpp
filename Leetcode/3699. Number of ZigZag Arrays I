@@ -1,0 +1,57 @@
+#include <vector>
+
+class Solution {
+public:
+    int zigZagArrays(int n, int l, int r) {
+        long long k = r - l + 1;
+        long long MOD = 1e9 + 7;
+        
+        // Base cases
+        if (n == 1) return k % MOD;
+        if (n == 2) return (k * (k - 1)) % MOD;
+        if (k <= 1) return 0; // Length >= 3 but only 1 choice means adjacent equals are unavoidable
+        
+        // dp[j] tracks sequences ending in j where the last move was UP.
+        std::vector<long long> dp(k + 1, 0);
+        
+        // Initialize for length n = 2
+        // If we end at j and last move was UP, the previous element must be < j.
+        // There are exactly j - 1 such choices.
+        for (int j = 1; j <= k; ++j) {
+            dp[j] = j - 1;
+        }
+        
+        // Build sequence up to length n
+        for (int i = 3; i <= n; ++i) {
+            std::vector<long long> next_dp(k + 1, 0);
+            std::vector<long long> suffix_sum(k + 2, 0);
+            
+            // Precompute suffix sums of the previous DP state to achieve O(1) transitions
+            for (int y = k; y >= 1; --y) {
+                suffix_sum[y] = (suffix_sum[y + 1] + dp[y]) % MOD;
+            }
+            
+            // Calculate new state
+            for (int j = 1; j <= k; ++j) {
+                // start_y relies on the mathematical symmetry between UP and DOWN moves
+                int start_y = k - j + 2; 
+                if (start_y <= k) {
+                    next_dp[j] = suffix_sum[start_y];
+                }
+            }
+            
+            // Move next_dp to current dp state for the next iteration
+            dp = std::move(next_dp);
+        }
+        
+        // Sum all possibilities that ended on an UP step
+        long long total_up = 0;
+        for (int j = 1; j <= k; ++j) {
+            total_up = (total_up + dp[j]) % MOD;
+        }
+        
+        // Total valid sequences = (Ends on UP) + (Ends on DOWN)
+        // Since both have identical counts, we multiply by 2.
+        return (total_up * 2) % MOD;
+    }
+};
