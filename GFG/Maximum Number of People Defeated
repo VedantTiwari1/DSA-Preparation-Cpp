@@ -1,0 +1,16 @@
+class Solution {
+public:
+    int maxPeopleDefeated(int p) {
+        int count = 0;
+        long long i = 1; // Using long long to prevent potential overflow during squaring
+        
+        // Continue defeating people as long as you have enough strength for the next one
+        while (p >= i * i) {
+            p -= i * i;
+            count++;
+            i++;
+        }
+        
+        return count;
+    }
+};
