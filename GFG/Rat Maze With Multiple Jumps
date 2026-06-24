@@ -1,0 +1,56 @@
+#include <vector>
+
+class Solution {
+private:
+    bool solve(int r, int c, int n, std::vector<std::vector<int>>& mat, std::vector<std::vector<int>>& sol) {
+        // Base case: Reached the bottom-right destination
+        if (r == n - 1 && c == n - 1) {
+            sol[r][c] = 1;
+            return true;
+        }
+
+        // Safety check: Ensure we are within bounds and not on a 0 (blocked/dead end)
+        if (r >= 0 && c >= 0 && r < n && c < n && mat[r][c] != 0) {
+            // Mark current cell as part of the tentative path
+            sol[r][c] = 1;
+
+            // Rule 1: Shortest jumps first
+            for (int k = 1; k <= mat[r][c]; ++k) {
+                
+                // Rule 2: Prefer moving Right
+                if (c + k < n && solve(r, c + k, n, mat, sol)) {
+                    return true;
+                }
+                
+                // Rule 2 Fallback: Try moving Down
+                if (r + k < n && solve(r + k, c, n, mat, sol)) {
+                    return true;
+                }
+            }
+
+            // Backtrack: Unmark cell in the solution matrix if no valid path was found
+            sol[r][c] = 0;
+            
+            // OPTIMIZATION: Mark this cell as a dead end in the original matrix.
+            // If we couldn't find a path from here once, we never will.
+            mat[r][c] = 0; 
+            
+            return false;
+        }
+        return false;
+    }
+
+public:
+    std::vector<std::vector<int>> shortestDist(std::vector<std::vector<int>>& mat) {
+        int n = mat.size();
+        std::vector<std::vector<int>> sol(n, std::vector<int>(n, 0));
+
+        // If a valid path is found starting from (0,0), return the solution matrix
+        if (solve(0, 0, n, mat, sol)) {
+            return sol;
+        }
+
+        // If no valid path exists, return [[-1]]
+        return {{-1}};
+    }
+};
