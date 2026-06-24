@@ -1,0 +1,77 @@
+#include <vector>
+
+class Solution {
+    long long MOD = 1e9 + 7;
+    using Matrix = std::vector<std::vector<long long>>;
+
+    // Helper to multiply two matrices
+    Matrix multiply(const Matrix& A, const Matrix& B) {
+        int n = A.size();
+        Matrix C(n, std::vector<long long>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int k = 0; k < n; ++k) {
+                if (A[i][k] == 0) continue; // Skip zero terms to optimize
+                for (int j = 0; j < n; ++j) {
+                    C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % MOD;
+                }
+            }
+        }
+        return C;
+    }
+
+    // Helper to exponentiate a matrix to power p in O(log p)
+    Matrix power(Matrix A, long long p) {
+        int n = A.size();
+        Matrix res(n, std::vector<long long>(n, 0));
+        for (int i = 0; i < n; ++i) res[i][i] = 1; // Identity Matrix
+        
+        while (p > 0) {
+            if (p % 2 == 1) res = multiply(res, A);
+            A = multiply(A, A);
+            p /= 2;
+        }
+        return res;
+    }
+
+public:
+    int zigZagArrays(int n, int l, int r) {
+        long long k = r - l + 1;
+        
+        // Base cases
+        if (n == 1) return k % MOD;
+        if (n == 2) return (k * (k - 1)) % MOD;
+        if (k <= 1) return 0; // Length >= 3 but only 1 choice means adjacent equals
+        
+        // Construct the transition matrix M
+        Matrix M(k, std::vector<long long>(k, 0));
+        for (int u = 0; u < k; ++u) {
+            // Mathematical condition derived from symmetry: y > k - j + 1
+            for (int v = k - u; v < k; ++v) {
+                M[u][v] = 1;
+            }
+        }
+        
+        // Exponentiate the matrix to the power of n - 2
+        Matrix M_exp = power(M, n - 2);
+        
+        // Initial state vector V2 for length n = 2 (ending in an UP step)
+        // V2[u] corresponds to ending value (u + 1).
+        std::vector<long long> V2(k, 0);
+        for (int u = 0; u < k; ++u) {
+            V2[u] = u;
+        }
+        
+        // Calculate the final state vector Vn
+        long long total_up = 0;
+        for (int i = 0; i < k; ++i) {
+            long long current_val = 0;
+            for (int j = 0; j < k; ++j) {
+                current_val = (current_val + M_exp[i][j] * V2[j]) % MOD;
+            }
+            total_up = (total_up + current_val) % MOD;
+        }
+        
+        // Multiply by 2 to account for sequences that ended with a DOWN step
+        return (total_up * 2) % MOD;
+    }
+};
