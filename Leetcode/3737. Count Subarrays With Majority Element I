@@ -1,0 +1,41 @@
+#include <vector>
+
+class Solution {
+public:
+    int countMajoritySubarrays(std::vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        // Use an array to store the frequency of each prefix sum.
+        // We offset by 'n' to safely handle negative prefix sums.
+        std::vector<int> freq(2 * n + 2, 0);
+        int zero_offset = n;
+        
+        int current_prefix = 0;
+        freq[zero_offset] = 1; // Base case: prefix sum of 0 before any elements
+        
+        long long count_smaller = 0;
+        long long total_subarrays = 0;
+        
+        for (int num : nums) {
+            if (num == target) {
+                // Moving right (+1): The new prefix is greater than the old prefix.
+                // We add the frequency of the old prefix to our valid count.
+                count_smaller += freq[current_prefix + zero_offset];
+                current_prefix++;
+            } else {
+                // Moving left (-1): The new prefix is smaller than the old prefix.
+                // We subtract the frequency of the new prefix from our valid count.
+                current_prefix--;
+                count_smaller -= freq[current_prefix + zero_offset];
+            }
+            
+            // Add the current valid configurations to the total
+            total_subarrays += count_smaller;
+            
+            // Record the new prefix sum in our frequency map
+            freq[current_prefix + zero_offset]++;
+        }
+        
+        return static_cast<int>(total_subarrays);
+    }
+};
