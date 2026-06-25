@@ -1,0 +1,42 @@
+#include <vector>
+
+class Solution {
+private:
+    void findNumbers(int current_length, int n, int current_num, int last_digit, std::vector<int>& result) {
+        // Base case: If we have formed an n-digit number, add it to our results
+        if (current_length == n) {
+            result.push_back(current_num);
+            return;
+        }
+        
+        // Try appending all valid strictly increasing digits
+        for (int i = last_digit + 1; i <= 9; ++i) {
+            findNumbers(current_length + 1, n, current_num * 10 + i, i, result);
+        }
+    }
+    
+public:
+    std::vector<int> increasingNumbers(int n) {
+        std::vector<int> result;
+        
+        // Special edge case: n = 1 includes 0
+        if (n == 1) {
+            for (int i = 0; i <= 9; ++i) {
+                result.push_back(i);
+            }
+            return result;
+        }
+        
+        // Edge case: Impossible to have strictly increasing numbers with more than 9 digits
+        if (n > 9) {
+            return result;
+        }
+        
+        // Start building numbers with the first digit ranging from 1 to 9
+        for (int i = 1; i <= 9; ++i) {
+            findNumbers(1, n, i, i, result);
+        }
+        
+        return result;
+    }
+};
