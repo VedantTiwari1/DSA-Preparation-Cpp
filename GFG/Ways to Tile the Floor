@@ -1,0 +1,26 @@
+#include <vector>
+
+class Solution {
+public:
+    int countWays(int n, int m) {
+        int MOD = 1e9 + 7;
+        
+        // dp[i] will store the number of ways to tile a floor of dimensions i x m
+        std::vector<long long> dp(n + 1, 0);
+        
+        for (int i = 1; i <= n; ++i) {
+            if (i < m) {
+                // If rows are less than m, we can only place tiles horizontally
+                dp[i] = 1;
+            } else if (i == m) {
+                // If rows equal m, we can place them all horizontally or all vertically
+                dp[i] = 2;
+            } else {
+                // Otherwise, it's the sum of placing 1 horizontally or m vertically
+                dp[i] = (dp[i - 1] + dp[i - m]) % MOD;
+            }
+        }
+        
+        return static_cast<int>(dp[n]);
+    }
+};
