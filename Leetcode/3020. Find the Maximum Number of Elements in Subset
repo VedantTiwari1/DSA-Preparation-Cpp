@@ -1,0 +1,57 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+class Solution {
+public:
+    int maximumLength(std::vector<int>& nums) {
+        std::unordered_map<long long, int> freq;
+        
+        // Count frequencies of all elements
+        for (int num : nums) {
+            freq[num]++;
+        }
+        
+        int max_len = 1; // A single element is always a valid subset of length 1
+        
+        // Handle the special case for base 1
+        if (freq.count(1)) {
+            int ones = freq[1];
+            // If the count is even, subtract 1 to make it an odd-length peak pattern
+            if (ones % 2 == 0) {
+                ones -= 1;
+            }
+            max_len = std::max(max_len, ones);
+        }
+        
+        // Evaluate the pattern for all other bases
+        for (auto const& [key, val] : freq) {
+            long long x = key;
+            
+            // Skip 1s as they are already handled
+            if (x == 1) continue; 
+            
+            long long curr = x;
+            int current_len = 0;
+            
+            // Extend the sequence as long as we have pairs
+            while (freq.count(curr) && freq[curr] >= 2) {
+                current_len += 2;
+                curr = curr * curr;
+            }
+            
+            // Cap the sequence with a peak if it exists
+            if (freq.count(curr) && freq[curr] >= 1) {
+                current_len += 1;
+            } else {
+                // If no peak is found for the current sequence, the previous pair 
+                // must be cannibalized to serve as the peak.
+                current_len -= 1;
+            }
+            
+            max_len = std::max(max_len, current_len);
+        }
+        
+        return max_len;
+    }
+};a
