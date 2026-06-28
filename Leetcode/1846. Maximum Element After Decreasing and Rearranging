@@ -1,0 +1,21 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int maximumElementAfterDecrementingAndRearranging(std::vector<int>& arr) {
+        // Step 1: Sort the array
+        std::sort(arr.begin(), arr.end());
+        
+        // Step 2: The first element must be 1
+        arr[0] = 1;
+        
+        // Step 3: Greedily process the rest of the elements
+        for (int i = 1; i < arr.size(); ++i) {
+            arr[i] = std::min(arr[i], arr[i - 1] + 1);
+        }
+        
+        // Step 4: The last element is the maximum possible value
+        return arr.back();
+    }
+};
