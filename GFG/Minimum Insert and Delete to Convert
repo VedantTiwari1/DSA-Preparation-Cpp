@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int minInsAndDel(vector<int>& a, vector<int>& b) {
+        vector<int> lis;
+        
+        for (int x : a) {
+            // Because array b is sorted, we can efficiently check if x exists in b
+            if (binary_search(b.begin(), b.end(), x)) {
+                // If it exists, find its position in the Longest Increasing Subsequence
+                auto it = lower_bound(lis.begin(), lis.end(), x);
+                if (it == lis.end()) {
+                    lis.push_back(x);
+                } else {
+                    *it = x;
+                }
+            }
+        }
+        
+        // The length of the LIS represents the Longest Common Subsequence (LCS)
+        int lcs_length = lis.size();
+        
+        // Total operations = (Deletions from a) + (Insertions into a)
+        // Deletions = a.size() - lcs_length
+        // Insertions = b.size() - lcs_length
+        return a.size() + b.size() - 2 * lcs_length;
+    }
+};
