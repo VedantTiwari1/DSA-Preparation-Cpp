@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int numberOfSubstrings(string s) {
+        int count = 0;
+        // Array to store the last seen index of 'a', 'b', and 'c'
+        vector<int> last_seen = {-1, -1, -1};
+        
+        for (int i = 0; i < s.length(); ++i) {
+            // Update the index of the current character
+            last_seen[s[i] - 'a'] = i;
+            
+            // If we have seen all three characters at least once
+            if (last_seen[0] != -1 && last_seen[1] != -1 && last_seen[2] != -1) {
+                // The number of valid substrings ending at 'i' is determined by 
+                // the smallest index among the last seen positions of a, b, and c.
+                count += min({last_seen[0], last_seen[1], last_seen[2]}) + 1;
+            }
+        }
+        
+        return count;
+    }
+};
