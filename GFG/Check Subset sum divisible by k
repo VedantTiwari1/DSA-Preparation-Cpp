@@ -1,0 +1,46 @@
+class Solution {
+public:
+    bool divisibleByK(vector<int>& arr, int k) {
+        int n = arr.size();
+        
+        // Optimization using the Pigeonhole Principle:
+        // If the array size is greater than or equal to k, there are k prefix sums.
+        // Their remainders when divided by k can only take k possible values (0 to k-1).
+        // If any remainder is 0, we found a subset. If none is 0, we have k remainders 
+        // distributing into k-1 slots (1 to k-1). At least two prefix sums must have 
+        // the same remainder, meaning their difference (a subarray sum) is divisible by k.
+        // Since every subarray is a subset, the answer is always true if n >= k.
+        if (n >= k) {
+            return true;
+        }
+        
+        // dp[i] tracks whether there exists a subset with a sum that yields a remainder of 'i' when divided by k
+        vector<bool> dp(k, false);
+        
+        for (int i = 0; i < n; ++i) {
+            int rem = arr[i] % k;
+            
+            // We use a copy of the current DP state to avoid processing the same element multiple times in one step
+            vector<bool> next_dp = dp;
+            
+            // 1. The element itself can form a subset
+            next_dp[rem] = true;
+            
+            // 2. Add the current element to all previously reachable remainders
+            for (int j = 0; j < k; ++j) {
+                if (dp[j]) {
+                    next_dp[(j + rem) % k] = true;
+                }
+            }
+            
+            // If we've successfully reached a remainder of 0, we can stop early
+            if (next_dp[0]) {
+                return true;
+            }
+            
+            dp = next_dp;
+        }
+        
+        return dp[0];
+    }
+};
