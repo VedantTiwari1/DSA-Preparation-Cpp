@@ -1,0 +1,78 @@
+class Solution {
+public:
+    int findMaxPathScore(vector<vector<int>>& edges, vector<bool>& online, long long k) {
+        int n = online.size();
+        
+        // Step 1: Build the adjacency list
+        // Only include edges that point to an online node (this inherently filters out offline intermediate nodes)
+        vector<vector<pair<int, int>>> adj(n);
+        int max_edge_cost = 0;
+        
+        for (const auto& e : edges) {
+            int u = e[0], v = e[1], cost = e[2];
+            // Nodes 0 and n-1 are guaranteed online by the problem, 
+            // but for safety, we just check online[v] for all destinations.
+            if (online[v]) { 
+                adj[u].push_back({v, cost});
+                max_edge_cost = max(max_edge_cost, cost);
+            }
+        }
+        
+        // Step 2: Binary search on the answer (the minimum edge cost on our path)
+        int left = 0, right = max_edge_cost;
+        int max_score = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            // Can we find a path from 0 to n-1 using ONLY edges with cost >= mid, 
+            // such that the total path cost is <= k?
+            if (isValid(mid, n, adj, k)) {
+                max_score = mid;     // mid is achievable, save it
+                left = mid + 1;      // try to find an even higher minimum cost
+            } else {
+                right = mid - 1;     // mid is too high, lower the requirement
+            }
+        }
+        
+        return max_score;
+    }
+    
+private:
+    bool isValid(int min_allowed_cost, int n, const vector<vector<pair<int, int>>>& adj, long long k) {
+        // memo[u] will store the minimum total cost to reach n-1 from node u
+        // using only edges with cost >= min_allowed_cost
+        vector<long long> memo(n, -1);
+        
+        long long min_total_cost = dfs(0, min_allowed_cost, n, adj, memo);
+        
+        return min_total_cost <= k;
+    }
+    
+    long long dfs(int u, int min_allowed_cost, int n, const vector<vector<pair<int, int>>>& adj, vector<long long>& memo) {
+        // Base case: reached the target node
+        if (u == n - 1) return 0;
+        
+        // Return previously computed result to avoid redundant calculations (DP on DAG)
+        if (memo[u] != -1) return memo[u];
+        
+        long long min_cost = 1e18; // Use a very large number as infinity
+        
+        for (const auto& edge : adj[u]) {
+            int v = edge.first;
+            int cost = edge.second;
+            
+            // Only traverse edges that meet our current binary search threshold
+            if (cost >= min_allowed_cost) {
+                long long next_cost = dfs(v, min_allowed_cost, n, adj, memo);
+                
+                // If the target is reachable from v, update our minimum cost
+                if (next_cost != 1e18) {
+                    min_cost = min(min_cost, next_cost + cost);
+                }
+            }
+        }
+        
+        return memo[u] = min_cost;
+    }
+};
