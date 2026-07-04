@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int maxCharGap(string &s) {
+        // Array to store the first occurrence index of each character.
+        // Initialized to -1 to indicate the character hasn't been seen yet.
+        vector<int> first_seen(26, -1);
+        int max_gap = -1;
+        
+        for (int i = 0; i < s.length(); ++i) {
+            int char_idx = s[i] - 'a';
+            
+            // If this is the first time seeing the character, record its index.
+            if (first_seen[char_idx] == -1) {
+                first_seen[char_idx] = i;
+            } 
+            // If we've seen it before, calculate the gap and update max_gap.
+            else {
+                int current_gap = i - first_seen[char_idx] - 1;
+                max_gap = max(max_gap, current_gap);
+            }
+        }
+        
+        return max_gap;
+    }
+};
