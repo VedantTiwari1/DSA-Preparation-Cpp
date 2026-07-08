@@ -1,0 +1,66 @@
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> sumAndMultiply(string s, vector<vector<int>>& queries) {
+        int n = s.length();
+        long long MOD = 1e9 + 7;
+        
+        // Prefix sum of digits and prefix count of non-zero digits
+        vector<long long> pref_sum(n + 1, 0);
+        vector<int> pref_cnt(n + 1, 0);
+        
+        string s_prime = "";
+        for (int i = 0; i < n; ++i) {
+            int digit = s[i] - '0';
+            pref_sum[i+1] = pref_sum[i] + digit;
+            pref_cnt[i+1] = pref_cnt[i] + (digit > 0 ? 1 : 0);
+            if (digit > 0) {
+                s_prime += s[i];
+            }
+        }
+        
+        int k = s_prime.length();
+        
+        // Precompute powers of 10 and string prefix values modulo 10^9 + 7
+        vector<long long> pref_val(k + 1, 0);
+        vector<long long> p10(k + 1, 1);
+        
+        for (int i = 0; i < k; ++i) {
+            pref_val[i+1] = (pref_val[i] * 10 + (s_prime[i] - '0')) % MOD;
+            p10[i+1] = (p10[i] * 10) % MOD;
+        }
+        
+        vector<int> ans;
+        ans.reserve(queries.size());
+        
+        // Process each query in O(1) time
+        for (const auto& q : queries) {
+            int l = q[0];
+            int r = q[1];
+            
+            long long sum_val = pref_sum[r+1] - pref_sum[l];
+            int count = pref_cnt[r+1] - pref_cnt[l];
+            
+            if (count == 0) {
+                ans.push_back(0);
+            } else {
+                int L = pref_cnt[l];
+                
+                // Extract the value of the concatenated non-zero digits
+                long long x = pref_val[L + count] - (pref_val[L] * p10[count]) % MOD;
+                
+                // Handle potential negative values in C++ modulo arithmetic
+                x = (x % MOD + MOD) % MOD; 
+                
+                long long res = (x * (sum_val % MOD)) % MOD;
+                ans.push_back(static_cast<int>(res));
+            }
+        }
+        
+        return ans;
+    }
+};
