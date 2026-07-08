@@ -1,0 +1,65 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+private:
+    void dfs(vector<vector<int>>& mat, int r, int c, vector<vector<bool>>& visited) {
+        visited[r][c] = true;
+        int n = mat.size();
+        int m = mat[0].size();
+        
+        // Direction vectors for moving North, South, West, East
+        int dr[] = {-1, 1, 0, 0};
+        int dc[] = {0, 0, -1, 1};
+        
+        for (int i = 0; i < 4; ++i) {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+            
+            // Ensure the neighbor is within bounds and not yet visited
+            if (nr >= 0 && nr < n && nc >= 0 && nc < m && !visited[nr][nc]) {
+                // Reversed condition: To reach (nr, nc) FROM (r, c), 
+                // the neighbor's strength must be >= current cell's strength
+                if (mat[nr][nc] >= mat[r][c]) {
+                    dfs(mat, nr, nc, visited);
+                }
+            }
+        }
+    }
+
+public:
+    int countCoordinates(vector<vector<int>>& mat) {
+        if (mat.empty() || mat[0].empty()) return 0;
+        
+        int n = mat.size();
+        int m = mat[0].size();
+        
+        vector<vector<bool>> reachP(n, vector<bool>(m, false));
+        vector<vector<bool>> reachQ(n, vector<bool>(m, false));
+        
+        // 1. Traverse from the Left and Right boundaries
+        for (int i = 0; i < n; ++i) {
+            dfs(mat, i, 0, reachP);         // Station P (Left)
+            dfs(mat, i, m - 1, reachQ);     // Station Q (Right)
+        }
+        
+        // 2. Traverse from the Top and Bottom boundaries
+        for (int j = 0; j < m; ++j) {
+            dfs(mat, 0, j, reachP);         // Station P (Top)
+            dfs(mat, n - 1, j, reachQ);     // Station Q (Bottom)
+        }
+        
+        // 3. Count towers capable of reaching both stations
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (reachP[i][j] && reachQ[i][j]) {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+};
