@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int getCount(int n) {
+        int count = 0;
+        
+        // k represents the number of consecutive terms
+        // We start from 2 terms and run as long as the numerator is > 0
+        for (long long k = 2; k * (k - 1) / 2 < n; k++) {
+            
+            long long numerator = n - (k * (k - 1)) / 2;
+            
+            // If the numerator is perfectly divisible by k, a valid starting integer 'a' exists
+            if (numerator % k == 0) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+};
