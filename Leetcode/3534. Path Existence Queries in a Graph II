@@ -1,0 +1,80 @@
+class Solution {
+public:
+    vector<int> pathExistenceQueries(int n, vector<int>& nums, int maxDiff, vector<vector<int>>& queries) {
+        // Step 1: Coordinate Compression (Get sorted unique values)
+        vector<int> V = nums;
+        sort(V.begin(), V.end());
+        V.erase(unique(V.begin(), V.end()), V.end());
+        int m = V.size();
+        
+        // Step 2: Build the Binary Lifting table
+        // 20 bits is enough for N = 10^5 (2^19 > 10^5)
+        int LOG = 20;
+        vector<vector<int>> up(m, vector<int>(LOG));
+        
+        // Two pointers to find the furthest reachable node in 1 step for each unique value
+        int right = 0;
+        for (int i = 0; i < m; ++i) {
+            while (right + 1 < m && V[right + 1] <= V[i] + maxDiff) {
+                right++;
+            }
+            up[i][0] = right;
+        }
+        
+        // Fill the rest of the table: up[i][k] is the furthest node reachable in 2^k steps
+        for (int step = 1; step < LOG; ++step) {
+            for (int i = 0; i < m; ++i) {
+                up[i][step] = up[up[i][step - 1]][step - 1];
+            }
+        }
+        
+        // Step 3: Process queries
+        vector<int> ans;
+        ans.reserve(queries.size());
+        
+        for (const auto& q : queries) {
+            int u = q[0], v = q[1];
+            
+            // Base cases
+            if (u == v) {
+                ans.push_back(0);
+                continue;
+            }
+            
+            int valU = nums[u], valV = nums[v];
+            if (valU == valV) {
+                ans.push_back(1); // Different nodes, same value -> distance 1
+                continue;
+            }
+            
+            // We always jump from smaller value to larger value
+            if (valU > valV) {
+                swap(valU, valV);
+            }
+            
+            // Find their indices in our unique sorted array
+            int i = lower_bound(V.begin(), V.end(), valU) - V.begin();
+            int j = lower_bound(V.begin(), V.end(), valV) - V.begin();
+            
+            // If the maximum possible jumps can't reach the target, they are disconnected
+            if (up[i][LOG - 1] < j) {
+                ans.push_back(-1);
+            } else {
+                // Use binary lifting to find the minimum steps
+                int steps = 0;
+                for (int k = LOG - 1; k >= 0; --k) {
+                    // If taking 2^k jumps still lands us strictly behind the target, take those jumps
+                    if (up[i][k] < j) {
+                        i = up[i][k];
+                        steps += (1 << k);
+                    }
+                }
+                // At this point, `i` is the furthest we can go WITHOUT reaching `j`.
+                // Exactly 1 more step is required to cross/reach `j`.
+                ans.push_back(steps + 1);
+            }
+        }
+        
+        return ans;
+    }
+};
