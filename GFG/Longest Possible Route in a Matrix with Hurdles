@@ -1,0 +1,60 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+    int max_length = -1;
+
+    void dfs(vector<vector<int>>& mat, int x, int y, int xd, int yd, int current_len) {
+        int n = mat.size();
+        int m = mat[0].size();
+
+        // If destination is reached, update the maximum length
+        if (x == xd && y == yd) {
+            max_length = max(max_length, current_len);
+            return;
+        }
+
+        // Mark the current cell as visited by setting it to a hurdle
+        mat[x][y] = 0;
+
+        // Direction arrays for Up, Down, Left, Right
+        int dx[] = {-1, 1, 0, 0};
+        int dy[] = {0, 0, -1, 1};
+
+        // Explore all 4 adjacent directions
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            // Check boundaries and if the cell is traversable
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m && mat[nx][ny] == 1) {
+                dfs(mat, nx, ny, xd, yd, current_len + 1);
+            }
+        }
+
+        // Backtrack: Unmark the cell so it can be used in other paths
+        mat[x][y] = 1;
+    }
+
+public:
+    int longestPath(vector<vector<int>>& mat, int xs, int ys, int xd, int yd) {
+        int n = mat.size();
+        if (n == 0) return -1;
+        int m = mat[0].size();
+
+        // If the source or destination itself is blocked, no path is possible
+        if (mat[xs][ys] == 0 || mat[xd][yd] == 0) {
+            return -1;
+        }
+
+        // Reset max_length (useful if the class instance is reused for multiple test cases)
+        max_length = -1;
+
+        // Start DFS from the source with length 0
+        dfs(mat, xs, ys, xd, yd, 0);
+
+        return max_length;
+    }
+};
