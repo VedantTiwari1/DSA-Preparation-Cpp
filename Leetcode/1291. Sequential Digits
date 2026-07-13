@@ -1,0 +1,31 @@
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> sequentialDigits(int low, int high) {
+        string s = "123456789";
+        vector<int> result;
+        
+        // The length of numbers can range from 2 to 9 digits
+        for (int length = 2; length <= 9; ++length) {
+            // The starting index can be from 0 up to (9 - length)
+            for (int start = 0; start <= 9 - length; ++start) {
+                // Extract the substring of the current length
+                string temp = s.substr(start, length);
+                
+                // Convert string to integer
+                int num = stoi(temp);
+                
+                // Check if the number is within the inclusive range
+                if (num >= low && num <= high) {
+                    result.push_back(num);
+                }
+            }
+        }
+        
+        return result;
+    }
+};
