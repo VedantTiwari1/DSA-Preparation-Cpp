@@ -1,0 +1,61 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int minOperations(vector<int>& b) {
+        int n = b.size();
+        vector<bool> visited(n, false);
+        unordered_map<int, int> max_prime_powers;
+        
+        // Step 1: Find all cycle lengths and their prime factorizations
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                int curr = i;
+                int len = 0;
+                
+                // Traverse the cycle
+                while (!visited[curr]) {
+                    visited[curr] = true;
+                    // b contains 1-based values, so we subtract 1 for 0-based indexing
+                    curr = b[curr] - 1; 
+                    len++;
+                }
+                
+                // Step 2 & 3: Factorize the cycle length and store the max power of each prime
+                if (len > 1) {
+                    int temp = len;
+                    for (int p = 2; p * p <= temp; ++p) {
+                        if (temp % p == 0) {
+                            int count = 0;
+                            while (temp % p == 0) {
+                                count++;
+                                temp /= p;
+                            }
+                            max_prime_powers[p] = max(max_prime_powers[p], count);
+                        }
+                    }
+                    // If temp is a prime number greater than 1
+                    if (temp > 1) {
+                        max_prime_powers[temp] = max(max_prime_powers[temp], 1);
+                    }
+                }
+            }
+        }
+        
+        // Step 4: Calculate the LCM modulo 10^9 + 7
+        long long ans = 1;
+        int mod = 1e9 + 7;
+        
+        for (auto const& [p, power] : max_prime_powers) {
+            for (int i = 0; i < power; ++i) {
+                ans = (ans * p) % mod;
+            }
+        }
+        
+        return ans;
+    }
+};
