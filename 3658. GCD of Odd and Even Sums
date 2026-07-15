@@ -1,0 +1,8 @@
+class Solution {
+public:
+    int gcdOfOddEvenSums(int n) {
+        // Based on the mathematical derivation, 
+        // the GCD of n^2 and n(n+1) is always n.
+        return n;
+    }
+};
