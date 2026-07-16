@@ -1,0 +1,38 @@
+#include <vector>
+#include <numeric>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    long long gcdSum(vector<int>& nums) {
+        int n = nums.size();
+        if (n == 0) return 0;
+        
+        vector<int> prefixGcd(n);
+        int current_max = 0;
+        
+        // Step 1: Construct the prefixGcd array
+        for (int i = 0; i < n; ++i) {
+            current_max = max(current_max, nums[i]);
+            prefixGcd[i] = std::gcd(nums[i], current_max);
+        }
+        
+        // Step 2: Sort the array in non-decreasing order
+        sort(prefixGcd.begin(), prefixGcd.end());
+        
+        // Step 3 & 4: Form pairs and compute the sum of their GCDs
+        long long total_sum = 0;
+        int left = 0;
+        int right = n - 1;
+        
+        while (left < right) {
+            total_sum += std::gcd(prefixGcd[left], prefixGcd[right]);
+            left++;
+            right--;
+        }
+        
+        return total_sum;
+    }
+};
