@@ -1,0 +1,49 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    int countWays(int n, int sum) {
+        // Impossible cases:
+        // 1. A valid positive number's digits cannot sum to < 1.
+        // 2. The maximum sum for an n-digit number is 9 * n.
+        if (sum < 1 || sum > 9 * n) {
+            return -1;
+        }
+        
+        int MOD = 1e9 + 7;
+        
+        // dp[j] stores the number of ways to achieve sum 'j' 
+        // with the current number of processed digits.
+        vector<int> dp(sum + 1, 0);
+        
+        // Base case: 0 digits summing to 0 is exactly 1 way.
+        dp[0] = 1; 
+        
+        // Step 1: Calculate the ways to form the last (n - 1) digits.
+        // These digits are allowed to be anything from 0 to 9.
+        for (int i = 1; i < n; ++i) {
+            vector<int> next_dp(sum + 1, 0);
+            for (int j = 0; j <= sum; ++j) {
+                for (int d = 0; d <= 9; ++d) {
+                    if (j >= d) {
+                        next_dp[j] = (next_dp[j] + dp[j - d]) % MOD;
+                    }
+                }
+            }
+            dp = next_dp;
+        }
+        
+        // Step 2: Handle the 1st digit (most significant digit).
+        // It must be between 1 and 9 to avoid leading zeros.
+        long long final_ans = 0;
+        for (int d = 1; d <= 9; ++d) {
+            if (sum >= d) {
+                final_ans = (final_ans + dp[sum - d]) % MOD;
+            }
+        }
+        
+        return final_ans > 0 ? final_ans : -1;
+    }
+};
