@@ -1,0 +1,66 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> gcdValues(vector<int>& nums, vector<long long>& queries) {
+        int max_val = 0;
+        for (int x : nums) {
+            max_val = max(max_val, x);
+        }
+        
+        // Count the frequency of each number in the input
+        vector<long long> count(max_val + 1, 0);
+        for (int x : nums) {
+            count[x]++;
+        }
+        
+        // exact[i] will store the exact number of pairs (nums[a], nums[b]) where gcd == i
+        vector<long long> exact(max_val + 1, 0);
+        
+        // Iterate backwards to compute exact occurrences using Inclusion-Exclusion
+        for (int i = max_val; i >= 1; --i) {
+            long long multiples_count = 0;
+            // Count how many numbers in the array are multiples of 'i'
+            for (int j = i; j <= max_val; j += i) {
+                multiples_count += count[j];
+            }
+            
+            // Total pairs where both elements are multiples of 'i'
+            long long pairs = multiples_count * (multiples_count - 1) / 2;
+            exact[i] = pairs;
+            
+            // Subtract pairs where the GCD is a strict multiple of 'i' (e.g., 2i, 3i...)
+            for (int j = 2 * i; j <= max_val; j += i) {
+                exact[i] -= exact[j];
+            }
+        }
+        
+        // Build the prefix sum array
+        vector<long long> prefix(max_val + 1, 0);
+        for (int i = 1; i <= max_val; ++i) {
+            prefix[i] = prefix[i - 1] + exact[i];
+        }
+        
+        // Answer each query using binary search
+        vector<int> ans;
+        for (long long q : queries) {
+            int left = 1, right = max_val, res = max_val;
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                // We want the first GCD value whose cumulative count is greater than the 0-based query index
+                if (prefix[mid] > q) {
+                    res = mid;
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            ans.push_back(res);
+        }
+        
+        return ans;
+    }
+};
