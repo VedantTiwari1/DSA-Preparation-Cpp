@@ -1,0 +1,16 @@
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+using namespace std;
+
+class Solution {
+public:
+    int findGCD(vector<int>& nums) {
+        // std::minmax_element returns a pair of iterators pointing to the min and max elements
+        auto [min_it, max_it] = std::minmax_element(nums.begin(), nums.end());
+        
+        // Dereference the iterators to get the values and return their GCD
+        return std::gcd(*min_it, *max_it);
+    }
+};
