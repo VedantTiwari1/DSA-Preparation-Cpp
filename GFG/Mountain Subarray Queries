@@ -1,0 +1,50 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<bool> processQueries(vector<int> &arr, vector<vector<int>> &queries) {
+        int n = arr.size();
+        if (n == 0) return {};
+        
+        vector<int> right_inc(n);
+        vector<int> left_dec(n);
+        
+        // Step 1: Compute right_inc array (moving right to find max non-decreasing extent)
+        right_inc[n - 1] = n - 1;
+        for (int i = n - 2; i >= 0; --i) {
+            if (arr[i] <= arr[i + 1]) {
+                right_inc[i] = right_inc[i + 1];
+            } else {
+                right_inc[i] = i;
+            }
+        }
+        
+        // Step 2: Compute left_dec array (moving left to find start of non-increasing extent)
+        left_dec[0] = 0;
+        for (int i = 1; i < n; ++i) {
+            if (arr[i] <= arr[i - 1]) {
+                left_dec[i] = left_dec[i - 1];
+            } else {
+                left_dec[i] = i;
+            }
+        }
+        
+        // Step 3: Process all queries in O(1) time each
+        vector<bool> ans;
+        for (const auto& q : queries) {
+            int L = q[0];
+            int R = q[1];
+            
+            // If the peak of the left slope passes or meets the start of the right slope
+            if (right_inc[L] >= left_dec[R]) {
+                ans.push_back(true);
+            } else {
+                ans.push_back(false);
+            }
+        }
+        
+        return ans;
+    }
+};
