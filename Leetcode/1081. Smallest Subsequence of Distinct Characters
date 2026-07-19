@@ -1,0 +1,41 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    string smallestSubsequence(string s) {
+        // Arrays to keep track of character states for O(1) lookups
+        vector<int> last_occurrence(26, -1);
+        vector<bool> in_stack(26, false);
+        string result = ""; // This string will act as our monotonic stack
+
+        // Step 1: Record the last occurrence index of each character
+        for (int i = 0; i < s.length(); ++i) {
+            last_occurrence[s[i] - 'a'] = i;
+        }
+
+        // Step 2: Build the result string
+        for (int i = 0; i < s.length(); ++i) {
+            char c = s[i];
+            
+            // If the character is already in our constructed subsequence, skip it
+            if (in_stack[c - 'a']) continue;
+
+            // While result is not empty, AND the last character is lexicographically greater than current,
+            // AND the last character appears again later in the string:
+            while (!result.empty() && result.back() > c && last_occurrence[result.back() - 'a'] > i) {
+                // We can safely drop the last character and pick it up later
+                in_stack[result.back() - 'a'] = false;
+                result.pop_back();
+            }
+
+            // Add the current character to result and mark it as used
+            result.push_back(c);
+            in_stack[c - 'a'] = true;
+        }
+
+        return result;
+    }
+};
