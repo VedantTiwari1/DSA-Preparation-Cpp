@@ -1,0 +1,39 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> shiftGrid(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int total_elements = m * n;
+        
+        // Optimize k to avoid unnecessary full-cycle shifts
+        k = k % total_elements;
+        
+        // If k is 0, the grid remains unchanged
+        if (k == 0) return grid;
+        
+        vector<vector<int>> result(m, vector<int>(n));
+        
+        for (int r = 0; r < m; ++r) {
+            for (int c = 0; c < n; ++c) {
+                // Convert current 2D coordinate to a 1D index
+                int flat_index = r * n + c;
+                
+                // Calculate the new 1D index after shifting
+                int new_flat_index = (flat_index + k) % total_elements;
+                
+                // Convert the new 1D index back to 2D coordinates
+                int new_r = new_flat_index / n;
+                int new_c = new_flat_index % n;
+                
+                // Place the element in its new position
+                result[new_r][new_c] = grid[r][c];
+            }
+        }
+        
+        return result;
+    }
+};
