@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxActiveSectionsAfterTrade(string s) {
+        int n = s.length();
+        if (n == 0) return 0;
+
+        // Step 1: Compress the string into contiguous blocks of 0s and 1s
+        vector<pair<int, int>> blocks; // {type, length}
+        int count = 1;
+        for (int i = 1; i < n; ++i) {
+            if (s[i] == s[i - 1]) {
+                count++;
+            } else {
+                blocks.push_back({s[i - 1] - '0', count});
+                count = 1;
+            }
+        }
+        blocks.push_back({s[n - 1] - '0', count});
+
+        // Step 2: Track initial 1s and available 0-blocks
+        int initial_ones = 0;
+        vector<pair<int, int>> zero_blocks; // {length, index_in_blocks}
+        
+        for (int i = 0; i < blocks.size(); ++i) {
+            if (blocks[i].first == 1) {
+                initial_ones += blocks[i].second;
+            } else {
+                zero_blocks.push_back({blocks[i].second, i});
+            }
+        }
+
+        // Keep the largest 0-blocks easily accessible
+        sort(zero_blocks.rbegin(), zero_blocks.rend());
+        if (zero_blocks.size() > 3) {
+            zero_blocks.resize(3);
+        }
+
+        int max_ones = initial_ones;
+        int m = blocks.size();
+
+        // Step 3: Evaluate trades for every valid 1-block
+        // A 1-block is surrounded by 0s only if it isn't at the edges of the compressed blocks array
+        for (int i = 1; i < m - 1; ++i) {
+            if (blocks[i].first == 1) {
+                // Destroying this 1-block merges the left and right 0-blocks
+                int L_merge = blocks[i - 1].second + blocks[i].second + blocks[i + 1].second;
+                
+                int max_other_0 = 0;
+                // Find the largest 0-block that wasn't part of this merge
+                for (const auto& zb : zero_blocks) {
+                    if (zb.second != i - 1 && zb.second != i + 1) {
+                        max_other_0 = zb.first;
+                        break;
+                    }
+                }
+
+                // Choose the best 0-block to convert into 1s
+                int best_0_to_1 = max(L_merge, max_other_0);
+                
+                // Calculate net result for this specific trade
+                int current_ones = initial_ones - blocks[i].second + best_0_to_1;
+                max_ones = max(max_ones, current_ones);
+            }
+        }
+
+        return max_ones;
+    }
+};
