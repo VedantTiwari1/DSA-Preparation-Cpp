@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int minDeletions(vector<int>& arr) {
+        vector<int> lis;
+        
+        for (int x : arr) {
+            // Find the first element in 'lis' that is >= x
+            auto it = lower_bound(lis.begin(), lis.end(), x);
+            
+            // If x is greater than all elements, it extends the subsequence
+            if (it == lis.end()) {
+                lis.push_back(x);
+            } 
+            // Otherwise, replace the found element with x to maintain the smallest possible tails
+            else {
+                *it = x;
+            }
+        }
+        
+        // Minimum deletions = total elements - elements we keep (LIS)
+        return arr.size() - lis.size();
+    }
+};
