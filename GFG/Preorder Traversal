@@ -1,0 +1,27 @@
+class Solution {
+private:
+    // Helper function to perform the recursive traversal
+    void traverse(Node* node, vector<int>& result) {
+        // Base case: if the current node is null, stop and return
+        if (node == nullptr) {
+            return;
+        }
+        
+        // 1. Visit the root (current node)
+        result.push_back(node->data);
+        
+        // 2. Visit the left child/subtree
+        traverse(node->left, result);
+        
+        // 3. Visit the right child/subtree
+        traverse(node->right, result);
+    }
+
+public:
+    vector<int> preOrder(Node* root) {
+        vector<int> result;
+        // Start the recursive traversal from the root
+        traverse(root, result);
+        return result;
+    }
+};
