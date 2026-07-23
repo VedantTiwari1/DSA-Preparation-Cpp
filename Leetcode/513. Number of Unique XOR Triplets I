@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int uniqueXorTriplets(vector<int>& nums) {
+        int n = nums.size();
+        
+        // Base cases for small n
+        if (n == 1) return 1;
+        if (n == 2) return 2;
+        
+        // For n >= 3, the number of unique XOR values is the 
+        // smallest power of 2 that is strictly greater than n.
+        int powerOfTwo = 1;
+        while (powerOfTwo <= n) {
+            powerOfTwo *= 2;
+        }
+        
+        return powerOfTwo;
+    }
+};
