@@ -1,0 +1,49 @@
+/* Structure of Binary Tree Node
+class Node {
+  public:
+    int data;
+    Node* left;
+    Node* right;
+    
+    Node(int val) {
+        data = val;
+        left = nullptr;
+        right = nullptr;
+    }
+};
+*/
+
+class Solution {
+public:
+    int longestConsecutive(Node* root) {
+        if (!root) return -1;
+        
+        int max_len = 0;
+        // Start DFS: expected value is root->data (to trigger a match on the first step), 
+        // starting length is 0.
+        dfs(root, root->data, 0, max_len);
+        
+        // If the longest path is less than 2, no valid parent-child sequence exists.
+        return max_len > 1 ? max_len : -1;
+    }
+
+private:
+    void dfs(Node* node, int target_val, int current_len, int& max_len) {
+        if (!node) return;
+        
+        // If the current node matches the expected consecutive value, increment the sequence length.
+        // Otherwise, the streak is broken; reset the length to 1 starting from this node.
+        if (node->data == target_val) {
+            current_len++;
+        } else {
+            current_len = 1;
+        }
+        
+        // Update the global maximum length found so far
+        max_len = max(max_len, current_len);
+        
+        // Recurse for left and right children, expecting the next value to be node->data + 1
+        dfs(node->left, node->data + 1, current_len, max_len);
+        dfs(node->right, node->data + 1, current_len, max_len);
+    }
+};
