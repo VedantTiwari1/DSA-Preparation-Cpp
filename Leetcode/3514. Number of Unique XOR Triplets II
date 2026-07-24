@@ -1,0 +1,39 @@
+#include <vector>
+#include <unordered_set>
+
+using namespace std;
+
+class Solution {
+public:
+    int uniqueXorTriplets(vector<int>& nums) {
+        // 1. Deduplicate the input to minimize redundant operations
+        unordered_set<int> unique_set(nums.begin(), nums.end());
+        vector<int> u(unique_set.begin(), unique_set.end());
+        
+        unordered_set<int> result;
+        unordered_set<int> pairs;
+        
+        // 2. All single elements are valid triplet values (x ^ x ^ y = y)
+        for (int val : u) {
+            result.insert(val);
+        }
+        
+        int n = u.size();
+        
+        // 3. Compute all unique pairwise XORs
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                pairs.insert(u[i] ^ u[j]);
+            }
+        }
+        
+        // 4. XOR all unique pairs with every unique element to complete the triplet
+        for (int p : pairs) {
+            for (int val : u) {
+                result.insert(p ^ val);
+            }
+        }
+        
+        return result.size();
+    }
+};
