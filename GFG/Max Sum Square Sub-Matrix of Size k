@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int maximumSum(vector<vector<int>>& mat, int k) {
+        int n = mat.size();
+        
+        // Create a 1-indexed prefix sum matrix to handle boundaries easily
+        vector<vector<int>> prefix(n + 1, vector<int>(n + 1, 0));
+        
+        // 1. Build the prefix sum matrix
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                prefix[i][j] = mat[i - 1][j - 1] 
+                             + prefix[i - 1][j] 
+                             + prefix[i][j - 1] 
+                             - prefix[i - 1][j - 1];
+            }
+        }
+        
+        int maxSum = INT_MIN; // Initialize with the smallest possible integer
+        
+        // 2. Find the maximum sum of any k x k sub-matrix
+        // We iterate through all possible bottom-right corners of the k x k grid
+        for (int i = k; i <= n; ++i) {
+            for (int j = k; j <= n; ++j) {
+                
+                // Calculate the sum of the k x k sub-matrix ending at (i, j)
+                int currentSum = prefix[i][j] 
+                               - prefix[i - k][j] 
+                               - prefix[i][j - k] 
+                               + prefix[i - k][j - k];
+                
+                maxSum = max(maxSum, currentSum);
+            }
+        }
+        
+        return maxSum;
+    }
+};
