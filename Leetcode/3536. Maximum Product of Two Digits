@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int maxProduct(int n) {
+        int max1 = 0; // Highest digit
+        int max2 = 0; // Second highest digit
+        
+        while (n > 0) {
+            int digit = n % 10; // Extract the last digit
+            
+            // If the current digit is greater than the highest seen so far
+            if (digit > max1) {
+                max2 = max1;    // The old highest becomes the second highest
+                max1 = digit;   // Update the highest
+            } 
+            // If it's not greater than max1, but greater than max2
+            else if (digit > max2) {
+                max2 = digit;   // Update the second highest
+            }
+            
+            n /= 10; // Remove the last digit from n
+        }
+        
+        return max1 * max2;
+    }
+};
