@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<vector<int>> levelSort(vector<int>& arr) {
+        vector<vector<int>> result;
+        int n = arr.size();
+        int i = 0;
+        int levelSize = 1; // Number of max nodes at the current level
+
+        while (i < n) {
+            vector<int> currentLevel;
+            
+            // The actual number of nodes in this level is either the full 
+            // level capacity, or whatever is left in the array.
+            int count = min(levelSize, n - i);
+            
+            for (int j = 0; j < count; ++j) {
+                currentLevel.push_back(arr[i]);
+                i++;
+            }
+            
+            // Sort the extracted level independently
+            sort(currentLevel.begin(), currentLevel.end());
+            result.push_back(currentLevel);
+            
+            // Move to the next level which can hold twice as many nodes
+            levelSize *= 2;
+        }
+
+        return result;
+    }
+};
