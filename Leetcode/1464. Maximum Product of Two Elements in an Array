@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int max1 = 0; // Highest number
+        int max2 = 0; // Second highest number
+        
+        for (int num : nums) {
+            if (num > max1) {
+                // Current max1 gets pushed down to max2
+                max2 = max1; 
+                max1 = num;
+            } else if (num > max2) {
+                // If it's not greater than max1 but greater than max2
+                max2 = num;
+            }
+        }
+        
+        return (max1 - 1) * (max2 - 1);
+    }
+};
