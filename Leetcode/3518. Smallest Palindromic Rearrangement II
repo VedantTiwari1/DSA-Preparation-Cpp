@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+    // Helper function to safely calculate combinations nCr with a cap to prevent overflow
+    long long nCr(int n, int r) {
+        if (r < 0 || r > n) return 0;
+        if (r > n / 2) r = n - r;
+        long long res = 1;
+        for (int i = 1; i <= r; ++i) {
+            res = res * (n - i + 1) / i;
+            // Cap at 2e9 + 1 because k is bounded by standard 32-bit signed integer limits
+            if (res > 2000000000LL) return 2000000001LL; 
+        }
+        return res;
+    }
+
+    // Helper function to calculate the number of permutations of the given character frequencies
+    long long countPerms(const vector<int>& f, int N) {
+        long long res = 1;
+        int rem = N;
+        for (int c : f) {
+            if (c == 0) continue;
+            long long ways = nCr(rem, c);
+            if (ways > 2000000000LL) return 2000000001LL;
+            if (res > 2000000000LL / ways + 1) return 2000000001LL;
+            res *= ways;
+            rem -= c;
+        }
+        return min(res, 2000000001LL);
+    }
+
+public:
+    string smallestPalindrome(string s, int k) {
+        vector<int> counts(26, 0);
+        for (char c : s) {
+            counts[c - 'a']++;
+        }
+
+        vector<int> f(26, 0);
+        char mid_char = 0;
+        
+        // Split frequencies for the left half
+        for (int i = 0; i < 26; ++i) {
+            if (counts[i] % 2 != 0) {
+                mid_char = i + 'a';
+            }
+            f[i] = counts[i] / 2;
+        }
+
+        int N = s.length() / 2;
+
+        // If total unique palindromes are strictly less than k, return empty string
+        if (countPerms(f, N) < k) return "";
+
+        string left = "";
+        
+        // Build the left half string greedily
+        for (int i = 0; i < N; ++i) {
+            for (int c = 0; c < 26; ++c) {
+                if (f[c] > 0) {
+                    f[c]--; // Temporarily pick character 'c'
+                    
+                    long long perms = countPerms(f, N - 1 - i);
+                    
+                    if (k <= perms) {
+                        left += (char)('a' + c);
+                        break; // Character is locked in, move to the next position in the string
+                    } else {
+                        k -= perms; // Skip all permutations starting with 'c'
+                        f[c]++;     // Backtrack and try the next character
+                    }
+                }
+            }
+        }
+
+        // Mirror the string
+        string right = left;
+        reverse(right.begin(), right.end());
+        string mid = (s.length() % 2 != 0) ? string(1, mid_char) : "";
+        
+        return left + mid + right;
+    }
+};
