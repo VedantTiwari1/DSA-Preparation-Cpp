@@ -1,0 +1,30 @@
+#include <vector>
+#include <string>
+#include <algorithm>
+
+class Solution {
+public:
+    int minimumPushes(std::string word) {
+        // Step 1: Count the frequency of each character
+        std::vector<int> freq(26, 0);
+        for (char c : word) {
+            freq[c - 'a']++;
+        }
+        
+        // Step 2: Sort frequencies in descending order
+        std::sort(freq.rbegin(), freq.rend());
+        
+        int total_pushes = 0;
+        
+        // Step 3: Calculate total pushes using the greedy strategy
+        for (int i = 0; i < 26; ++i) {
+            if (freq[i] == 0) break; // Stop early if no more characters are present
+            
+            // The multiplier increases by 1 for every 8 characters
+            int pushes = (i / 8) + 1;
+            total_pushes += freq[i] * pushes;
+        }
+        
+        return total_pushes;
+    }
+};
