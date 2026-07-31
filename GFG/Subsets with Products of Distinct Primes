@@ -1,0 +1,66 @@
+#include <vector>
+
+class Solution {
+public:
+    int countSubsets(std::vector<int>& arr) {
+        int MOD = 1e9 + 7;
+        std::vector<int> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+        
+        // Step 1: Count frequencies of each number up to 30
+        std::vector<long long> freq(31, 0);
+        for (int num : arr) {
+            if (num <= 30) {
+                freq[num]++;
+            }
+        }
+        
+        // dp[mask] stores the number of valid subsets forming the prime combination of 'mask'
+        std::vector<long long> dp(1024, 0);
+        dp[0] = 1; // Base case: 1 way to have an empty subset (product = 1, mask = 0)
+        
+        // Step 2: Iterate through all candidate numbers from 2 to 30
+        for (int i = 2; i <= 30; i++) {
+            if (freq[i] == 0) continue;
+            
+            // Skip numbers that are not square-free
+            if (i % 4 == 0 || i % 9 == 0 || i % 25 == 0) continue;
+            
+            // Find the bitmask representation of the current number
+            int mask = 0;
+            int temp = i;
+            for (int j = 0; j < 10; j++) {
+                if (temp % primes[j] == 0) {
+                    mask |= (1 << j);
+                }
+            }
+            
+            // Step 3: Update the DP table
+            // Iterate backwards to avoid using the same number multiple times in the same step
+            for (int state = 1023; state >= 0; state--) {
+                // If the current state and our number's mask share no common primes
+                if ((state & mask) == 0) {
+                    dp[state | mask] = (dp[state | mask] + dp[state] * freq[i]) % MOD;
+                }
+            }
+        }
+        
+        // Step 4: Sum all valid subsets (ignoring the empty subset at dp[0])
+        long long total_subsets = 0;
+        for (int i = 1; i < 1024; i++) {
+            total_subsets = (total_subsets + dp[i]) % MOD;
+        }
+        
+        // Step 5: Account for the 1s using modular exponentiation
+        long long power_of_2 = 1;
+        long long base = 2;
+        long long exp = freq[1];
+        
+        while (exp > 0) {
+            if (exp % 2 == 1) power_of_2 = (power_of_2 * base) % MOD;
+            base = (base * base) % MOD;
+            exp /= 2;
+        }
+        
+        return (total_subsets * power_of_2) % MOD;
+    }
+};
