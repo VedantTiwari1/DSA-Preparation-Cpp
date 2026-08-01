@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findMax(int n, vector<int>& a, vector<int>& b, vector<int>& k) {
+        // Create a difference array of size n + 1 initialized to 0
+        vector<int> arr(n + 1, 0); 
+        
+        int m = a.size();
+        
+        // Step 1: Apply boundary updates for each range increment
+        for (int i = 0; i < m; ++i) {
+            arr[a[i]] += k[i];
+            
+            // Subtract k[i] just after the range ends to cancel the effect for subsequent indices
+            if (b[i] + 1 < n) {
+                arr[b[i] + 1] -= k[i];
+            }
+        }
+        
+        // Step 2: Calculate the prefix sum to find the actual values and the maximum
+        int max_val = 0;
+        int current_sum = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            current_sum += arr[i];
+            max_val = max(max_val, current_sum);
+        }
+        
+        return max_val;
+    }
+};
