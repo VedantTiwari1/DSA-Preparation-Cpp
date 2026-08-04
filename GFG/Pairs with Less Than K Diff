@@ -1,0 +1,31 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int countPairs(vector<int>& arr, int k) {
+        int n = arr.size();
+        
+        // Step 1: Sort the array
+        sort(arr.begin(), arr.end());
+        
+        int count = 0;
+        int right = 0;
+        
+        // Step 2 & 3: Two pointer approach
+        for (int left = 0; left < n; ++left) {
+            // Move right pointer as long as the difference is less than k
+            while (right < n && arr[right] - arr[left] < k) {
+                right++;
+            }
+            
+            // Step 4: Add the number of valid pairs found for the current 'left'
+            // The valid elements are from index (left + 1) to (right - 1)
+            count += (right - left - 1);
+        }
+        
+        return count;
+    }
+};
