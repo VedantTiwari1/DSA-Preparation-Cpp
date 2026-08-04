@@ -1,0 +1,29 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findMissingElements(vector<int>& nums) {
+        vector<int> result;
+        
+        // If the array is empty or has only one element, there are no gaps
+        if (nums.size() <= 1) {
+            return result;
+        }
+        
+        // Step 1: Sort the array
+        sort(nums.begin(), nums.end());
+        
+        // Step 2 & 3: Iterate and fill gaps
+        for (int i = 1; i < nums.size(); ++i) {
+            // Find all missing numbers strictly between nums[i-1] and nums[i]
+            for (int missing = nums[i - 1] + 1; missing < nums[i]; ++missing) {
+                result.push_back(missing);
+            }
+        }
+        
+        return result;
+    }
+};
