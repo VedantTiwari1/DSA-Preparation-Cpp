@@ -1,0 +1,61 @@
+#include <vector>
+#include <queue>
+
+class Solution {
+public:
+    std::vector<int> remainingMethods(int n, int k, std::vector<std::vector<int>>& invocations) {
+        // Step 1: Build the adjacency list for the graph
+        std::vector<std::vector<int>> adj(n);
+        for (const auto& inv : invocations) {
+            adj[inv[0]].push_back(inv[1]);
+        }
+
+        // Step 2: Find all suspicious methods using BFS
+        std::vector<bool> suspicious(n, false);
+        std::queue<int> q;
+        
+        q.push(k);
+        suspicious[k] = true;
+
+        while (!q.empty()) {
+            int curr = q.front();
+            q.pop();
+            for (int neighbor : adj[curr]) {
+                if (!suspicious[neighbor]) {
+                    suspicious[neighbor] = true;
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        // Step 3: Check if any non-suspicious method invokes a suspicious one
+        bool canRemove = true;
+        for (const auto& inv : invocations) {
+            int u = inv[0];
+            int v = inv[1];
+            // If an outside method (u) calls an inside method (v), we can't remove
+            if (!suspicious[u] && suspicious[v]) {
+                canRemove = false;
+                break;
+            }
+        }
+
+        // Step 4: Construct the final array
+        std::vector<int> result;
+        if (canRemove) {
+            // Add only non-suspicious methods
+            for (int i = 0; i < n; ++i) {
+                if (!suspicious[i]) {
+                    result.push_back(i);
+                }
+            }
+        } else {
+            // Add all methods since removal isn't possible
+            for (int i = 0; i < n; ++i) {
+                result.push_back(i);
+            }
+        }
+
+        return result;
+    }
+};
