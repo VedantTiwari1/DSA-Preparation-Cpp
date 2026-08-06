@@ -1,0 +1,42 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int countMinOperations(vector<int>& arr) {
+        int max_element = 0;
+        int total_increments = 0;
+        
+        for (int num : arr) {
+            // Track the maximum element to find global doubling operations
+            max_element = max(max_element, num);
+            
+            // Count the set bits (1s) for the current number
+            // This represents the individual +1 operations needed
+            int temp = num;
+            while (temp > 0) {
+                if (temp % 2 != 0) {
+                    total_increments++;
+                }
+                temp /= 2;
+            }
+        }
+        
+        // If the array only contains 0s, no operations are needed
+        if (max_element == 0) {
+            return 0;
+        }
+        
+        // Find the number of times we need to double globally
+        // This is the position of the highest set bit in the max_element
+        int max_doubles = 0;
+        while (max_element > 1) {
+            max_element /= 2;
+            max_doubles++;
+        }
+        
+        return total_increments + max_doubles;
+    }
+};
