@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int countFriendsPairings(int n) {
+        // Base cases
+        if (n <= 2) {
+            return n;
+        }
+        
+        long long a = 1; // Represents f(n-2)
+        long long b = 2; // Represents f(n-1)
+        long long c = 0; // Represents f(n)
+        long long mod = 1e9 + 7;
+        
+        for (int i = 3; i <= n; i++) {
+            c = (b + (i - 1) * a) % mod;
+            a = b;
+            b = c;
+        }
+        
+        return c;
+    }
+};
