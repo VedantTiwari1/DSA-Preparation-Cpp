@@ -1,0 +1,40 @@
+class Solution {
+public:
+    void dfs(int node, vector<vector<int>>& adj, vector<bool>& visited) {
+        visited[node] = true;
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited);
+            }
+        }
+    }
+
+    int minEdgesReq(int n, vector<vector<int>>& edges) {
+        // Step 1: Base case check
+        // If there are fewer than n-1 edges, it's impossible to connect the graph
+        if (edges.size() < n - 1) {
+            return -1;
+        }
+
+        // Step 2: Build the adjacency list for the undirected graph
+        vector<vector<int>> adj(n);
+        for (const auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+
+        vector<bool> visited(n, false);
+        int components = 0;
+
+        // Step 3: Traverse the graph to count connected components
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                components++;
+                dfs(i, adj, visited);
+            }
+        }
+
+        // Step 4: The operations needed is the number of components minus 1
+        return components - 1;
+    }
+};
