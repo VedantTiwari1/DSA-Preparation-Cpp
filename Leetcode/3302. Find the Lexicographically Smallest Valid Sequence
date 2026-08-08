@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<int> validSequence(string word1, string word2) {
+        int n = word1.length();
+        int m = word2.length();
+        
+        // match_len[i] stores the length of the longest suffix of word2 
+        // that is a subsequence of word1[i...n-1]
+        vector<int> match_len(n + 1, 0);
+        int j = m - 1;
+        
+        for (int i = n - 1; i >= 0; --i) {
+            if (j >= 0 && word1[i] == word2[j]) {
+                match_len[i] = match_len[i + 1] + 1;
+                j--;
+            } else {
+                match_len[i] = match_len[i + 1];
+            }
+        }
+        
+        vector<int> ans;
+        bool changed = false;
+        j = 0;
+        
+        // Greedily find the lexicographically smallest sequence
+        for (int i = 0; i < n; ++i) {
+            if (j == m) break;
+            
+            if (word1[i] == word2[j]) {
+                ans.push_back(i);
+                j++;
+            } else if (!changed && match_len[i + 1] >= m - 1 - j) {
+                // If we haven't made a change yet, and the remaining required 
+                // characters of word2 can be found in the remaining characters of word1
+                changed = true;
+                ans.push_back(i);
+                j++;
+            }
+        }
+        
+        // If we matched all characters of word2, return the sequence
+        if (j == m) {
+            return ans;
+        }
+        
+        // Otherwise, no valid sequence exists
+        return {};
+    }
+};
