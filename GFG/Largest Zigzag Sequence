@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int zigzagSequence(vector<vector<int>>& mat) {
+        int n = mat.size();
+        if (n == 0) return 0;
+        
+        // Variables to keep track of the top two sums and the index of the max sum from the previous row
+        int max1 = -1;
+        int max2 = -1; 
+        int idx1 = -1;
+        
+        // Initialize for the first row
+        for (int j = 0; j < n; ++j) {
+            if (mat[0][j] > max1) {
+                max2 = max1;
+                max1 = mat[0][j];
+                idx1 = j;
+            } else if (mat[0][j] > max2) {
+                max2 = mat[0][j];
+            }
+        }
+        
+        // Process subsequent rows
+        for (int i = 1; i < n; ++i) {
+            int next_max1 = -1;
+            int next_max2 = -1; 
+            int next_idx1 = -1;
+            
+            for (int j = 0; j < n; ++j) {
+                // If current column matches the max from the previous row, use the second max.
+                // Otherwise, use the max.
+                int current_val = mat[i][j] + (j == idx1 ? max2 : max1);
+                
+                // Update the maximums for the current row
+                if (current_val > next_max1) {
+                    next_max2 = next_max1;
+                    next_max1 = current_val;
+                    next_idx1 = j;
+                } else if (current_val > next_max2) {
+                    next_max2 = current_val;
+                }
+            }
+            
+            // Move to the next row
+            max1 = next_max1;
+            max2 = next_max2;
+            idx1 = next_idx1;
+        }
+        
+        return max1;
+    }
+};
