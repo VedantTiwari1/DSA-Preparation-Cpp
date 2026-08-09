@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int stoneGameII(vector<int>& piles) {
+        int n = piles.size();
+        // memo[i][m] will store the max stones a player can get starting from index i with given M
+        vector<vector<int>> memo(n, vector<int>(n + 1, -1));
+        
+        // suffix_sum[i] stores the sum of stones from pile i to the end
+        vector<int> suffix_sum(n, 0);
+        suffix_sum[n - 1] = piles[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suffix_sum[i] = suffix_sum[i + 1] + piles[i];
+        }
+        
+        // Alice starts at index 0 with M = 1
+        return dfs(piles, 0, 1, memo, suffix_sum);
+    }
+    
+private:
+    int dfs(const vector<int>& piles, int i, int m, vector<vector<int>>& memo, const vector<int>& suffix_sum) {
+        int n = piles.size();
+        
+        // If no piles are left
+        if (i >= n) return 0;
+        
+        // If the current player can take all remaining piles
+        if (i + 2 * m >= n) return suffix_sum[i];
+        
+        // Return precalculated result if it exists
+        if (memo[i][m] != -1) return memo[i][m];
+        
+        int max_stones = 0;
+        
+        // Try all possible valid moves X (from 1 to 2M)
+        for (int x = 1; x <= 2 * m; ++x) {
+            // Current player's stones = Total remaining stones - Max stones next player can get
+            int current_take = suffix_sum[i] - dfs(piles, i + x, max(m, x), memo, suffix_sum);
+            max_stones = max(max_stones, current_take);
+        }
+        
+        return memo[i][m] = max_stones;
+    }
+};
