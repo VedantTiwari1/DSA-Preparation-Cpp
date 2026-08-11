@@ -1,0 +1,54 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> largestSquare(vector<vector<int>>& mat, vector<vector<int>>& queries, int k) {
+        int n = mat.size();
+        int m = mat[0].size();
+        vector<vector<int>> pref(n + 1, vector<int>(m + 1, 0));
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                pref[i + 1][j + 1] = mat[i][j] + pref[i][j + 1] + pref[i + 1][j] - pref[i][j];
+            }
+        }
+        
+        vector<int> res;
+        res.reserve(queries.size());
+        
+        for (const auto& q : queries) {
+            int r = q[0];
+            int c = q[1];
+            
+            int low = 0;
+            int high = min({r, c, n - 1 - r, m - 1 - c});
+            int best = -1;
+            
+            while (low <= high) {
+                int mid = low + (high - low) / 2;
+                int r1 = r - mid, c1 = c - mid;
+                int r2 = r + mid, c2 = c + mid;
+                
+                int sum = pref[r2 + 1][c2 + 1] - pref[r1][c2 + 1] - pref[r2 + 1][c1] + pref[r1][c1];
+                
+                if (sum <= k) {
+                    best = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            
+            if (best == -1) {
+                res.push_back(-1); 
+            } else {
+                res.push_back(2 * best + 1);
+            }
+        }
+        
+        return res;
+    }
+};
