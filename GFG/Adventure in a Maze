@@ -1,0 +1,54 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> findWays(vector<vector<int>>& grid) {
+        int n = grid.size();
+        long long MOD = 1e9 + 7;
+        
+        vector<vector<long long>> paths(n, vector<long long>(n, 0));
+        vector<vector<long long>> max_adv(n, vector<long long>(n, 0));
+        
+        // Base case: Starting cell
+        paths[0][0] = 1;
+        max_adv[0][0] = grid[0][0];
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                // Skip the starting cell as it's already initialized
+                if (i == 0 && j == 0) continue;
+                
+                long long current_paths = 0;
+                long long current_max = 0;
+                
+                // Check if we can arrive from the TOP cell (i-1, j)
+                if (i > 0 && paths[i-1][j] > 0 && (grid[i-1][j] == 2 || grid[i-1][j] == 3)) {
+                    current_paths = (current_paths + paths[i-1][j]) % MOD;
+                    current_max = max(current_max, max_adv[i-1][j] + grid[i][j]);
+                }
+                
+                // Check if we can arrive from the LEFT cell (i, j-1)
+                if (j > 0 && paths[i][j-1] > 0 && (grid[i][j-1] == 1 || grid[i][j-1] == 3)) {
+                    current_paths = (current_paths + paths[i][j-1]) % MOD;
+                    current_max = max(current_max, max_adv[i][j-1] + grid[i][j]);
+                }
+                
+                // If the current cell is reachable, update the DP tables
+                if (current_paths > 0) {
+                    paths[i][j] = current_paths;
+                    max_adv[i][j] = current_max;
+                }
+            }
+        }
+        
+        // If the bottom-right cell is unreachable, return {0, 0}
+        if (paths[n-1][n-1] == 0) {
+            return {0, 0};
+        }
+        
+        return {(int)paths[n-1][n-1], (int)max_adv[n-1][n-1]};
+    }
+};
