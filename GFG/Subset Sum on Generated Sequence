@@ -1,0 +1,43 @@
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    bool isPossible(vector<int>& arr, int s, int x) {
+        vector<long long> P;
+        
+        // Add the initial value if it's within the target
+        if (s <= x) {
+            P.push_back(s);
+        }
+        
+        long long current_sum = s;
+        
+        // Generate the sequence up to x
+        for (int i = 0; i < arr.size(); ++i) {
+            if (current_sum > x) {
+                break;
+            }
+            
+            long long next_elem = current_sum + arr[i];
+            
+            if (next_elem <= x) {
+                P.push_back(next_elem);
+                current_sum += next_elem;
+            } else {
+                break;
+            }
+        }
+        
+        // Greedily find the subset sum
+        long long target = x;
+        for (int i = (int)P.size() - 1; i >= 0; --i) {
+            if (target >= P[i]) {
+                target -= P[i];
+            }
+        }
+        
+        return target == 0;
+    }
+};
