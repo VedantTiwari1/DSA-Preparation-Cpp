@@ -1,0 +1,29 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    int maximumLengthSubstring(std::string s) {
+        // Array to store the frequency of characters (size 128 covers all standard ASCII)
+        std::vector<int> freq(128, 0);
+        
+        int max_len = 0;
+        int left = 0;
+        
+        for (int right = 0; right < s.length(); ++right) {
+            freq[s[right]]++;
+            
+            // If the current character's frequency exceeds 2, shrink the window from the left
+            while (freq[s[right]] > 2) {
+                freq[s[left]]--;
+                left++;
+            }
+            
+            // Update the maximum length found so far
+            max_len = std::max(max_len, right - left + 1);
+        }
+        
+        return max_len;
+    }
+};
