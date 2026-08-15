@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int longestSubsequence(vector<int>& nums) {
+        int totalXor = 0;
+        bool hasNonZero = false;
+        
+        for (int num : nums) {
+            totalXor ^= num;
+            if (num != 0) {
+                hasNonZero = true;
+            }
+        }
+        
+        // If the total XOR is already non-zero, take the whole array
+        if (totalXor != 0) {
+            return nums.size();
+        }
+        
+        // If total XOR is 0 but we have at least one non-zero element, 
+        // removing one non-zero element gives a non-zero XOR.
+        if (hasNonZero) {
+            return nums.size() - 1;
+        }
+        
+        // If all elements are 0
+        return 0;
+    }
+};
