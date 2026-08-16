@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool stoneGameIX(vector<int>& stones) {
+        int counts[3] = {0, 0, 0};
+        
+        // Count the frequencies of mod 3 values
+        for (int stone : stones) {
+            counts[stone % 3]++;
+        }
+        
+        // If the number of 0s is even, they cancel out.
+        // Alice wins as long as there's at least one 1 and one 2.
+        if (counts[0] % 2 == 0) {
+            return counts[1] > 0 && counts[2] > 0;
+        } 
+        // If the number of 0s is odd, it shifts the game parity.
+        // Alice wins only if one type outnumbers the other by more than 2.
+        else {
+            return abs(counts[1] - counts[2]) > 2;
+        }
+    }
+};
