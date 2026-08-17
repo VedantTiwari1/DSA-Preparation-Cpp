@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int minThrows(int n, vector<int>& lad, vector<int>& sn) {
+        int target = n * n;
+        vector<int> board(target + 1, -1);
+        
+        // Map ladders
+        for (int i = 0; i < lad.size(); i += 2) {
+            board[lad[i]] = lad[i + 1];
+        }
+        
+        // Map snakes
+        for (int i = 0; i < sn.size(); i += 2) {
+            board[sn[i]] = sn[i + 1];
+        }
+        
+        // BFS queue storing pairs of {current_cell, dice_throws}
+        queue<pair<int, int>> q;
+        vector<bool> visited(target + 1, false);
+        
+        q.push({1, 0});
+        visited[1] = true;
+        
+        while (!q.empty()) {
+            auto [curr, throws] = q.front();
+            q.pop();
+            
+            // If we reached the final cell, return the number of throws
+            if (curr == target) {
+                return throws;
+            }
+            
+            // Try all possible dice throws from 1 to 6
+            for (int dice = 1; dice <= 6; ++dice) {
+                int next_cell = curr + dice;
+                
+                if (next_cell <= target) {
+                    // If there's a snake or ladder, take it immediately
+                    if (board[next_cell] != -1) {
+                        next_cell = board[next_cell];
+                    }
+                    
+                    // If the cell hasn't been visited, queue it up
+                    if (!visited[next_cell]) {
+                        visited[next_cell] = true;
+                        q.push({next_cell, throws + 1});
+                    }
+                }
+            }
+        }
+        
+        // If it is impossible to reach the end
+        return -1; 
+    }
+};
