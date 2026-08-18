@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int largestInteger(vector<int>& nums, int k) {
+        unordered_map<int, int> subarray_count;
+        int n = nums.size();
+        
+        // Step 1 & 2: Process every subarray of size k
+        for (int i = 0; i <= n - k; i++) {
+            unordered_set<int> unique_in_window;
+            
+            // Collect unique elements in the current window
+            for (int j = 0; j < k; j++) {
+                unique_in_window.insert(nums[i + j]);
+            }
+            
+            // Step 3: Increment their occurrence count
+            for (int num : unique_in_window) {
+                subarray_count[num]++;
+            }
+        }
+        
+        // Step 4: Find the largest integer that appears in exactly one subarray
+        int max_almost_missing = -1;
+        for (const auto& pair : subarray_count) {
+            if (pair.second == 1) {
+                max_almost_missing = max(max_almost_missing, pair.first);
+            }
+        }
+        
+        return max_almost_missing;
+    }
+};
