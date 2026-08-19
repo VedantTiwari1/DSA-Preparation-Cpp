@@ -1,0 +1,34 @@
+class Solution {
+private:
+    // Helper function to count triplets with sum <= target
+    int countTripletsAtMost(vector<int>& arr, int target) {
+        int n = arr.size();
+        int count = 0;
+        
+        for (int i = 0; i < n - 2; i++) {
+            int left = i + 1;
+            int right = n - 1;
+            
+            while (left < right) {
+                if (arr[i] + arr[left] + arr[right] <= target) {
+                    // All elements between left and right will also satisfy the condition
+                    count += (right - left);
+                    left++;
+                } else {
+                    // Sum is too large, decrease the right pointer
+                    right--;
+                }
+            }
+        }
+        return count;
+    }
+
+public:
+    int countTriplets(vector<int> &arr, int l, int r) {
+        // Step 1: Sort the array to enable two-pointer technique
+        sort(arr.begin(), arr.end());
+        
+        // Step 2: Use the mathematical trick to find the range
+        return countTripletsAtMost(arr, r) - countTripletsAtMost(arr, l - 1);
+    }
+};
