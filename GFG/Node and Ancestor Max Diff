@@ -1,0 +1,49 @@
+#include <climits>
+#include <algorithm>
+
+/* Structure of Binary Tree Node
+class Node {
+  public:
+    int data;
+    Node *left;
+    Node *right;
+    Node(int val) {
+        data = val;
+        left = right = nullptr;
+    }
+};
+*/
+
+class Solution {
+public:
+    int getMin(Node* root, int& max_diff) {
+        // Base case: If node is null, return a very large value
+        if (root == nullptr) {
+            return INT_MAX;
+        }
+        
+        // If it's a leaf node, return its data (it has no descendants to form a pair)
+        if (root->left == nullptr && root->right == nullptr) {
+            return root->data;
+        }
+        
+        // Get the minimum values from the left and right subtrees
+        int min_left = getMin(root->left, max_diff);
+        int min_right = getMin(root->right, max_diff);
+        
+        // Find the absolute minimum among all descendants
+        int min_child = std::min(min_left, min_right);
+        
+        // Update the global maximum difference
+        max_diff = std::max(max_diff, root->data - min_child);
+        
+        // Return the minimum value of the current subtree to the parent
+        return std::min(root->data, min_child);
+    }
+    
+    int maxDiff(Node* root) {
+        int max_diff = INT_MIN;
+        getMin(root, max_diff);
+        return max_diff;
+    }
+};
