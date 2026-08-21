@@ -1,0 +1,49 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    int transform(string &s1, string &s2) {
+        // If lengths are different, transformation is impossible
+        if (s1.length() != s2.length()) {
+            return -1;
+        }
+        
+        // Count frequencies to verify both strings have the same characters
+        int count[256] = {0};
+        int n = s1.length();
+        
+        for (int i = 0; i < n; i++) {
+            count[s1[i]]++;
+            count[s2[i]]--;
+        }
+        
+        // If any character count is non-zero, they don't match
+        for (int i = 0; i < 256; i++) {
+            if (count[i] != 0) {
+                return -1;
+            }
+        }
+        
+        // Two pointers starting from the end
+        int i = n - 1;
+        int j = n - 1;
+        int steps = 0;
+        
+        while (i >= 0) {
+            // If characters match, move both pointers backward
+            if (s1[i] == s2[j]) {
+                i--;
+                j--;
+            } else {
+                // If they don't match, s1[i] needs to be moved to the front
+                steps++;
+                i--;
+            }
+        }
+        
+        return steps;
+    }
+};
