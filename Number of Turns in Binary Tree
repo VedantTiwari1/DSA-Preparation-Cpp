@@ -1,0 +1,93 @@
+/* Structure of Binary Tree Node
+class Node {
+public:
+    int data;
+    Node *left;
+    Node *right;
+
+    Node(int val) {
+        data = val;
+        left = right = nullptr;
+    }
+}; */
+
+class Solution {
+private:
+    // Helper to find the Lowest Common Ancestor (LCA)
+    Node* findLCA(Node* root, int p, int q) {
+        if (!root || root->data == p || root->data == q) {
+            return root;
+        }
+        
+        Node* left = findLCA(root->left, p, q);
+        Node* right = findLCA(root->right, p, q);
+        
+        if (left && right) return root;
+        return left ? left : right;
+    }
+
+    // Helper to count turns from an initial branch direction down to the target
+    bool countTurns(Node* curr, int target, bool isLeft, int& turns) {
+        if (!curr) return false;
+        if (curr->data == target) return true;
+
+        // Traverse Left
+        if (curr->left) {
+            if (isLeft) {
+                if (countTurns(curr->left, target, true, turns)) return true;
+            } else {
+                turns++;
+                if (countTurns(curr->left, target, true, turns)) return true;
+                turns--; // Backtrack
+            }
+        }
+
+        // Traverse Right
+        if (curr->right) {
+            if (!isLeft) {
+                if (countTurns(curr->right, target, false, turns)) return true;
+            } else {
+                turns++;
+                if (countTurns(curr->right, target, false, turns)) return true;
+                turns--; // Backtrack
+            }
+        }
+
+        return false;
+    }
+
+    // Helper to initiate turn counting from a parent node
+    int getTurnsFrom(Node* start, int target) {
+        int turns = 0;
+        if (start->left && countTurns(start->left, target, true, turns)) {
+            return turns;
+        }
+        turns = 0;
+        if (start->right && countTurns(start->right, target, false, turns)) {
+            return turns;
+        }
+        return 0;
+    }
+
+public:
+    int numberOfTurns(Node* root, int p, int q) {
+        if (!root || p == q) return -1;
+
+        Node* lca = findLCA(root, p, q);
+        if (!lca) return -1;
+
+        // Case 1: LCA is neither p nor q (nodes are in different subtrees)
+        if (lca->data != p && lca->data != q) {
+            int turnsP = getTurnsFrom(lca, p);
+            int turnsQ = getTurnsFrom(lca, q);
+            // +1 for the turn when moving through the LCA
+            return turnsP + turnsQ + 1;
+        }
+
+        // Case 2: One node is an ancestor of the other
+        int turns = (lca->data == p) ? getTurnsFrom(lca, q) : getTurnsFrom(lca, p);
+        
+        // If it's a straight line (0 turns), problem specifies returning -1
+        return (turns == 0) ? -1 : turns;
+    }
+};
