@@ -1,0 +1,33 @@
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    bool sumGame(string num) {
+        int n = num.size();
+        int sumDiff = 0; // sum(left) - sum(right)
+        int qDiff = 0;   // q(left) - q(right)
+
+        for (int i = 0; i < n / 2; ++i) {
+            if (num[i] == '?') {
+                qDiff++;
+            } else {
+                sumDiff += (num[i] - '0');
+            }
+        }
+
+        for (int i = n / 2; i < n; ++i) {
+            if (num[i] == '?') {
+                qDiff--;
+            } else {
+                sumDiff -= (num[i] - '0');
+            }
+        }
+
+        // Bob wins if and only if:
+        // 1. Total '?' is even (implied if sumDiff * 2 + qDiff * 9 == 0 since 9*qDiff must be even)
+        // 2. The remaining '?' can be paired up to contribute exactly 9 per pair to balance sumDiff
+        return (sumDiff * 2 + qDiff * 9) != 0;
+    }
+};
