@@ -1,0 +1,74 @@
+#include <vector>
+#include <deque>
+
+using namespace std;
+
+class Solution {
+public:
+    int numberOfCells(int r, int c, int u, int d, vector<vector<char>> &mat) {
+        int n = mat.size();
+        int m = mat[0].size();
+
+        // If the starting cell is an obstacle, return 0
+        if (mat[r][c] == '#') return 0;
+
+        // min_up[i][j] stores the minimum upward moves needed to reach (i, j)
+        const int INF = 1e9;
+        vector<vector<int>> min_up(n, vector<int>(m, INF));
+
+        deque<pair<int, int>> dq;
+        min_up[r][c] = 0;
+        dq.push_back({r, c});
+
+        // Direction vectors: Left, Right, Down, Up
+        int dx[] = {0, 0, 1, -1};
+        int dy[] = {-1, 1, 0, 0};
+
+        while (!dq.empty()) {
+            auto [x, y] = dq.front();
+            dq.pop_front();
+
+            int cur_u = min_up[x][y];
+            // Net vertical displacement = down_moves - up_moves = x - r
+            int cur_d = (x - r) + cur_u;
+
+            for (int k = 0; k < 4; ++k) {
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+
+                // Boundary & obstacle check
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m || mat[nx][ny] == '#') {
+                    continue;
+                }
+
+                int weight = (k == 3) ? 1 : 0; // Cost is 1 only when moving Up
+                int new_u = cur_u + weight;
+                int new_d = (nx - r) + new_u;
+
+                // Prune paths that exceed the upward or downward limit
+                if (new_u <= u && new_d <= d) {
+                    if (new_u < min_up[nx][ny]) {
+                        min_up[nx][ny] = new_u;
+                        if (weight == 0) {
+                            dq.push_front({nx, ny}); // 0-cost move
+                        } else {
+                            dq.push_back({nx, ny});  // 1-cost move
+                        }
+                    }
+                }
+            }
+        }
+
+        // Count all visited reachable cells
+        int reachableCount = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (min_up[i][j] != INF) {
+                    reachableCount++;
+                }
+            }
+        }
+
+        return reachableCount;
+    }
+};
