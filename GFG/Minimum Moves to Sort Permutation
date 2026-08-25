@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int minMoves(vector<int>& arr) {
+        int n = arr.size();
+        
+        // Store the 0-based index of each value (1 to n)
+        vector<int> pos(n + 1);
+        for (int i = 0; i < n; i++) {
+            pos[arr[i]] = i;
+        }
+        
+        // Find the longest sequence of consecutive numbers in increasing index order
+        int max_len = 1;
+        int current_len = 1;
+        
+        for (int val = 1; val < n; val++) {
+            if (pos[val] < pos[val + 1]) {
+                current_len++;
+            } else {
+                current_len = 1;
+            }
+            max_len = max(max_len, current_len);
+        }
+        
+        return n - max_len;
+    }
+};
