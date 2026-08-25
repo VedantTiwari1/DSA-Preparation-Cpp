@@ -1,0 +1,13 @@
+class Solution {
+public:
+    int missingMultiple(vector<int>& nums, int k) {
+        unordered_set<int> present(nums.begin(), nums.end());
+        
+        int target = k;
+        while (present.count(target)) {
+            target += k;
+        }
+        
+        return target;
+    }
+};
