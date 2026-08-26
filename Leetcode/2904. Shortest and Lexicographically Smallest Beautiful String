@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string shortestBeautifulSubstring(string s, int k) {
+        vector<int> ones;
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == '1') {
+                ones.push_back(i);
+            }
+        }
+
+        // If s contains fewer than k ones, no valid substring exists
+        if (ones.size() < k) {
+            return "";
+        }
+
+        string ans = "";
+        for (int i = 0; i <= (int)ones.size() - k; i++) {
+            int start = ones[i];
+            int end = ones[i + k - 1];
+            string sub = s.substr(start, end - start + 1);
+
+            // Update ans if sub is shorter, or if equal length and lexicographically smaller
+            if (ans == "" || sub.length() < ans.length() || 
+               (sub.length() == ans.length() && sub < ans)) {
+                ans = sub;
+            }
+        }
+
+        return ans;
+    }
+};
