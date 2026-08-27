@@ -1,0 +1,65 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Solution {
+public:
+    string lexGreaterPermutation(string s, string target) {
+        int n = s.length();
+        vector<int> count(26, 0);
+        for (char ch : s) {
+            count[ch - 'a']++;
+        }
+
+        // Store character count snapshots at each matching prefix length
+        vector<vector<int>> prefix_counts;
+        prefix_counts.push_back(count);
+
+        int max_prefix = 0;
+        for (int k = 0; k < n; k++) {
+            int char_idx = target[k] - 'a';
+            if (count[char_idx] > 0) {
+                count[char_idx]--;
+                prefix_counts.push_back(count);
+                max_prefix++;
+            } else {
+                break;
+            }
+        }
+
+        // Search from the longest valid prefix down to 0
+        for (int i = max_prefix; i >= 0; i--) {
+            if (i == n) continue;
+
+            vector<int> cur_count = prefix_counts[i];
+            int target_char = target[i] - 'a';
+
+            // Find the smallest available character strictly greater than target[i]
+            int chosen_char = -1;
+            for (int c = target_char + 1; c < 26; c++) {
+                if (cur_count[c] > 0) {
+                    chosen_char = c;
+                    break;
+                }
+            }
+
+            if (chosen_char != -1) {
+                string result = target.substr(0, i);
+                result += (char)('a' + chosen_char);
+                cur_count[chosen_char]--;
+
+                // Append all remaining characters in ascending sorted order
+                for (int c = 0; c < 26; c++) {
+                    while (cur_count[c] > 0) {
+                        result += (char)('a' + c);
+                        cur_count[c]--;
+                    }
+                }
+                return result;
+            }
+        }
+
+        return "";
+    }
+};
