@@ -1,0 +1,38 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxArea(vector<vector<int>>& mat) {
+        int n = mat.size();
+        if (n == 0) return 0;
+        int m = mat[0].size();
+
+        // Step 1: Compute height of consecutive 1s for each cell vertically
+        vector<vector<int>> hist(n, vector<int>(m, 0));
+        for (int j = 0; j < m; j++) {
+            hist[0][j] = mat[0][j];
+            for (int i = 1; i < n; i++) {
+                hist[i][j] = (mat[i][j] == 1) ? hist[i - 1][j] + 1 : 0;
+            }
+        }
+
+        int max_area = 0;
+
+        // Step 2: Process each row as the bottom base of the rectangle
+        for (int i = 0; i < n; i++) {
+            vector<int> count = hist[i];
+            // Sort heights in descending order to simulate optimal column ordering
+            sort(count.rbegin(), count.rend());
+
+            for (int k = 0; k < m; k++) {
+                int area = count[k] * (k + 1);
+                max_area = max(max_area, area);
+            }
+        }
+
+        return max_area;
+    }
+};
