@@ -1,0 +1,49 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> lexicographicallySmallestArray(vector<int>& nums, int limit) {
+        int n = nums.size();
+        
+        // Pair each element with its original index
+        vector<pair<int, int>> sorted_nums(n);
+        for (int i = 0; i < n; i++) {
+            sorted_nums[i] = {nums[i], i};
+        }
+
+        // Sort by element values
+        sort(sorted_nums.begin(), sorted_nums.end());
+
+        vector<int> result(n);
+
+        // Group elements where adjacent sorted elements difference <= limit
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            vector<int> indices;
+            vector<int> values;
+
+            // Expand connected component
+            while (j < n && (j == i || sorted_nums[j].first - sorted_nums[j - 1].first <= limit)) {
+                indices.push_back(sorted_nums[j].second);
+                values.push_back(sorted_nums[j].first);
+                j++;
+            }
+
+            // Sort original indices to assign smallest values to smallest indices
+            sort(indices.begin(), indices.end());
+
+            // Fill result array
+            for (size_t k = 0; k < indices.size(); k++) {
+                result[indices[k]] = values[k];
+            }
+
+            i = j;
+        }
+
+        return result;
+    }
+};
