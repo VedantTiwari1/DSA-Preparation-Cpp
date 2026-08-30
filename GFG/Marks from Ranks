@@ -1,0 +1,35 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> getMarks(vector<int> &l, vector<int> &r, vector<int> &rank) {
+        int n = l.size();
+        
+        // Compute prefix sums of total mark counts up to each interval
+        vector<long long> prefix(n);
+        long long total_count = 0;
+        for (int i = 0; i < n; i++) {
+            total_count += (long long)(r[i] - l[i] + 1);
+            prefix[i] = total_count;
+        }
+
+        vector<int> ans;
+        ans.reserve(rank.size());
+
+        // Process each rank query using binary search
+        for (int k : rank) {
+            auto it = lower_bound(prefix.begin(), prefix.end(), (long long)k);
+            int idx = distance(prefix.begin(), it);
+
+            long long prev_count = (idx > 0) ? prefix[idx - 1] : 0;
+            long long offset = k - prev_count - 1;
+
+            ans.push_back(l[idx] + offset);
+        }
+
+        return ans;
+    }
+};
