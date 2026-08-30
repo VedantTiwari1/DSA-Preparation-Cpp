@@ -1,0 +1,39 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int minimumDeletions(vector<int>& nums) {
+        int n = nums.size();
+        
+        int min_idx = 0;
+        int max_idx = 0;
+
+        // Find indices of minimum and maximum elements
+        for (int k = 0; k < n; k++) {
+            if (nums[k] < nums[min_idx]) {
+                min_idx = k;
+            }
+            if (nums[k] > nums[max_idx]) {
+                max_idx = k;
+            }
+        }
+
+        // Let i be the smaller index (closer to front) and j be the larger index (closer to back)
+        int i = min(min_idx, max_idx);
+        int j = max(min_idx, max_idx);
+
+        // Strategy 1: Delete both from the front (left side)
+        int del_front = j + 1;
+
+        // Strategy 2: Delete both from the back (right side)
+        int del_back = n - i;
+
+        // Strategy 3: Delete one from the front and one from the back
+        int del_both_sides = (i + 1) + (n - j);
+
+        return min({del_front, del_back, del_both_sides});
+    }
+};
