@@ -1,0 +1,30 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int minCost(int n, int i, int d, int c) {
+        if (n <= 0) return 0;
+
+        vector<long long> dp(n + 1, 0);
+        dp[1] = i; // Cost to create 1 character starting from empty screen
+
+        for (int k = 2; k <= n; k++) {
+            if (k % 2 == 0) {
+                // If k is even, reach k by either:
+                // 1. Adding 1 character to (k - 1)
+                // 2. Doubling (k / 2) characters
+                dp[k] = min(dp[k - 1] + i, dp[k / 2] + c);
+            } else {
+                // If k is odd, reach k by either:
+                // 1. Adding 1 character to (k - 1)
+                // 2. Doubling ((k + 1) / 2) characters and deleting 1 character
+                dp[k] = min(dp[k - 1] + i, dp[(k + 1) / 2] + c + d);
+            }
+        }
+
+        return dp[n];
+    }
+};
