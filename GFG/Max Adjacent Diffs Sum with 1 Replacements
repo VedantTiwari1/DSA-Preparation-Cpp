@@ -1,0 +1,30 @@
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+class Solution {
+public:
+    int maxDiffSum(std::vector<int>& arr) {
+        int n = arr.size();
+        if (n <= 1) return 0;
+        
+        // Base cases for index 0
+        int prev_orig = 0; // Value when arr[0] is kept as arr[0]
+        int prev_one = 0;  // Value when arr[0] is replaced with 1
+        
+        for (int i = 1; i < n; i++) {
+            // Option 1: arr[i] remains original
+            int curr_orig = std::max(prev_orig + std::abs(arr[i] - arr[i - 1]),
+                                     prev_one + std::abs(arr[i] - 1));
+            
+            // Option 2: arr[i] is replaced with 1
+            int curr_one = std::max(prev_orig + std::abs(1 - arr[i - 1]),
+                                    prev_one + 0);
+            
+            prev_orig = curr_orig;
+            prev_one = curr_one;
+        }
+        
+        return std::max(prev_orig, prev_one);
+    }
+};
