@@ -1,0 +1,35 @@
+#include <vector>
+#include <algorithm>
+#include <numeric>
+
+class Solution {
+public:
+    int maxFruits(std::vector<int>& arr, int m) {
+        int n = arr.size();
+
+        // If m >= n, the bird can visit every tree in the circle
+        if (m >= n) {
+            int total_fruits = 0;
+            for (int fruits : arr) {
+                total_fruits += fruits;
+            }
+            return total_fruits;
+        }
+
+        // Calculate the sum of the initial window of size m
+        int current_sum = 0;
+        for (int i = 0; i < m; i++) {
+            current_sum += arr[i];
+        }
+
+        int max_sum = current_sum;
+
+        // Slide the window around the circular array
+        for (int i = 0; i < n; i++) {
+            current_sum = current_sum - arr[i] + arr[(i + m) % n];
+            max_sum = std::max(max_sum, current_sum);
+        }
+
+        return max_sum;
+    }
+};
