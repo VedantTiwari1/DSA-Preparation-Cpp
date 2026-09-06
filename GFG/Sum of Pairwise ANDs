@@ -1,0 +1,28 @@
+#include <vector>
+
+class Solution {
+public:
+    long long pairAndSum(std::vector<int>& arr) {
+        long long total_sum = 0;
+        
+        // Iterate over all 32 bit positions
+        for (int b = 0; b < 32; ++b) {
+            long long count = 0;
+            
+            // Count elements that have the b-th bit set
+            for (int x : arr) {
+                if ((x >> b) & 1) {
+                    count++;
+                }
+            }
+            
+            // Number of pairs where both elements have the b-th bit set
+            long long pairs = (count * (count - 1)) / 2;
+            
+            // Add the total contribution of bit 'b' to the sum
+            total_sum += pairs * (1LL << b);
+        }
+        
+        return total_sum;
+    }
+};
