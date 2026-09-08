@@ -1,0 +1,52 @@
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<vector<int>> searchWord(vector<vector<char>>& mat, string &word) {
+        int n = mat.size();
+        int m = mat[0].size();
+        int len = word.length();
+        vector<vector<int>> ans;
+
+        // 8 Possible Directions: Up, Down, Left, Right, and 4 Diagonals
+        int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < m; ++c) {
+                // Quick check for matching starting character
+                if (mat[r][c] != word[0]) continue;
+
+                bool found = false;
+
+                for (int dir = 0; dir < 8; ++dir) {
+                    int k;
+                    for (k = 0; k < len; ++k) {
+                        int nr = r + k * dx[dir];
+                        int nc = c + k * dy[dir];
+
+                        // Boundary check & character comparison
+                        if (nr < 0 || nr >= n || nc < 0 || nc >= m || mat[nr][nc] != word[k]) {
+                            break;
+                        }
+                    }
+
+                    // If all characters in the word matched in this direction
+                    if (k == len) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    ans.push_back({r, c});
+                }
+            }
+        }
+
+        return ans;
+    }
+};
