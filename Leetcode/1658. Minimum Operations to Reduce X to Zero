@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int minOperations(vector<int>& nums, int x) {
+        int totalSum = 0;
+        for (int num : nums) {
+            totalSum += num;
+        }
+        
+        // Target sum for the contiguous subarray left in the middle
+        int target = totalSum - x;
+        
+        if (target == 0) return nums.size();
+        if (target < 0) return -1;
+        
+        int left = 0, currentSum = 0, maxLen = -1;
+        
+        // Sliding window to find the longest subarray with sum equal to target
+        for (int right = 0; right < nums.size(); right++) {
+            currentSum += nums[right];
+            
+            while (currentSum > target && left <= right) {
+                currentSum -= nums[left];
+                left++;
+            }
+            
+            if (currentSum == target) {
+                maxLen = max(maxLen, right - left + 1);
+            }
+        }
+        
+        return (maxLen == -1) ? -1 : (nums.size() - maxLen);
+    }
+};
