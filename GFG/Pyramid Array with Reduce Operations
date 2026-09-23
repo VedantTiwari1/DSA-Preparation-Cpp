@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int formPyramid(vector<int>& arr) {
+        int n = arr.size();
+        if (n == 0) return 0;
+
+        vector<int> L(n), R(n);
+
+        // Compute maximum valid height for left slope at each position
+        L[0] = min(arr[0], 1);
+        for (int i = 1; i < n; i++) {
+            L[i] = min(arr[i], L[i - 1] + 1);
+        }
+
+        // Compute maximum valid height for right slope at each position
+        R[n - 1] = min(arr[n - 1], 1);
+        for (int i = n - 2; i >= 0; i--) {
+            R[i] = min(arr[i], R[i + 1] + 1);
+        }
+
+        int maxPeak = 0;
+        long long totalSum = 0;
+
+        // Determine max peak height possible across all positions
+        for (int i = 0; i < n; i++) {
+            totalSum += arr[i];
+            maxPeak = max(maxPeak, min(L[i], R[i]));
+        }
+
+        // Sum of a full pyramid with peak x is always x * x
+        long long maxPyramidSum = (long long)maxPeak * maxPeak;
+
+        // Total cost = Total sum of elements - Maximum pyramid sum
+        return totalSum - maxPyramidSum;
+    }
+};
