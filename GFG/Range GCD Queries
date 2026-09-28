@@ -1,0 +1,80 @@
+#include <vector>
+#include <numeric> // For std::gcd
+
+class SegmentTree {
+    int n;
+    std::vector<int> tree;
+
+    void build(const std::vector<int>& arr, int node, int start, int end) {
+        if (start == end) {
+            tree[node] = arr[start];
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        build(arr, 2 * node, start, mid);
+        build(arr, 2 * node + 1, mid + 1, end);
+        tree[node] = std::gcd(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    void update(int node, int start, int end, int idx, int val) {
+        if (start == end) {
+            tree[node] = val;
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        if (start <= idx && idx <= mid) {
+            update(2 * node, start, mid, idx, val);
+        } else {
+            update(2 * node + 1, mid + 1, end, idx, val);
+        }
+        tree[node] = std::gcd(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    int query(int node, int start, int end, int l, int r) {
+        if (r < start || end < l) return 0; // std::gcd(0, x) = x
+        if (l <= start && end <= r) return tree[node];
+
+        int mid = start + (end - start) / 2;
+        int leftGCD = query(2 * node, start, mid, l, r);
+        int rightGCD = query(2 * node + 1, mid + 1, end, l, r);
+        return std::gcd(leftGCD, rightGCD);
+    }
+
+public:
+    SegmentTree(const std::vector<int>& arr) {
+        n = arr.size();
+        tree.resize(4 * n, 0);
+        if (n > 0) build(arr, 1, 0, n - 1);
+    }
+
+    void updatePoint(int idx, int val) {
+        update(1, 0, n - 1, idx, val);
+    }
+
+    int queryRange(int l, int r) {
+        return query(1, 0, n - 1, l, r);
+    }
+};
+
+class Solution {
+public:
+    std::vector<int> processQueries(std::vector<int>& arr, std::vector<std::vector<int>>& queries) {
+        SegmentTree st(arr);
+        std::vector<int> result;
+
+        for (const auto& q : queries) {
+            int type = q[0];
+            if (type == 0) {
+                int l = q[1];
+                int r = q[2];
+                result.push_back(st.queryRange(l, r));
+            } else if (type == 1) {
+                int index = q[1];
+                int value = q[2];
+                st.updatePoint(index, value);
+            }
+        }
+
+        return result;
+    }
+};
