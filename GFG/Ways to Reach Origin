@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int ways(int x, int y) {
+        int MOD = 1e9 + 7;
+        
+        // dp[i][j] stores the number of paths from (i, j) to (0, 0)
+        vector<vector<int>> dp(x + 1, vector<int>(y + 1, 0));
+        
+        for (int i = 0; i <= x; i++) {
+            for (int j = 0; j <= y; j++) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 1; // Only 1 way if along the boundary
+                } else {
+                    dp[i][j] = (dp[i - 1][j] + dp[i][j - 1]) % MOD;
+                }
+            }
+        }
+        
+        return dp[x][y];
+    }
+};
