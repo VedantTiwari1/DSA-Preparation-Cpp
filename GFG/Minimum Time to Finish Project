@@ -1,0 +1,62 @@
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+class Solution {
+public:
+    int minTime(std::vector<int>& duration, std::vector<std::vector<int>>& dependencies) {
+        int n = duration.size();
+        
+        std::vector<std::vector<int>> adj(n);
+        std::vector<int> inDegree(n, 0);
+        
+        // Build adjacency list and compute in-degrees
+        for (const auto& dep : dependencies) {
+            int u = dep[0];
+            int v = dep[1];
+            adj[u].push_back(v);
+            inDegree[v]++;
+        }
+        
+        // Queue for BFS (Kahn's Algorithm)
+        std::queue<int> q;
+        
+        // dp[i] stores the completion time of module i
+        std::vector<int> dp(n, 0);
+        
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+                dp[i] = duration[i]; // Base case: modules with no dependencies end at duration[i]
+            }
+        }
+        
+        int processedNodes = 0;
+        int maxTime = 0;
+        
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            processedNodes++;
+            
+            maxTime = std::max(maxTime, dp[u]);
+            
+            for (int v : adj[u]) {
+                // Time to finish module v is at least (completion time of u) + duration[v]
+                dp[v] = std::max(dp[v], dp[u] + duration[v]);
+                
+                inDegree[v]--;
+                if (inDegree[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        
+        // If we couldn't process all nodes, a cycle exists
+        if (processedNodes < n) {
+            return -1;
+        }
+        
+        return maxTime;
+    }
+};
