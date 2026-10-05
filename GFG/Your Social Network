@@ -1,0 +1,38 @@
+#include <vector>
+#include <algorithm>
+
+class Solution {
+public:
+    std::vector<std::vector<int>> socialNetwork(std::vector<int>& arr) {
+        std::vector<std::vector<int>> ans;
+        int n = arr.size() + 1; // Total number of users
+
+        // Process each user i from 2 to n
+        for (int i = 2; i <= n; i++) {
+            std::vector<std::pair<int, int>> reachable; // Stores pairs of (j, k)
+            
+            int curr = arr[i - 2];
+            int dist = 1;
+
+            // Follow friend links until reaching a user with no friend (user 1)
+            while (curr != 0) { // Assuming 0-indexed or 1-indexed stopping condition
+                reachable.push_back({curr, dist});
+                
+                if (curr == 1) break; // User 1 has no friend
+                
+                curr = arr[curr - 2];
+                dist++;
+            }
+
+            // Sort reachable users by j in increasing order
+            std::sort(reachable.begin(), reachable.end());
+
+            // Add [i, j, k] to the answer
+            for (const auto& item : reachable) {
+                ans.push_back({i, item.first, item.second});
+            }
+        }
+
+        return ans;
+    }
+};
