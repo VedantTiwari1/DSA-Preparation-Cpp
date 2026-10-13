@@ -1,0 +1,22 @@
+#include <vector>
+
+class Solution {
+public:
+    std::vector<int> update(int n, std::vector<int>& updates) {
+        std::vector<int> arr(n, 0);
+        
+        // Step 1: Record the start of each update range (convert to 0-based indexing)
+        for (int j : updates) {
+            if (j >= 1 && j <= n) {
+                arr[j - 1]++;
+            }
+        }
+        
+        // Step 2: Compute prefix sums to propagate the additions to all subsequent elements
+        for (int i = 1; i < n; ++i) {
+            arr[i] += arr[i - 1];
+        }
+        
+        return arr;
+    }
+};
