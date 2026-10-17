@@ -1,0 +1,53 @@
+class Solution {
+public:
+    bool isItPossible(string s1, string s2) {
+        int n = s1.length();
+        int m = s2.length();
+        
+        // If lengths don't match, transformation is impossible
+        if (n != m) return false;
+        
+        int i = 0, j = 0;
+        
+        while (i < n && j < n) {
+            // Skip '#' in s1
+            while (i < n && s1[i] == '#') {
+                i++;
+            }
+            // Skip '#' in s2
+            while (j < n && s2[j] == '#') {
+                j++;
+            }
+            
+            // If both reached the end
+            if (i == n && j == n) return true;
+            
+            // If one reached the end before the other or characters don't match
+            if (i == n || j == n || s1[i] != s2[j]) return false;
+            
+            // Check positional constraints for 'A' and 'B'
+            if (s1[i] == 'A') {
+                // 'A' can only move left, so its index in s1 must be >= index in s2
+                if (i < j) return false;
+            } else if (s1[i] == 'B') {
+                // 'B' can only move right, so its index in s1 must be <= index in s2
+                if (i > j) return false;
+            }
+            
+            i++;
+            j++;
+        }
+        
+        // Check if any remaining characters are left in s1 or s2
+        while (i < n) {
+            if (s1[i] != '#') return false;
+            i++;
+        }
+        while (j < n) {
+            if (s2[j] != '#') return false;
+            j++;
+        }
+        
+        return true;
+    }
+};
