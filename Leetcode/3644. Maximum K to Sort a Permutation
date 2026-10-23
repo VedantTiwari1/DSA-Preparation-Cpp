@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int sortPermutation(vector<int>& nums) {
+        int n = nums.size();
+        int ans = -1;
+        
+        // If an element nums[i] is not in its correct position (i.e., nums[i] != i),
+        // it needs to be moved. The swap condition requires that for any swap involving
+        // these elements, nums[i] & nums[j] == k.
+        // Thus, k must be a bitwise AND of elements that are out of place.
+        // If all elements are already in place, the answer is 0.
+        
+        bool already_sorted = true;
+        int current_and = -1;
+        
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] != i) {
+                already_sorted = false;
+                if (current_and == -1) {
+                    current_and = nums[i];
+                } else {
+                    current_and &= nums[i];
+                }
+            }
+        }
+        
+        if (already_sorted) {
+            return 0;
+        }
+        
+        return current_and;
+    }
+};
