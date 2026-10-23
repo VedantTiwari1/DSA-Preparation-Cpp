@@ -1,0 +1,70 @@
+class Solution {
+private:
+    void inorder(Node* root, vector<int>& vals) {
+        if (!root) return;
+        inorder(root->left, vals);
+        vals.push_back(root->data);
+        inorder(root->right, vals);
+    }
+    
+    long long mergeAndCount(vector<int>& arr, int temp[], int left, int mid, int right) {
+        int i = left;    // Left subarray tracker
+        int j = mid + 1; // Right subarray tracker
+        int k = left;    // Result array tracker
+        long long inv_count = 0;
+        
+        while (i <= mid && j <= right) {
+            if (arr[i] <= arr[j]) {
+                temp[k++] = arr[i++];
+            } else {
+                temp[k++] = arr[j++];
+                // All remaining elements in the left subarray (from i to mid) 
+                // are greater than arr[j], forming inversions.
+                inv_count += (mid - i + 1);
+            }
+        }
+        
+        while (i <= mid) {
+            temp[k++] = arr[i++];
+        }
+        
+        while (j <= right) {
+            temp[k++] = arr[j++];
+        }
+        
+        for (i = left; i <= right; ++i) {
+            arr[i] = temp[i];
+        }
+        
+        return inv_count;
+    }
+    
+    long long mergeSortAndCount(vector<int>& arr, int temp[], int left, int right) {
+        long long inv_count = 0;
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            
+            inv_count += mergeSortAndCount(arr, temp, left, mid);
+            inv_count += mergeSortAndCount(arr, temp, mid + 1, right);
+            inv_count += mergeAndCount(arr, temp, left, mid, right);
+        }
+        return inv_count;
+    }
+
+public:
+    int pairsViolatingBST(Node* root) {
+        vector<int> vals;
+        inorder(root, vals); // Step 1: Get in-order traversal
+        
+        int n = vals.size();
+        vector<int> temp(n);
+        
+        // Step 2: Count inversions in the in-order traversal array
+        return mergeSortAndCount(vals, temp.data(), 0, n - 1);
+    }
+};
+```[cite: 3]
+
+### Complexity
+* **Time Complexity**: $\mathcal{O}(n \log n)$ where $n$ is the number of nodes in the tree. Extracting the in-order traversal takes $\mathcal{O}(n)$, and counting inversions using merge sort takes $\mathcal{O}(n \log n)$.
+* **Space Complexity**: $\mathcal{O}(n)$ to store the in-order traversal array and temporary merge buffers.
