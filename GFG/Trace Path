@@ -1,0 +1,35 @@
+#include <string>
+#include <algorithm>
+
+class Solution {
+public:
+    bool isPossible(int n, int m, std::string& s) {
+        int row = 0, col = 0;
+        int minRow = 0, maxRow = 0;
+        int minCol = 0, maxCol = 0;
+
+        for (char ch : s) {
+            if (ch == 'L') {
+                col--;
+            } else if (ch == 'R') {
+                col++;
+            } else if (ch == 'U') {
+                row++;
+            } else if (ch == 'D') {
+                row--;
+            }
+
+            minRow = std::min(minRow, row);
+            maxRow = std::max(maxRow, row);
+            minCol = std::min(minCol, col);
+            maxCol = std::max(maxCol, col);
+        }
+
+        // Total vertical span needed <= n and total horizontal span needed <= m
+        if ((maxRow - minRow + 1) <= n && (maxCol - minCol + 1) <= m) {
+            return true;
+        }
+
+        return false;
+    }
+};
