@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int beautySum(string s) {
+        int totalBeauty = 0;
+        int n = s.length();
+        
+        // Pick every possible starting point of the substring
+        for (int i = 0; i < n; ++i) {
+            int freq[26] = {0}; // Frequency array for characters 'a' through 'z'
+            
+            // Pick every possible ending point of the substring
+            for (int j = i; j < n; ++j) {
+                freq[s[j] - 'a']++; // Update frequency of the current character
+                
+                // Find the maximum and minimum non-zero frequencies in the current substring
+                int maxFreq = 0;
+                int minFreq = INT_MAX;
+                
+                for (int k = 0; k < 26; ++k) {
+                    if (freq[k] > 0) {
+                        maxFreq = max(maxFreq, freq[k]);
+                        minFreq = min(minFreq, freq[k]);
+                    }
+                }
+                
+                // Add the beauty of the current substring to the total
+                totalBeauty += (maxFreq - minFreq);
+            }
+        }
+        
+        return totalBeauty;
+    }
+};
