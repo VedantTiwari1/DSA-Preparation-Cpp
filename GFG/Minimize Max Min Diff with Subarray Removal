@@ -1,0 +1,54 @@
+class Solution {
+public:
+    int minDiff(int k, vector<int>& arr) {
+        int n = arr.size();
+        if (n <= k) return 0; // If k is greater than or equal to n, no elements or all elements removed.
+        
+        vector<int> prefMax(n), prefMin(n);
+        vector<int> suffMax(n), suffMin(n);
+        
+        // Precompute prefix max and min
+        prefMax[0] = arr[0];
+        prefMin[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            prefMax[i] = max(prefMax[i - 1], arr[i]);
+            prefMin[i] = min(prefMin[i - 1], arr[i]);
+        }
+        
+        // Precompute suffix max and min
+        suffMax[n - 1] = arr[n - 1];
+        suffMin[n - 1] = arr[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suffMax[i] = max(suffMax[i + 1], arr[i]);
+            suffMin[i] = min(suffMin[i + 1], arr[i]);
+        }
+        
+        int ans = INT_MAX;
+        
+        // Try removing every subarray of size k starting at index i
+        for (int i = 0; i <= n - k; i++) {
+            int currentMax = -1e9, currentMin = 1e9;
+            bool hasElement = false;
+            
+            // Check prefix part (0 to i - 1)
+            if (i > 0) {
+                currentMax = max(currentMax, prefMax[i - 1]);
+                currentMin = min(currentMin, prefMin[i - 1]);
+                hasElement = true;
+            }
+            
+            // Check suffix part (i + k to n - 1)
+            if (i + k < n) {
+                currentMax = max(currentMax, suffMax[i + k]);
+                currentMin = min(currentMin, suffMin[i + k]);
+                hasElement = true;
+            }
+            
+            if (hasElement) {
+                ans = min(ans, currentMax - currentMin);
+            }
+        }
+        
+        return ans;
+    }
+};
