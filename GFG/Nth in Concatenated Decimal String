@@ -1,0 +1,31 @@
+class Solution {
+public:
+    char nthCharacter(int n) {
+        long long len = 1;      // Length of the current digit block (1, 2, 3...)
+        long long count = 9;    // Number of integers with 'len' digits (9, 90, 900...)
+        long long start = 1;    // The starting number of the current block (1, 10, 100...)
+
+        // Find which block of digit-length 'len' the n-th character falls into
+        while (n > len * count) {
+            n -= len * count;
+            len++;
+            count *= 10;
+            start *= 10;
+        }
+
+        // Find the exact number within that block
+        long long targetNumber = start + (n - 1) / len;
+
+        // Find the exact digit within that number
+        long long digitIndex = (n - 1) % len;
+
+        // Convert the number to string and return the character at the specified index
+        string s = to_string(targetNumber);
+        return s[digitIndex];
+    }
+};
+```[cite: 1]
+
+### Complexity
+* **Time Complexity:** $O(\log_{10} n)$ because the number of digit blocks is proportional to the number of digits in $n$.
+* **Space Complexity:** $O(\log n)$ to store the string representation of the target number.
