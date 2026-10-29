@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int minComputation(vector<int>& files) {
+        // Create a min-heap using priority_queue with greater comparator
+        priority_queue<int, vector<int>, greater<int>> minHeap(files.begin(), files.end());
+        
+        int totalCost = 0;
+        
+        // While there is more than one file in the heap
+        while (minHeap.size() > 1) {
+            // Extract the two smallest files
+            int first = minHeap.top();
+            minHeap.pop();
+            
+            int second = minHeap.top();
+            minHeap.pop();
+            
+            // Cost to merge these two files
+            int cost = first + second;
+            totalCost += cost;
+            
+            // Push the merged file back into the heap
+            minHeap.push(cost);
+        }
+        
+        return totalCost;
+    }
+};
