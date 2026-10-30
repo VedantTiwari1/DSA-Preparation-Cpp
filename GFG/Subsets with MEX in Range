@@ -1,0 +1,52 @@
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    int cntSubsets(vector<int>& arr, int l, int r) {
+        long long M = 1000000007;
+        int n = arr.size();
+
+        unordered_map<int, int> mp;
+        for (int num : arr) {
+            mp[num]++;
+        }
+
+        // Precompute powers of 2 modulo M
+        vector<long long> power(n + 1, 1);
+        for (int i = 1; i <= n; i++) {
+            power[i] = (power[i - 1] * 2) % M;
+        }
+
+        long long res = 0;
+        long long cur = 1;
+        int seen = 0;
+
+        // Ensure every value smaller than l is present at least once
+        for (int i = 0; i < l; i++) {
+            int freq = mp.count(i) ? mp[i] : 0;
+            if (freq == 0) {
+                return 0; // If any number < l is missing, no subset can have MEX in [l, r] starting from < l
+            }
+            seen += freq;
+            cur = (cur * (power[freq] - 1 + M)) % M;
+        }
+
+        // Count subsets for each possible MEX from l to r
+        for (int i = l; i <= r; i++) {
+            int freq = mp.count(i) ? mp[i] : 0;
+            long long here = (cur * power[n - seen - freq]) % M;
+            res = (res + here) % M;
+
+            if (freq == 0) {
+                break; // If number i is missing, no higher MEX can be formed
+            }
+            seen += freq;
+            cur = (cur * (power[freq] - 1 + M)) % M;
+        }
+
+        return res;
+    }
+};
