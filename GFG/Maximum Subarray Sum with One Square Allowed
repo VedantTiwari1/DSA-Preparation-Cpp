@@ -1,0 +1,32 @@
+class Solution {
+public:
+    long long maximumSubarray(vector<int>& arr) {
+        if (arr.empty()) return 0;
+        
+        // Base cases for the first element
+        long long normal_prev = arr[0];
+        long long squared_prev = (long long)arr[0] * arr[0];
+        long long max_ans = max(normal_prev, squared_prev);
+        
+        for (size_t i = 1; i < arr.size(); ++i) {
+            long long curr = arr[i];
+            
+            // Maximum normal subarray sum ending at i
+            long long normal_curr = max(curr, normal_prev + curr);
+            
+            // Maximum subarray sum with one square ending at i:
+            // 1. Square the current element arr[i] (add previous normal sum only if positive)
+            // 2. Extend the previous squared subarray by adding curr normally
+            long long squared_curr = max(max(0LL, normal_prev) + curr * curr, squared_prev + curr);
+            
+            // Update global maximum answer
+            max_ans = max({max_ans, normal_curr, squared_curr});
+            
+            // Move to the next state
+            normal_prev = normal_curr;
+            squared_prev = squared_curr;
+        }
+        
+        return max_ans;
+    }
+};
