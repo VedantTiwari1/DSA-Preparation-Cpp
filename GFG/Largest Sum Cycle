@@ -1,0 +1,45 @@
+class Solution {
+public:
+    long long largestSumCycle(vector<int>& edge) {
+        int n = edge.size();
+        vector<int> vis(n, 0); // 0: Unvisited, 1: Visiting (current path), 2: Visited
+        long long maxSum = -1;
+
+        for (int i = 0; i < n; ++i) {
+            if (vis[i] == 0) {
+                int curr = i;
+                // Track path nodes and their positions/indices in the current traversal
+                vector<int> path;
+                
+                while (curr != -1 && vis[curr] == 0) {
+                    vis[curr] = 1;
+                    path.push_back(curr);
+                    curr = edge[curr];
+                }
+
+                // Check if we encountered a cycle (curr is currently being visited)
+                if (curr != -1 && vis[curr] == 1) {
+                    long long currentCycleSum = 0;
+                    bool startCounting = false;
+                    
+                    for (int node : path) {
+                        if (node == curr) {
+                            startCounting = true;
+                        }
+                        if (startCounting) {
+                            currentCycleSum += node;
+                        }
+                    }
+                    maxSum = max(maxSum, currentCycleSum);
+                }
+
+                // Mark all nodes in the current traversal path as fully processed
+                for (int node : path) {
+                    vis[node] = 2;
+                }
+            }
+        }
+
+        return maxSum;
+    }
+};
