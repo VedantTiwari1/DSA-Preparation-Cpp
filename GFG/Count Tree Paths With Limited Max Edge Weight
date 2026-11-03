@@ -1,0 +1,67 @@
+class Solution {
+private:
+    struct DSU {
+        vector<int> parent;
+        vector<long long> size;
+        long long total_paths;
+
+        DSU(int n) {
+            parent.resize(n + 1);
+            size.assign(n + 1, 1);
+            for (int i = 1; i <= n; ++i) parent[i] = i;
+            total_paths = 0;
+        }
+
+        int find(int i) {
+            if (parent[i] == i)
+                return i;
+            return parent[i] = find(parent[i]);
+        }
+
+        bool unite(int u, int v, int w) {
+            int root_u = find(u);
+            int root_v = find(v);
+            if (root_u != root_v) {
+                total_paths += size[root_u] * size[root_v];
+                if (size[root_u] < size[root_v]) swap(root_u, root_v);
+                parent[root_v] = root_u;
+                size[root_u] += size[root_v];
+                return true;
+            }
+            return false;
+        }
+    };
+
+public:
+    vector<int> maximumWeight(int n, vector<vector<int>>& edges, vector<int>& queries) {
+        sort(edges.begin(), edges.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[2] < b[2];
+        });
+
+        int q = queries.size();
+        vector<pair<int, int>> sorted_queries(q);
+        for (int i = 0; i < q; ++i) {
+            sorted_queries[i] = {queries[i], i};
+        }
+        sort(sorted_queries.begin(), sorted_queries.end());
+
+        vector<int> ans(q);
+        DSU dsu(n);
+        int edge_idx = 0;
+        int m = edges.size();
+
+        for (int i = 0; i < q; ++i) {
+            int limit = sorted_queries[i].first;
+            int original_idx = sorted_queries[i].second;
+
+            while (edge_idx < m && edges[edge_idx][2] <= limit) {
+                dsu.unite(edges[edge_idx][0], edges[edge_idx][1], edges[edge_idx][2]);
+                edge_idx++;
+            }
+
+            ans[original_idx] = (int)dsu.total_paths;
+        }
+
+        return ans;
+    }
+};
