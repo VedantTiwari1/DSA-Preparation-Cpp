@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int subarrayXor(vector<int>& arr) {
+        int n = arr.size();
+        int finalXor = 0;
+        
+        // If n is even, the frequency of every element in all subarrays is even, 
+        // so the total XOR sum is always 0.
+        if (n % 2 == 0) {
+            return 0;
+        }
+        
+        // If n is odd, only elements at even indices contribute an odd number of times.
+        for (int i = 0; i < n; i += 2) {
+            finalXor ^= arr[i];
+        }
+        
+        return finalXor;
+    }
+};
