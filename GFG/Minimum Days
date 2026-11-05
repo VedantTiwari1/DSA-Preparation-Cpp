@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int getMinimumDays(string &s, vector<int> &p) {
+        int n = s.length();
+        int violations = 0;
+        
+        // Count initial adjacent equal pairs
+        for (int i = 0; i < n - 1; ++i) {
+            if (s[i] == s[i + 1]) {
+                violations++;
+            }
+        }
+        
+        // If there are no violations initially
+        if (violations == 0) return 0;
+        
+        // Process each day
+        for (int day = 0; day < n; ++day) {
+            int idx = p[day];
+            
+            // Check left pair (idx - 1, idx)
+            if (idx > 0 && s[idx - 1] != '?' && s[idx - 1] == s[idx]) {
+                violations--;
+            }
+            
+            // Check right pair (idx, idx + 1)
+            if (idx < n - 1 && s[idx + 1] != '?' && s[idx] == s[idx + 1]) {
+                violations--;
+            }
+            
+            // Replace the character with '?'
+            s[idx] = '?';
+            
+            // If all adjacent violations are resolved
+            if (violations == 0) {
+                return day + 1;
+            }
+        }
+        
+        return 0;
+    }
+};
