@@ -1,0 +1,44 @@
+#include <vector>
+#include <string>
+#include <unordered_set>
+#include <unordered_map>
+
+class Solution {
+public:
+    std::vector<std::string> generateUsernames(std::vector<std::string>& arr) {
+        std::unordered_set<std::string> reserved;
+        std::unordered_set<std::string> assigned;
+        std::unordered_map<std::string, int> next_suffix;
+        std::vector<std::string> result;
+        
+        // Step 1: Mark all input usernames as reserved
+        for (const std::string& name : arr) {
+            reserved.insert(name);
+        }
+        
+        // Step 2: Process each username in order
+        for (const std::string& name : arr) {
+            if (assigned.find(name) == assigned.end()) {
+                // If the username has not been assigned yet, keep it unchanged
+                result.push_back(name);
+                assigned.insert(name);
+            } else {
+                // Otherwise, find the smallest positive integer suffix starting from next_suffix
+                int k = next_suffix.count(name) ? next_suffix[name] : 1;
+                std::string new_name = name + std::to_string(k);
+                
+                // Ensure the new name is neither already assigned nor reserved in the input
+                while (assigned.find(new_name) != assigned.end() || reserved.find(new_name) != reserved.end()) {
+                    k++;
+                    new_name = name + std::to_string(k);
+                }
+                
+                next_suffix[name] = k + 1;
+                result.push_back(new_name);
+                assigned.insert(new_name);
+            }
+        }
+        
+        return result;
+    }
+};
