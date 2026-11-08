@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int minTime(int n, int s1, int s2) {
+        long long low = 0;
+        long long high = (long long)n * min(s1, s2);
+        long long ans = high;
+        
+        while (low <= high) {
+            long long mid = low + (high - low) / 2;
+            long long docs = (mid / s1) + (mid / s2);
+            
+            if (docs >= n) {
+                ans = mid;
+                high = mid - 1; // Try to find a smaller time
+            } else {
+                low = mid + 1;  // Need more time
+            }
+        }
+        
+        return ans;
+    }
+};
