@@ -1,0 +1,40 @@
+#include <string>
+#include <unordered_map>
+
+class Solution {
+public:
+    int getCount(string &s, int k) {
+        int n = s.length();
+        if (n == 0) return 0;
+        
+        unordered_map<char, int> groupCount;
+        int i = 0;
+        
+        // Traverse the string to extract groups
+        while (i < n) {
+            char ch = s[i];
+            int j = i;
+            
+            // Find the end of the current consecutive group
+            while (j < n && s[j] == ch) {
+                j++;
+            }
+            
+            // Increment the group count for this character
+            groupCount[ch]++;
+            
+            // Move to the next group
+            i = j;
+        }
+        
+        // Count how many characters appear in exactly k groups
+        int ans = 0;
+        for (auto& entry : groupCount) {
+            if (entry.second == k) {
+                ans++;
+            }
+        }
+        
+        return ans;
+    }
+};
