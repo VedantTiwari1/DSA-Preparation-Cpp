@@ -1,0 +1,22 @@
+class Solution {
+  public:
+    int minDiff(Node *root, int k) {
+        int min_diff = INT_MAX;
+        Node* curr = root;
+        
+        while (curr != nullptr) {
+            // Update the minimum absolute difference
+            min_diff = min(min_diff, abs(curr->data - k));
+            
+            if (curr->data == k) {
+                return 0; // Exact match found
+            } else if (curr->data > k) {
+                curr = curr->left; // Values are too large, search left
+            } else {
+                curr = curr->right; // Values are too small, search right
+            }
+        }
+        
+        return min_diff;
+    }
+};
