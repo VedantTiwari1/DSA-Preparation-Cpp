@@ -1,0 +1,50 @@
+class Solution {
+public:
+    vector<int> findCommon(Node* r1, Node* r2) {
+        vector<int> result;
+        stack<Node*> s1, s2;
+        
+        Node* curr1 = r1;
+        Node* curr2 = r2;
+        
+        while ((curr1 != nullptr || !s1.empty()) && (curr2 != nullptr || !s2.empty())) {
+            // Reach the leftmost node of both trees
+            while (curr1 != nullptr) {
+                s1.push(curr1);
+                curr1 = curr1->left;
+            }
+            while (curr2 != nullptr) {
+                s2.push(curr2);
+                curr2 = curr2->left;
+            }
+            
+            curr1 = s1.top();
+            curr2 = s2.top();
+            
+            // Compare the values of the current nodes
+            if (curr1->data == curr2->data) {
+                result.push_back(curr1->data);
+                s1.pop();
+                s2.pop();
+                
+                // Move to the right subtree
+                curr1 = curr1->right;
+                curr2 = curr2->right;
+            } 
+            else if (curr1->data < curr2->data) {
+                s1.pop();
+                // Move to the right subtree of curr1, keep curr2 same for next comparison
+                curr1 = curr1->right;
+                curr2 = nullptr; 
+            } 
+            else {
+                s2.pop();
+                // Move to the right subtree of curr2, keep curr1 same for next comparison
+                curr2 = curr2->right;
+                curr1 = nullptr;
+            }
+        }
+        
+        return result;
+    }
+};
