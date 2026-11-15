@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int subsequenceSum(string &s) {
+        long long MOD = 1e9 + 7;
+        long long digitSum = 0;
+        int n = s.length();
+        
+        // 1. Calculate the sum of all digits in the string
+        for (char ch : s) {
+            digitSum = (digitSum + (ch - '0')) % MOD;
+        }
+        
+        // 2. Compute 2^(n-1) modulo (10^9 + 7)
+        long long digitFreq = 1;
+        for (int i = 1; i < n; i++) {
+            digitFreq = (digitFreq * 2) % MOD;
+        }
+        
+        // 3. Multiply digit sum by frequency and return modulo result
+        return (digitSum * digitFreq) % MOD;
+    }
+};
