@@ -1,0 +1,16 @@
+#include <algorithm>
+#include <functional>
+#include <vector>
+using namespace std;
+
+class Solution {
+  public:
+    void sortIt(vector<int>& arr) {
+        auto mid = partition(arr.begin(), arr.end(), [](int x) {
+            return (x & 1) != 0;
+        });
+
+        sort(arr.begin(), mid, greater<int>());
+        sort(mid, arr.end());
+    }
+};
