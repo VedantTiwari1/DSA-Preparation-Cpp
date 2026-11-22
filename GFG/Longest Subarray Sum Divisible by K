@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int longestSubarrayDivK(vector<int>& arr, int k) {
+        unordered_map<int, int> firstIndex;
+        firstIndex[0] = -1; // Base case: prefix sum 0 occurs before index 0
+        
+        long long prefixSum = 0;
+        int maxLen = 0;
+        
+        for (int i = 0; i < (int)arr.size(); i++) {
+            prefixSum += arr[i];
+            int rem = ((prefixSum % k) + k) % k;
+            
+            if (firstIndex.count(rem)) {
+                maxLen = max(maxLen, i - firstIndex[rem]);
+            } else {
+                firstIndex[rem] = i;
+            }
+        }
+        
+        return maxLen;
+    }
+};
