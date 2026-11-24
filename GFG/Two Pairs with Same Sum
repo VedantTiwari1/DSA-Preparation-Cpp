@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> findPairs(vector<int>& arr) {
+        int n = arr.size();
+        unordered_map<int, vector<pair<int, int>>> sumMap;
+
+        // Store all pairs (c, d) with c < d in lexicographical order per sum
+        for (int c = 0; c < n; ++c) {
+            for (int d = c + 1; d < n; ++d) {
+                sumMap[arr[c] + arr[d]].push_back({c, d});
+            }
+        }
+
+        // Iterate (a, b) with a < b in lexicographical order
+        for (int a = 0; a < n; ++a) {
+            for (int b = a + 1; b < n; ++b) {
+                int target = arr[a] + arr[b];
+                auto it = sumMap.find(target);
+                if (it == sumMap.end()) continue;
+
+                for (const auto& p : it->second) {
+                    int c = p.first;
+                    int d = p.second;
+
+                    // Indices must be distinct
+                    if (c == a || c == b || d == a || d == b) continue;
+
+                    // (a, b) must be lexicographically smaller than (c, d)
+                    if (a < c || (a == c && b < d)) {
+                        return {a, b, c, d};
+                    }
+                }
+            }
+        }
+
+        return {-1, -1, -1, -1};
+    }
+};
